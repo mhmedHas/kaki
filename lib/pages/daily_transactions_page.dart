@@ -1,0 +1,6844 @@
+// // import 'package:flutter/material.dart';
+// // import 'package:uhf_gold_shop/pages/RemainingKitsPage.dart';
+// // import '../services/firestore_service.dart'; // ✅ مكان FS class
+// // import 'package:intl/intl.dart';
+// // import 'package:cloud_firestore/cloud_firestore.dart';
+// // import 'expenses_page.dart';
+// // import 'TransformPage.dart';
+// // //import 'image_upload_page.dart';
+// // import 'cash_box_page.dart';
+// // import 'package:shared_preferences/shared_preferences.dart';
+// // import 'branches_page.dart';
+// // import 'EditPage.dart';
+// // import 'external_transactions_page.dart';
+// // import 'ExitPermissionPage.dart';
+// // import 'settings_page.dart';
+// // import 'settings_page.dart' show checkPassword;
+// // import 'ReturnsPage.dart';
+// // import 'preview_page.dart';
+// // import 'DeletedItemsPage.dart';
+
+// // class DailyTransactionsPage extends StatefulWidget {
+// //   const DailyTransactionsPage({super.key});
+
+// //   @override
+// //   State<DailyTransactionsPage> createState() => _DailyTransactionsPageState();
+// // }
+
+// // class _DailyTransactionsPageState extends State<DailyTransactionsPage> {
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   void _openPage(BuildContext context, Widget page) async {
+// //     String? pageKey;
+
+// //     if (page is PartPage) {
+// //       pageKey = 'Suppliers';
+// //     } else if (page is Part1Page)
+// //       pageKey = 'Vouchers';
+// //     else if (page is Part2Page)
+// //       pageKey = 'Funds';
+// //     else if (page is TransformPage)
+// //       pageKey = 'Transfers';
+// //     else if (page is EditPage)
+// //       pageKey = 'edit';
+// //     else if (page is BranchesPage)
+// //       pageKey = 'branches';
+// //     else if (page is ExternalTransactionsPage)
+// //       pageKey = 'Transactions';
+// //     else if (page is ExitPermissionPage) pageKey = 'Statements';
+
+// //     if (pageKey != null) {
+// //       final allowed = await checkPassword(context, pageKey);
+// //       if (!allowed) return;
+// //     }
+
+// //     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("الحركة اليومية", "Daily Transactions")),
+// //         backgroundColor: const Color(0xFFD4AF37),
+// //       ),
+// //       body: Padding(
+// //         padding: const EdgeInsets.all(30),
+// //         child: SingleChildScrollView(
+// //           child: Column(
+// //             children: [
+// //               // الشبكة
+// //               GridView.count(
+// //                 crossAxisCount: 2,
+// //                 crossAxisSpacing: 20,
+// //                 mainAxisSpacing: 20,
+// //                 shrinkWrap:
+// //                     true, // مهم جدًا عشان الشبكة تاخد حجم محتواها مش كل المساحة
+// //                 physics:
+// //                     const NeverScrollableScrollPhysics(), // عشان الـ Scroll يبقى للـ Column
+// //                 children: [
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.people,
+// //                     label: _t("الموردين", "Suppliers"),
+// //                     page: const PartPage(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.receipt_long,
+// //                     label: _t("سندات", "Vouchers"),
+// //                     page: const Part1Page(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.monetization_on,
+// //                     label: _t("الأموال", "Funds"),
+// //                     page: const Part2Page(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.mail_rounded,
+// //                     label: _t("التحويل", "Transfers"),
+// //                     page: const TransformPage(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.edit_outlined,
+// //                     label: _t("التعديل", "edit"),
+// //                     page: const EditPage(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.location_city,
+// //                     label: _t("الافرع", "branches"),
+// //                     page: const BranchesPage(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.outbond_outlined,
+// //                     label: _t("التعاملات", "Transactions"),
+// //                     page: const ExternalTransactionsPage(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.safety_check,
+// //                     label: _t("التصريحات", "Statements"),
+// //                     page: const ExitPermissionPage(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.delete,
+// //                     label: _t("المحذوفات", "Deletes"),
+// //                     page: const DeletedItemsPage(),
+// //                   ),
+// //                   _buildMenuCard(
+// //                     context,
+// //                     icon: Icons.keyboard_return_outlined,
+// //                     label: _t("المرتجعات", "Returns"),
+// //                     page: const ReturnsPage(),
+// //                   ),
+// //                   // الزر الجديد - بقايا الاطقم
+// //                   // _buildMenuCard(
+// //                   //   context,
+// //                   //   icon: Icons.inventory_2_outlined,
+// //                   //   label: _t("بقايا الاطقم", "Remaining Kits"),
+// //                   //   page: const RemainingKitsPage(),
+// //                   // ),
+// //                 ],
+// //               ),
+
+// //               //const SizedBox(height: 20), // مسافة بين الشبكة والزرار
+
+// //               // الزرار
+// //               /*SizedBox(
+// //                 width: double.infinity,
+// //                 height: 70,
+// //                 child: ElevatedButton(
+// //                   style: ElevatedButton.styleFrom(
+// //                     backgroundColor: Color(0xFFD4AF37).withOpacity(0.9),
+// //                     padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+// //                   ),
+// //                   onPressed: () {
+// //                     _openPage(context, ReturnsPage());
+// //                   },
+// //                   child: Row(
+// //                     mainAxisAlignment: MainAxisAlignment.center, // عشان النص والأيقونة يكونوا في النص
+// //                     children: [
+// //                       Icon(
+// //                         Icons.keyboard_return_outlined, // أي أيقونة تحبها
+// //                         color: Colors.white,
+// //                         size: 24,
+// //                       ),
+// //                       const SizedBox(width: 8), // مسافة بين الأيقونة والنص
+// //                       Text(
+// //                         _t("المرتجعات", "Returns"),
+// //                         style: const TextStyle(
+// //                           fontSize: 16,
+// //                           fontWeight: FontWeight.bold,
+// //                           color: Colors.white,
+// //                         ),
+// //                       ),
+// //                     ],
+// //                   ),
+// //                 ),
+// //               ),*/
+// //             ],
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildMenuCard(BuildContext context,
+// //       {required IconData icon, required String label, required Widget page}) {
+// //     return GestureDetector(
+// //       onTap: () => _openPage(context, page),
+// //       child: Card(
+// //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+// //         elevation: 4,
+// //         color: const Color(0xFFD4AF37).withOpacity(0.9), // دهبي
+// //         child: Center(
+// //           child: Column(
+// //             mainAxisAlignment: MainAxisAlignment.center,
+// //             children: [
+// //               Icon(icon, size: 30, color: Colors.white),
+// //               const SizedBox(height: 10),
+// //               Text(
+// //                 label,
+// //                 textAlign: TextAlign.center,
+// //                 style: const TextStyle(
+// //                   fontSize: 16,
+// //                   fontWeight: FontWeight.bold,
+// //                   color: Colors.white,
+// //                 ),
+// //               ),
+// //             ],
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // class PartPage extends StatefulWidget {
+// //   const PartPage({super.key});
+
+// //   @override
+// //   State<PartPage> createState() => _PartPageState();
+// // }
+
+// // class _PartPageState extends State<PartPage> {
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     final theme = Theme.of(context);
+
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("الموردين", "Suppliers")),
+// //         backgroundColor: const Color(0xFFD4AF37),
+// //       ),
+// //       body: Container(
+// //         decoration: BoxDecoration(
+// //           gradient: LinearGradient(
+// //             begin: Alignment.topCenter,
+// //             end: Alignment.bottomCenter,
+// //             colors: [
+// //               theme.colorScheme.surface,
+// //               theme.colorScheme.surface.withOpacity(0.8),
+// //             ],
+// //           ),
+// //         ),
+// //         child: Center(
+// //           child: Padding(
+// //             padding: const EdgeInsets.all(20),
+// //             child: Column(
+// //               mainAxisAlignment: MainAxisAlignment.center,
+// //               children: [
+// //                 GridView.count(
+// //                   shrinkWrap: true,
+// //                   physics: const NeverScrollableScrollPhysics(),
+// //                   crossAxisCount: 1, // زرار واحد في السطر
+// //                   mainAxisSpacing: 12,
+// //                   childAspectRatio: 4, // مستطيل (تقدر تزود أو تقلل)
+// //                   children: [
+// //                     _buildMenuCard(
+// //                       context,
+// //                       icon: Icons.add_box,
+// //                       label: _t("إضافة مورد", "Add Supplier"),
+// //                       page: const AddSupplierPage(),
+// //                     ),
+// //                     _buildMenuCard(
+// //                       context,
+// //                       icon: Icons.people,
+// //                       label: _t("الموردين", "Suppliers List"),
+// //                       page: const SuppliersPage(),
+// //                     ),
+// //                   ],
+// //                 ),
+// //                 const SizedBox(height: 10),
+// //               ],
+// //             ),
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildMenuCard(
+// //     BuildContext context, {
+// //     required IconData icon,
+// //     required String label,
+// //     Widget? page,
+// //     VoidCallback? onTap,
+// //   }) {
+// //     return GestureDetector(
+// //       onTap: onTap ??
+// //           () {
+// //             if (page != null) {
+// //               Navigator.push(
+// //                 context,
+// //                 MaterialPageRoute(builder: (_) => page),
+// //               );
+// //             }
+// //           },
+// //       child: Card(
+// //         shape: RoundedRectangleBorder(
+// //           borderRadius: BorderRadius.circular(16),
+// //         ),
+// //         elevation: 4,
+// //         color: const Color(0xFFD4AF37).withOpacity(0.9),
+// //         child: Padding(
+// //           padding: const EdgeInsets.symmetric(horizontal: 20),
+// //           child: Row(
+// //             mainAxisAlignment: MainAxisAlignment.center,
+// //             children: [
+// //               Icon(icon, size: 36, color: Colors.white),
+// //               const SizedBox(width: 20),
+// //               Text(
+// //                 label,
+// //                 style: const TextStyle(
+// //                   fontSize: 18,
+// //                   fontWeight: FontWeight.bold,
+// //                   color: Colors.white,
+// //                 ),
+// //               ),
+// //             ],
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // class Part1Page extends StatefulWidget {
+// //   const Part1Page({super.key});
+
+// //   @override
+// //   State<Part1Page> createState() => _Part1PageState();
+// // }
+
+// // class _Part1PageState extends State<Part1Page> {
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     final theme = Theme.of(context);
+
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("السندات", "Vouchers")),
+// //         backgroundColor: const Color(0xFFD4AF37),
+// //       ),
+// //       body: Container(
+// //         decoration: BoxDecoration(
+// //           gradient: LinearGradient(
+// //             begin: Alignment.topCenter,
+// //             end: Alignment.bottomCenter,
+// //             colors: [
+// //               theme.colorScheme.surface,
+// //               theme.colorScheme.surface.withOpacity(0.8),
+// //             ],
+// //           ),
+// //         ),
+// //         child: Center(
+// //           child: Padding(
+// //             padding: const EdgeInsets.all(20),
+// //             child: Column(
+// //               mainAxisAlignment: MainAxisAlignment.center,
+// //               children: [
+// //                 GridView.count(
+// //                   shrinkWrap: true,
+// //                   physics: const NeverScrollableScrollPhysics(),
+// //                   crossAxisCount: 1, // زرار واحد في السطر
+// //                   mainAxisSpacing: 12,
+// //                   childAspectRatio: 4, // مستطيل (تقدر تزود أو تقلل)
+// //                   children: [
+// //                     _buildMenuCard(
+// //                       context,
+// //                       icon: Icons.receipt_long,
+// //                       label: _t("سند قبض", "Receipt Voucher"),
+// //                       page: const ReceiptVoucherPage(),
+// //                     ),
+// //                     _buildMenuCard(
+// //                       context,
+// //                       icon: Icons.payments,
+// //                       label: _t("سند صرف", "Payment Voucher"),
+// //                       page: const PaymentVoucherPage(),
+// //                     ),
+// //                   ],
+// //                 ),
+// //                 const SizedBox(height: 10),
+// //               ],
+// //             ),
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildMenuCard(
+// //     BuildContext context, {
+// //     required IconData icon,
+// //     required String label,
+// //     Widget? page,
+// //     VoidCallback? onTap,
+// //   }) {
+// //     return GestureDetector(
+// //       onTap: onTap ??
+// //           () {
+// //             if (page != null) {
+// //               Navigator.push(
+// //                 context,
+// //                 MaterialPageRoute(builder: (_) => page),
+// //               );
+// //             }
+// //           },
+// //       child: Card(
+// //         shape: RoundedRectangleBorder(
+// //           borderRadius: BorderRadius.circular(16),
+// //         ),
+// //         elevation: 4,
+// //         color: const Color(0xFFD4AF37).withOpacity(0.9),
+// //         child: Padding(
+// //           padding: const EdgeInsets.symmetric(horizontal: 20),
+// //           child: Row(
+// //             mainAxisAlignment: MainAxisAlignment.center,
+// //             children: [
+// //               Icon(icon, size: 36, color: Colors.white),
+// //               const SizedBox(width: 20),
+// //               Text(
+// //                 label,
+// //                 style: const TextStyle(
+// //                   fontSize: 18,
+// //                   fontWeight: FontWeight.bold,
+// //                   color: Colors.white,
+// //                 ),
+// //               ),
+// //             ],
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // class Part2Page extends StatefulWidget {
+// //   const Part2Page({super.key});
+
+// //   @override
+// //   State<Part2Page> createState() => _Part2PageState();
+// // }
+
+// // class _Part2PageState extends State<Part2Page> {
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     final theme = Theme.of(context);
+
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("الأموال", "Funds")),
+// //         backgroundColor: const Color(0xFFD4AF37),
+// //       ),
+// //       body: Container(
+// //         decoration: BoxDecoration(
+// //           gradient: LinearGradient(
+// //             begin: Alignment.topCenter,
+// //             end: Alignment.bottomCenter,
+// //             colors: [
+// //               theme.colorScheme.surface,
+// //               theme.colorScheme.surface.withOpacity(0.8),
+// //             ],
+// //           ),
+// //         ),
+// //         child: Center(
+// //           child: Padding(
+// //             padding: const EdgeInsets.all(20),
+// //             child: Column(
+// //               mainAxisAlignment: MainAxisAlignment.center,
+// //               children: [
+// //                 GridView.count(
+// //                   shrinkWrap: true,
+// //                   physics: const NeverScrollableScrollPhysics(),
+// //                   crossAxisCount: 1, // زرار واحد في السطر
+// //                   mainAxisSpacing: 12,
+// //                   childAspectRatio: 4, // مستطيل (تقدر تزود أو تقلل)
+// //                   children: [
+// //                     _buildMenuCard(
+// //                       context,
+// //                       icon: Icons.account_balance_wallet,
+// //                       label: _t("الصندوق", "Cash Box"),
+// //                       page: const CashBoxPage(),
+// //                     ),
+// //                     _buildMenuCard(
+// //                       context,
+// //                       icon: Icons.monetization_on,
+// //                       label: _t("المصروفات", "Expenses"),
+// //                       page: const ExpensesPage(),
+// //                     ),
+// //                   ],
+// //                 ),
+// //                 const SizedBox(height: 10),
+// //               ],
+// //             ),
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildMenuCard(
+// //     BuildContext context, {
+// //     required IconData icon,
+// //     required String label,
+// //     Widget? page,
+// //     VoidCallback? onTap,
+// //   }) {
+// //     return GestureDetector(
+// //       onTap: onTap ??
+// //           () {
+// //             if (page != null) {
+// //               Navigator.push(
+// //                 context,
+// //                 MaterialPageRoute(builder: (_) => page),
+// //               );
+// //             }
+// //           },
+// //       child: Card(
+// //         shape: RoundedRectangleBorder(
+// //           borderRadius: BorderRadius.circular(16),
+// //         ),
+// //         elevation: 4,
+// //         color: const Color(0xFFD4AF37).withOpacity(0.9),
+// //         child: Padding(
+// //           padding: const EdgeInsets.symmetric(horizontal: 20),
+// //           child: Row(
+// //             mainAxisAlignment: MainAxisAlignment.center,
+// //             children: [
+// //               Icon(icon, size: 36, color: Colors.white),
+// //               const SizedBox(width: 20),
+// //               Text(
+// //                 label,
+// //                 style: const TextStyle(
+// //                   fontSize: 18,
+// //                   fontWeight: FontWeight.bold,
+// //                   color: Colors.white,
+// //                 ),
+// //               ),
+// //             ],
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // ///////////////////////
+// // /// صفحة إضافة مورد ///
+// // ///////////////////////
+// // class AddSupplierPage extends StatefulWidget {
+// //   const AddSupplierPage({super.key});
+
+// //   @override
+// //   State<AddSupplierPage> createState() => _AddSupplierPageState();
+// // }
+
+// // class _AddSupplierPageState extends State<AddSupplierPage> {
+// //   final nameCtrl = TextEditingController();
+// //   final phoneCtrl = TextEditingController();
+// //   final delegateCtrl = TextEditingController();
+// //   List<String> delegates = [];
+
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("إضافة مورد", "Add Supplier")),
+// //         backgroundColor: const Color(0xFFD4AF37), // دهبي
+// //       ),
+// //       body: Container(
+// //         decoration: BoxDecoration(
+// //           gradient: LinearGradient(
+// //             begin: Alignment.topCenter,
+// //             end: Alignment.bottomCenter,
+// //             colors: [
+// //               Colors.white,
+// //               Colors.grey.shade100,
+// //             ],
+// //           ),
+// //         ),
+// //         child: Padding(
+// //           padding: const EdgeInsets.all(20),
+// //           child: SingleChildScrollView(
+// //             child: Column(
+// //               crossAxisAlignment: CrossAxisAlignment.stretch,
+// //               children: [
+// //                 // اسم المورد
+// //                 _buildInputField(
+// //                   controller: nameCtrl,
+// //                   label: _t("اسم المورد", "Supplier Name"),
+// //                   icon: Icons.business,
+// //                 ),
+
+// //                 const SizedBox(height: 15),
+
+// //                 // رقم الجوال
+// //                 _buildInputField(
+// //                   controller: phoneCtrl,
+// //                   label: _t("رقم الجوال", "Phone Number"),
+// //                   icon: Icons.phone,
+// //                 ),
+
+// //                 const SizedBox(height: 15),
+
+// //                 // اسم المندوب مع زر إضافة
+// //                 Row(
+// //                   children: [
+// //                     Expanded(
+// //                       child: _buildInputField(
+// //                         controller: delegateCtrl,
+// //                         label: _t("اسم المندوب", "Delegate Name"),
+// //                         icon: Icons.person,
+// //                       ),
+// //                     ),
+// //                     const SizedBox(width: 10),
+// //                     ElevatedButton(
+// //                       style: ElevatedButton.styleFrom(
+// //                         backgroundColor: const Color(0xFFD4AF37),
+// //                         shape: RoundedRectangleBorder(
+// //                           borderRadius: BorderRadius.circular(12),
+// //                         ),
+// //                         padding: const EdgeInsets.all(14),
+// //                       ),
+// //                       onPressed: () {
+// //                         if (delegateCtrl.text.isNotEmpty) {
+// //                           setState(() {
+// //                             delegates.add(delegateCtrl.text.trim());
+// //                             delegateCtrl.clear();
+// //                           });
+// //                         }
+// //                       },
+// //                       child: const Icon(Icons.add, color: Colors.white),
+// //                     ),
+// //                   ],
+// //                 ),
+
+// //                 const SizedBox(height: 10),
+
+// //                 // Chips للمندوبين
+// //                 Wrap(
+// //                   spacing: 8,
+// //                   runSpacing: 4,
+// //                   children: delegates
+// //                       .map((d) => Chip(
+// //                             label: Text(d),
+// //                             backgroundColor: Colors.grey.shade200,
+// //                             labelStyle:
+// //                                 const TextStyle(fontWeight: FontWeight.bold),
+// //                             deleteIcon: const Icon(Icons.close, size: 16),
+// //                             onDeleted: () {
+// //                               setState(() => delegates.remove(d));
+// //                             },
+// //                           ))
+// //                       .toList(),
+// //                 ),
+
+// //                 const SizedBox(height: 30),
+
+// //                 // زرار الحفظ
+// //                 ElevatedButton(
+// //                   style: ElevatedButton.styleFrom(
+// //                     backgroundColor: const Color(0xFFD4AF37),
+// //                     shape: RoundedRectangleBorder(
+// //                       borderRadius: BorderRadius.circular(16),
+// //                     ),
+// //                     padding: const EdgeInsets.symmetric(vertical: 16),
+// //                   ),
+// //                   onPressed: () async {
+// //                     if (nameCtrl.text.isEmpty) {
+// //                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                         content:
+// //                             Text(_t("ادخل اسم المورد", "Enter supplier name")),
+// //                       ));
+// //                       return;
+// //                     }
+
+// //                     await FS.addSupplier(
+// //                       name: nameCtrl.text,
+// //                       delegates: delegates,
+// //                       phone: phoneCtrl.text,
+// //                     );
+
+// //                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                       content: Text(_t("تم حفظ المورد بنجاح ✅",
+// //                           "Supplier saved successfully ✅")),
+// //                     ));
+
+// //                     Navigator.pop(context);
+// //                   },
+// //                   child: Text(
+// //                     _t("حفظ", "Save"),
+// //                     style: const TextStyle(
+// //                       fontSize: 18,
+// //                       fontWeight: FontWeight.bold,
+// //                       color: Colors.white,
+// //                     ),
+// //                   ),
+// //                 ),
+// //               ],
+// //             ),
+// //           ),
+// //         ),
+// //       ),
+// //     );
+// //   }
+
+// //   Widget _buildInputField({
+// //     required TextEditingController controller,
+// //     required String label,
+// //     IconData? icon,
+// //   }) {
+// //     return TextField(
+// //       controller: controller,
+// //       decoration: InputDecoration(
+// //         labelText: label,
+// //         prefixIcon:
+// //             icon != null ? Icon(icon, color: const Color(0xFFD4AF37)) : null,
+// //         filled: true,
+// //         fillColor: Colors.white,
+// //         contentPadding:
+// //             const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+// //         border: OutlineInputBorder(
+// //           borderRadius: BorderRadius.circular(12),
+// //           borderSide: BorderSide(color: Colors.grey.shade300),
+// //         ),
+// //         enabledBorder: OutlineInputBorder(
+// //           borderRadius: BorderRadius.circular(12),
+// //           borderSide: BorderSide(color: Colors.grey.shade300),
+// //         ),
+// //         focusedBorder: OutlineInputBorder(
+// //           borderRadius: BorderRadius.circular(12),
+// //           borderSide: const BorderSide(color: Color(0xFFD4AF37), width: 2),
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // ////////////////////
+// // /// صفحة الموردين ///
+// // ////////////////////
+
+// // class SuppliersPage extends StatefulWidget {
+// //   const SuppliersPage({super.key});
+
+// //   @override
+// //   State<SuppliersPage> createState() => _SuppliersPageState();
+// // }
+
+// // class _SuppliersPageState extends State<SuppliersPage> {
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("الموردين", "Suppliers")),
+// //         backgroundColor: const Color(0xFFD4AF37), // دهبي
+// //       ),
+// //       body: StreamBuilder<List<Map<String, dynamic>>>(
+// //         stream: FS.suppliersStream(),
+// //         builder: (context, snap) {
+// //           if (!snap.hasData) {
+// //             return const Center(child: CircularProgressIndicator());
+// //           }
+// //           final suppliers = snap.data!;
+// //           if (suppliers.isEmpty) {
+// //             return Center(
+// //                 child: Text(
+// //                     _t("لا يوجد موردين حالياً", "No suppliers available")));
+// //           }
+
+// //           return ListView.builder(
+// //             padding: const EdgeInsets.all(12),
+// //             itemCount: suppliers.length,
+// //             itemBuilder: (_, i) {
+// //               final s = suppliers[i];
+// //               return Card(
+// //                 elevation: 4,
+// //                 margin: const EdgeInsets.symmetric(vertical: 8),
+// //                 shape: RoundedRectangleBorder(
+// //                     borderRadius: BorderRadius.circular(16)),
+// //                 child: ListTile(
+// //                   leading: CircleAvatar(
+// //                     backgroundColor: Colors.blue.shade100,
+// //                     child: const Icon(Icons.person, color: Colors.blue),
+// //                   ),
+// //                   title: Text(
+// //                     s["name"],
+// //                     style: const TextStyle(
+// //                         fontWeight: FontWeight.bold, fontSize: 16),
+// //                   ),
+// //                   /*subtitle: Padding(
+// //                     padding: const EdgeInsets.only(top: 6),
+// //                     child: Column(
+// //                       crossAxisAlignment: CrossAxisAlignment.start,
+// //                       children: [
+// //                         Text("👤 ${_t("مندوبيـن", "Delegates")}: ${s["delegates"].join(", ")}"),
+// //                         const SizedBox(height: 4),
+// //                         Text("📞 ${_t("جوال", "Phone")}: ${s["phone"]}"),
+// //                       ],
+// //                     ),
+// //                   ),*/
+// //                   subtitle: FutureBuilder<Map<String, dynamic>>(
+// //                     future: _supplierSummary(s["id"]),
+// //                     builder: (context, snap) {
+// //                       if (!snap.hasData) {
+// //                         return const Text("جاري حساب الرصيد...");
+// //                       }
+
+// //                       final data = snap.data!;
+// //                       final bool cleared = data["cleared"];
+// //                       final double w = data["weight"];
+// //                       final double g = data["wage"];
+
+// //                       Color color;
+// //                       String status;
+
+// //                       if (cleared) {
+// //                         color = Colors.green;
+// //                         status = "تمت تصفية الحساب";
+// //                       } else if (w > 0) {
+// //                         color = Colors.red;
+// //                         status = "للمورد";
+// //                       } else {
+// //                         color = Colors.green.shade700;
+// //                         status = "على المورد";
+// //                       }
+
+// //                       return Column(
+// //                         crossAxisAlignment: CrossAxisAlignment.start,
+// //                         children: [
+// //                           Text(
+// //                               "👤 ${_t("مندوبيـن", "Delegates")}: ${s["delegates"].join(", ")}"),
+// //                           const SizedBox(height: 4),
+// //                           Text("📞 ${s["phone"] ?? '-'}"),
+// //                           const SizedBox(height: 4),
+
+// //                           /// ===== Status Badge =====
+// //                           Container(
+// //                             padding: const EdgeInsets.symmetric(
+// //                                 horizontal: 10, vertical: 4),
+// //                             decoration: BoxDecoration(
+// //                               color: color.withOpacity(.1),
+// //                               borderRadius: BorderRadius.circular(20),
+// //                             ),
+// //                             child: Text(
+// //                               status,
+// //                               style: TextStyle(
+// //                                 color: color,
+// //                                 fontWeight: FontWeight.bold,
+// //                                 fontSize: 12,
+// //                               ),
+// //                             ),
+// //                           ),
+
+// //                           if (!cleared) ...[
+// //                             const SizedBox(height: 4),
+// //                             Text(
+// //                               "وزن: ${w.abs().toStringAsFixed(2)} جم • أجر: ${g.abs().toStringAsFixed(2)}",
+// //                               style: TextStyle(
+// //                                 fontSize: 12,
+// //                                 color: Colors.grey.shade700,
+// //                               ),
+// //                             ),
+// //                           ],
+// //                         ],
+// //                       );
+// //                     },
+// //                   ),
+// //                   trailing: PopupMenuButton<String>(
+// //                     icon: const Icon(Icons.more_vert),
+// //                     onSelected: (value) async {
+// //                       if (value == 'edit') {
+// //                         _showEditSupplierDialog(context, s);
+// //                       } else if (value == 'delete') {
+// //                         final confirm = await showDialog(
+// //                           context: context,
+// //                           builder: (_) => AlertDialog(
+// //                             title:
+// //                                 Text(_t("تأكيد الحذف", "Delete Confirmation")),
+// //                             content: Text(_t("هل تريد حذف المورد ${s["name"]}؟",
+// //                                 "Are you sure you want to delete ${s["name"]}?")),
+// //                             actions: [
+// //                               TextButton(
+// //                                 onPressed: () => Navigator.pop(context, false),
+// //                                 child: Text(_t("إلغاء", "Cancel")),
+// //                               ),
+// //                               TextButton(
+// //                                 onPressed: () => Navigator.pop(context, true),
+// //                                 child: Text(_t("حذف", "Delete"),
+// //                                     style: const TextStyle(color: Colors.red)),
+// //                               ),
+// //                             ],
+// //                           ),
+// //                         );
+
+// //                         if (confirm == true) {
+// //                           await FS.deleteSupplier(s["id"]);
+// //                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                             content: Text(_t(
+// //                                 "تم حذف المورد ${s["name"]} بنجاح ✅",
+// //                                 "Supplier ${s["name"]} deleted successfully ✅")),
+// //                             backgroundColor: Colors.redAccent,
+// //                           ));
+// //                         }
+// //                       }
+// //                     },
+// //                     itemBuilder: (context) => [
+// //                       PopupMenuItem(
+// //                         value: 'edit',
+// //                         child: Row(
+// //                           children: [
+// //                             const Icon(Icons.edit, color: Colors.orange),
+// //                             const SizedBox(width: 8),
+// //                             Text(_t('تعديل', 'Edit')),
+// //                           ],
+// //                         ),
+// //                       ),
+// //                       PopupMenuItem(
+// //                         value: 'delete',
+// //                         child: Row(
+// //                           children: [
+// //                             const Icon(Icons.delete, color: Colors.red),
+// //                             const SizedBox(width: 8),
+// //                             Text(_t('حذف', 'Delete')),
+// //                           ],
+// //                         ),
+// //                       ),
+// //                     ],
+// //                   ),
+// //                   onTap: () async {
+// //                     final vouchers = await FS.getVouchersForSupplier(s["id"]);
+
+// //                     // 🧮 حساب إجمالي الوزن والأجر لكل عيار
+// //                     final Map<String, double> totalPaymentWeight = {
+// //                       "18": 0,
+// //                       "21": 0,
+// //                       "22": 0
+// //                     };
+// //                     final Map<String, double> totalReceiptWeight = {
+// //                       "18": 0,
+// //                       "21": 0,
+// //                       "22": 0
+// //                     };
+// //                     final Map<String, double> totalPaymentWage = {
+// //                       "18": 0,
+// //                       "21": 0,
+// //                       "22": 0
+// //                     };
+// //                     final Map<String, double> totalReceiptWage = {
+// //                       "18": 0,
+// //                       "21": 0,
+// //                       "22": 0
+// //                     };
+
+// //                     for (var v in vouchers) {
+// //                       final carat = (v["carat"] ?? "").toString();
+// //                       final weight =
+// //                           double.tryParse(v["weight"]?.toString() ?? "0") ??
+// //                               0.0;
+// //                       final wage =
+// //                           double.tryParse(v["wage"]?.toString() ?? "0") ?? 0.0;
+
+// //                       if (["18", "21", "22"].contains(carat)) {
+// //                         if (v["type"] == "payment") {
+// //                           totalPaymentWeight[carat] =
+// //                               (totalPaymentWeight[carat] ?? 0) + weight;
+// //                           totalPaymentWage[carat] =
+// //                               (totalPaymentWage[carat] ?? 0) + wage;
+// //                         } else if (v["type"] == "receipt") {
+// //                           totalReceiptWeight[carat] =
+// //                               (totalReceiptWeight[carat] ?? 0) + weight;
+// //                           totalReceiptWage[carat] =
+// //                               (totalReceiptWage[carat] ?? 0) + wage;
+// //                         }
+// //                       }
+// //                     }
+
+// //                     // 🧾 حساب الصافي لكل عيار
+// //                     final Map<String, double> balanceWeight = {};
+// //                     final Map<String, double> balanceWage = {};
+
+// //                     for (var c in ["18", "21", "22"]) {
+// //                       balanceWeight[c] =
+// //                           totalReceiptWeight[c]! - totalPaymentWeight[c]!;
+// //                       balanceWage[c] =
+// //                           totalReceiptWage[c]! - totalPaymentWage[c]!;
+// //                     }
+
+// //                     // 💰 إجمالي عام
+// //                     final totalBalanceWeight =
+// //                         balanceWeight.values.fold(0.0, (a, b) => a + b);
+// //                     final totalBalanceWage =
+// //                         balanceWage.values.fold(0.0, (a, b) => a + b);
+
+// //                     final allCleared =
+// //                         balanceWeight.values.every((v) => v.abs() < 0.0001) &&
+// //                             balanceWage.values.every((v) => v.abs() < 0.0001);
+
+// //                     showDialog(
+// //                       context: context,
+// //                       builder: (_) => AlertDialog(
+// //                         shape: RoundedRectangleBorder(
+// //                             borderRadius: BorderRadius.circular(20)),
+// //                         title: Center(
+// //                           child: Text(
+// //                             _t("رصيد المورد", "Supplier Balance"),
+// //                             style: const TextStyle(
+// //                                 fontWeight: FontWeight.bold, fontSize: 18),
+// //                           ),
+// //                         ),
+// //                         content: SizedBox(
+// //                           width: double.maxFinite,
+// //                           height: MediaQuery.of(context).size.height * 0.85,
+// //                           child: SingleChildScrollView(
+// //                             child: Column(
+// //                               children: [
+// //                                 // 🔹 الحالة العامة
+// //                                 Card(
+// //                                   elevation: 2,
+// //                                   color: allCleared
+// //                                       ? Colors.green.shade50
+// //                                       : totalBalanceWeight > 0
+// //                                           ? Colors.amber.shade50
+// //                                           : Colors.red.shade50,
+// //                                   shape: RoundedRectangleBorder(
+// //                                       borderRadius: BorderRadius.circular(16)),
+// //                                   child: Padding(
+// //                                     padding: const EdgeInsets.all(14),
+// //                                     child: Row(
+// //                                       mainAxisAlignment:
+// //                                           MainAxisAlignment.center,
+// //                                       children: [
+// //                                         Icon(
+// //                                           allCleared
+// //                                               ? Icons.check_circle
+// //                                               : (totalBalanceWeight > 0
+// //                                                   ? Icons.account_balance_wallet
+// //                                                   : Icons
+// //                                                       .warning_amber_rounded),
+// //                                           color: allCleared
+// //                                               ? Colors.green
+// //                                               : (totalBalanceWeight > 0
+// //                                                   ? Colors.red
+// //                                                   : Colors.green),
+// //                                           size: 20,
+// //                                         ),
+// //                                         const SizedBox(width: 8),
+// //                                         Expanded(
+// //                                           child: Column(
+// //                                             crossAxisAlignment:
+// //                                                 CrossAxisAlignment.center,
+// //                                             children: [
+// //                                               if (allCleared)
+// //                                                 Text(
+// //                                                   _t("تمت تصفية الحساب بالكامل ",
+// //                                                       "Account fully settled "),
+// //                                                   textAlign: TextAlign.center,
+// //                                                   style: const TextStyle(
+// //                                                     fontWeight: FontWeight.bold,
+// //                                                     fontSize: 17,
+// //                                                     color: Colors.green,
+// //                                                   ),
+// //                                                 )
+// //                                               else ...[
+// //                                                 Text(
+// //                                                   totalBalanceWeight > 0
+// //                                                       ? _t("للمورد",
+// //                                                           "Supplier balance")
+// //                                                       : _t("على المورد",
+// //                                                           "Supplier owes"),
+// //                                                   textAlign: TextAlign.center,
+// //                                                   style: TextStyle(
+// //                                                     fontWeight: FontWeight.bold,
+// //                                                     fontSize: 17,
+// //                                                     color: totalBalanceWeight >
+// //                                                             0
+// //                                                         ? Colors.red.shade800
+// //                                                         : Colors.green.shade800,
+// //                                                   ),
+// //                                                 ),
+// //                                                 const SizedBox(height: 4),
+// //                                                 Row(
+// //                                                   mainAxisAlignment:
+// //                                                       MainAxisAlignment.center,
+// //                                                   children: [
+// //                                                     const SizedBox(width: 5),
+// //                                                     Text(
+// //                                                       "${_t("الأجر", "Wage")}: ${totalBalanceWage.abs().toStringAsFixed(2)}",
+// //                                                       style: const TextStyle(
+// //                                                           fontSize: 12,
+// //                                                           fontWeight:
+// //                                                               FontWeight.w500),
+// //                                                     ),
+
+// //                                                     const SizedBox(width: 5),
+// //                                                     Text(
+// //                                                       "${_t("الوزن", "Weight")}: ${totalBalanceWeight.abs().toStringAsFixed(2)} ",
+// //                                                       style: const TextStyle(
+// //                                                           fontSize: 12,
+// //                                                           fontWeight:
+// //                                                               FontWeight.w500),
+// //                                                     ),
+// //                                                     //const SizedBox(width: 12),
+// //                                                   ],
+// //                                                 ),
+// //                                               ],
+// //                                             ],
+// //                                           ),
+// //                                         ),
+// //                                       ],
+// //                                     ),
+// //                                   ),
+// //                                 ),
+
+// //                                 const SizedBox(height: 10),
+
+// //                                 // 🔸 تفاصيل كل عيار
+// //                                 if (!allCleared)
+// //                                   Card(
+// //                                     elevation: 1,
+// //                                     shape: RoundedRectangleBorder(
+// //                                         borderRadius:
+// //                                             BorderRadius.circular(16)),
+// //                                     child: Padding(
+// //                                       padding: const EdgeInsets.all(12),
+// //                                       child: Column(
+// //                                         children: [
+// //                                           Text(
+// //                                             _t("تفاصيل حسب العيار",
+// //                                                 "Details by Carat"),
+// //                                             style: const TextStyle(
+// //                                                 fontWeight: FontWeight.bold,
+// //                                                 fontSize: 15),
+// //                                           ),
+// //                                           const SizedBox(height: 8),
+// //                                           GridView.count(
+// //                                             physics:
+// //                                                 const NeverScrollableScrollPhysics(),
+// //                                             shrinkWrap: true,
+// //                                             crossAxisCount: 1,
+// //                                             mainAxisSpacing: 6,
+// //                                             crossAxisSpacing: 6,
+// //                                             childAspectRatio: 3,
+// //                                             children:
+// //                                                 ["18", "21", "22"].map((c) {
+// //                                               final bw = balanceWeight[c]!;
+// //                                               final wg = balanceWage[c]!;
+
+// //                                               final bool cleared =
+// //                                                   bw.abs() < 0.0001 &&
+// //                                                       wg.abs() < 0.0001;
+
+// //                                               return Container(
+// //                                                 decoration: BoxDecoration(
+// //                                                   borderRadius:
+// //                                                       BorderRadius.circular(12),
+// //                                                   color: cleared
+// //                                                       ? Colors.grey.shade100
+// //                                                       : bw > 0
+// //                                                           ? Colors.red.shade50
+// //                                                           : bw < 0
+// //                                                               ? Colors
+// //                                                                   .green.shade50
+// //                                                               : Colors.amber
+// //                                                                   .shade50,
+// //                                                   border: Border.all(
+// //                                                     color: cleared
+// //                                                         ? Colors.grey.shade300
+// //                                                         : bw > 0
+// //                                                             ? Colors
+// //                                                                 .red.shade300
+// //                                                             : Colors
+// //                                                                 .green.shade300,
+// //                                                   ),
+// //                                                 ),
+// //                                                 child: Padding(
+// //                                                   padding:
+// //                                                       const EdgeInsets.all(8),
+// //                                                   child: Column(
+// //                                                     mainAxisAlignment:
+// //                                                         MainAxisAlignment
+// //                                                             .center,
+// //                                                     children: [
+// //                                                       Text("عيار $c",
+// //                                                           style: const TextStyle(
+// //                                                               fontWeight:
+// //                                                                   FontWeight
+// //                                                                       .bold)),
+// //                                                       const SizedBox(height: 4),
+// //                                                       Text(
+// //                                                         "${_t("وزن", "weight")}: ${bw.toStringAsFixed(2)}  ${_t("أجر", "Wage")}: ${wg.toStringAsFixed(2)}",
+// //                                                         style: TextStyle(
+// //                                                             color: bw == 0
+// //                                                                 ? Colors.grey
+// //                                                                 : bw > 0
+// //                                                                     ? Colors.red
+// //                                                                         .shade800
+// //                                                                     : Colors
+// //                                                                         .green
+// //                                                                         .shade800,
+// //                                                             fontSize: 13),
+// //                                                       ),
+// //                                                       /*Text(
+// //                                                         _t("أجر", "Wage") +
+// //                                                             ": ${wg.toStringAsFixed(2)}",
+// //                                                         style: const TextStyle(fontSize: 12),
+// //                                                       ),*/
+// //                                                     ],
+// //                                                   ),
+// //                                                 ),
+// //                                               );
+// //                                             }).toList(),
+// //                                           ),
+// //                                         ],
+// //                                       ),
+// //                                     ),
+// //                                   ),
+
+// //                                 const SizedBox(height: 16),
+// //                                 const Divider(thickness: 1),
+// //                                 const SizedBox(height: 6),
+// //                                 Text(
+// //                                   _t("قائمة السندات", "Vouchers List"),
+// //                                   style: const TextStyle(
+// //                                       fontWeight: FontWeight.bold,
+// //                                       fontSize: 15),
+// //                                 ),
+// //                                 const SizedBox(height: 8),
+
+// //                                 // 🔹 قائمة السندات الأصلية
+// //                                 ...vouchers.map((v) {
+// //                                   final isReceipt = v["type"] == "receipt";
+
+// //                                   return Card(
+// //                                     elevation: 2,
+// //                                     margin:
+// //                                         const EdgeInsets.symmetric(vertical: 6),
+// //                                     shape: RoundedRectangleBorder(
+// //                                         borderRadius:
+// //                                             BorderRadius.circular(12)),
+// //                                     child: Padding(
+// //                                       padding: const EdgeInsets.all(10),
+// //                                       child: Column(
+// //                                         crossAxisAlignment:
+// //                                             CrossAxisAlignment.start,
+// //                                         children: [
+// //                                           Row(
+// //                                             children: [
+// //                                               CircleAvatar(
+// //                                                 backgroundColor: isReceipt
+// //                                                     ? Colors.red.shade100
+// //                                                     : Colors.green.shade100,
+// //                                                 child: Icon(
+// //                                                   isReceipt
+// //                                                       ? Icons.download_done
+// //                                                       : Icons.upload,
+// //                                                   color: isReceipt
+// //                                                       ? Colors.red
+// //                                                       : Colors.green,
+// //                                                 ),
+// //                                               ),
+// //                                               const SizedBox(width: 12),
+// //                                               Text(
+// //                                                 isReceipt
+// //                                                     ? _t("سند قبض",
+// //                                                         "Receipt Voucher")
+// //                                                     : _t("سند صرف",
+// //                                                         "Payment Voucher"),
+// //                                                 style: const TextStyle(
+// //                                                     fontWeight: FontWeight.bold,
+// //                                                     fontSize: 15),
+// //                                               ),
+// //                                               const Spacer(),
+// //                                               if (v["date"] != null)
+// //                                                 Text(
+// //                                                   " ${(v["date"] as Timestamp).toDate().toString().split(' ')[0]}",
+// //                                                   style: TextStyle(
+// //                                                       color:
+// //                                                           Colors.grey.shade600,
+// //                                                       fontSize: 12),
+// //                                                 ),
+// //                                             ],
+// //                                           ),
+// //                                           const Divider(height: 16),
+// //                                           Text(
+// //                                               "${_t("المندوب", "Delegate")}: ${v["delegate"] ?? "-"}"),
+// //                                           Text(
+// //                                               "${_t("العيار", "Carat")}: ${v["carat"] ?? "-"}"),
+// //                                           Text(
+// //                                               "${_t("الوزن", "Weight")}: ${v["weight"] ?? 0} g"),
+// //                                           Text(
+// //                                               "${_t("الأجر", "Wage")}: ${v["wage"] ?? 0}"),
+// //                                           if (!isReceipt) ...[
+// //                                             if (v["paymentMethod"] != null)
+// //                                               Text(
+// //                                                   "${_t("طريقة الدفع", "Payment Method")}: ${v["paymentMethod"]}"),
+// //                                             if (v["cash"] != null)
+// //                                               Text(
+// //                                                   "${_t("كاش", "Cash")}: ${v["cash"]}"),
+// //                                             if (v["network"] != null)
+// //                                               Text(
+// //                                                   "${_t("شبكة", "Network")}: ${v["network"]}"),
+// //                                           ],
+// //                                         ],
+// //                                       ),
+// //                                     ),
+// //                                   );
+// //                                 }),
+// //                               ],
+// //                             ),
+// //                           ),
+// //                         ),
+// //                       ),
+// //                     );
+// //                   },
+// //                 ),
+// //               );
+// //             },
+// //           );
+// //         },
+// //       ),
+// //     );
+// //   }
+
+// //   Future<Map<String, dynamic>> _supplierSummary(String supplierId) async {
+// //     final vouchers = await FS.getVouchersForSupplier(supplierId);
+
+// //     double payW = 0, recW = 0;
+// //     double payG = 0, recG = 0;
+
+// //     for (var v in vouchers) {
+// //       final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
+// //       final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
+
+// //       if (v["type"] == "payment") {
+// //         payW += weight;
+// //         payG += wage;
+// //       } else if (v["type"] == "receipt") {
+// //         recW += weight;
+// //         recG += wage;
+// //       }
+// //     }
+
+// //     final balanceWeight = recW - payW;
+// //     final balanceWage = recG - payG;
+
+// //     final cleared = balanceWeight.abs() < 0.0001 && balanceWage.abs() < 0.0001;
+
+// //     return {
+// //       "cleared": cleared,
+// //       "weight": balanceWeight,
+// //       "wage": balanceWage,
+// //     };
+// //   }
+
+// //   void _showEditSupplierDialog(
+// //       BuildContext context, Map<String, dynamic> supplier) {
+// //     final nameController = TextEditingController(text: supplier["name"]);
+// //     final phoneController = TextEditingController(text: supplier["phone"]);
+// //     final delegatesKey = GlobalKey<_DelegatesFieldState>();
+
+// //     showDialog(
+// //       context: context,
+// //       builder: (_) => AlertDialog(
+// //         title:
+// //             Text("${_t("تعديل المورد", "Edit Supplier")} ${supplier["name"]}"),
+// //         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+// //         content: SingleChildScrollView(
+// //           child: Column(
+// //             mainAxisSize: MainAxisSize.min,
+// //             children: [
+// //               TextField(
+// //                 controller: nameController,
+// //                 decoration: InputDecoration(
+// //                     labelText: _t("اسم المورد", "Supplier Name")),
+// //               ),
+// //               const SizedBox(height: 12),
+// //               TextField(
+// //                 controller: phoneController,
+// //                 decoration: InputDecoration(
+// //                     labelText: _t("رقم الجوال", "Phone Number")),
+// //               ),
+// //               const SizedBox(height: 12),
+// //               DelegatesField(
+// //                 key: delegatesKey,
+// //                 initialDelegates:
+// //                     List<String>.from(supplier["delegates"] ?? []),
+// //               ),
+// //             ],
+// //           ),
+// //         ),
+// //         actions: [
+// //           TextButton(
+// //             onPressed: () => Navigator.pop(context),
+// //             child: Text(_t("إلغاء", "Cancel")),
+// //           ),
+// //           ElevatedButton(
+// //             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+// //             onPressed: () async {
+// //               final delegates = delegatesKey.currentState?.getDelegates() ?? [];
+
+// //               await FS.updateSupplier(
+// //                 supplier["id"],
+// //                 {
+// //                   "name": nameController.text.trim(),
+// //                   "phone": phoneController.text.trim(),
+// //                   "delegates": delegates,
+// //                 },
+// //               );
+
+// //               Navigator.pop(context);
+// //               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                 content: Text(_t("تم تعديل المورد بنجاح ✅",
+// //                     "Supplier updated successfully ✅")),
+// //                 backgroundColor: Colors.green,
+// //               ));
+// //             },
+// //             child: Text(_t("حفظ", "Save")),
+// //           ),
+// //         ],
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // ////////////////////////
+// // /// صفحة سند القبض   ///
+// // ////////////////////////
+// // class ReceiptVoucherPage extends StatefulWidget {
+// //   const ReceiptVoucherPage({super.key});
+
+// //   @override
+// //   State<ReceiptVoucherPage> createState() => _ReceiptVoucherPageState();
+// // }
+
+// // class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
+// //   DateTime? date = DateTime.now();
+// //   String? supplierName;
+// //   String? supplierId;
+// //   String? delegate;
+// //   String? carat;
+// //   final weightCtrl = TextEditingController();
+// //   final wageCtrl = TextEditingController();
+
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("سند القبض", "Receipt Voucher")),
+// //         backgroundColor: const Color(0xFFD4AF37),
+// //       ),
+// //       body: Padding(
+// //         padding: const EdgeInsets.all(20),
+// //         child: ListView(
+// //           children: [
+// //             Card(
+// //               elevation: 3,
+// //               shape: RoundedRectangleBorder(
+// //                 borderRadius: BorderRadius.circular(12),
+// //               ),
+// //               child: Padding(
+// //                 padding: const EdgeInsets.all(16),
+// //                 child: Column(
+// //                   children: [
+// //                     // اختيار التاريخ
+// //                     /*ElevatedButton.icon(
+// //                       icon: const Icon(Icons.date_range),
+// //                       label: Text(DateFormat("yyyy-MM-dd").format(date!)),
+// //                       onPressed: () async {
+// //                         final d = await showDatePicker(
+// //                           context: context,
+// //                           initialDate: date!,
+// //                           firstDate: DateTime(2020),
+// //                           lastDate: DateTime(2100),
+// //                         );
+// //                         if (d != null) setState(() => date = d);
+// //                       },
+// //                     ),*/
+// //                     ListTile(
+// //                       leading: const Icon(Icons.calendar_today,
+// //                           color: Color(0xFFD4AF37)),
+// //                       title: Text(_t('التاريخ', 'Date')),
+// //                       subtitle: Text(DateFormat("yyyy-MM-dd").format(date!)),
+// //                       /*trailing: IconButton(
+// //                       icon: const Icon(Icons.date_range),
+// //                       onPressed: () async {
+// //                         final d = await showDatePicker(
+// //                           context: context,
+// //                           initialDate: date,
+// //                           firstDate: DateTime(2000),
+// //                           lastDate: DateTime(2100),
+// //                         );
+// //                         if (d != null) setState(() => date = d);
+// //                       },
+// //                     ),*/
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // اختيار المورد
+// //                     FutureBuilder(
+// //                       future: FS.getSuppliers(),
+// //                       builder: (context, snap) {
+// //                         if (!snap.hasData) {
+// //                           return const Center(
+// //                               child: CircularProgressIndicator());
+// //                         }
+// //                         final suppliers = snap.data!;
+// //                         return DropdownButtonFormField<String>(
+// //                           decoration: InputDecoration(
+// //                             labelText: _t("اختر المورد", "Select Supplier"),
+// //                             border: OutlineInputBorder(
+// //                               borderRadius: BorderRadius.circular(12),
+// //                             ),
+// //                           ),
+// //                           initialValue: supplierId,
+// //                           items: suppliers.map((s) {
+// //                             return DropdownMenuItem(
+// //                               value: s["id"].toString(),
+// //                               child: Text(s["name"]),
+// //                             );
+// //                           }).toList(),
+// //                           onChanged: (v) {
+// //                             setState(() {
+// //                               supplierId = v;
+// //                               supplierName = suppliers.firstWhere(
+// //                                   (s) => s["id"].toString() == v)["name"];
+// //                             });
+// //                           },
+// //                         );
+// //                       },
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // اختيار المندوب
+// //                     if (supplierId != null)
+// //                       FutureBuilder(
+// //                         future: FS.getSuppliers(),
+// //                         builder: (context, snap) {
+// //                           if (!snap.hasData) return const SizedBox();
+// //                           final supplier = snap.data!
+// //                               .firstWhere((s) => s["id"] == supplierId);
+// //                           final delegates =
+// //                               List<String>.from(supplier["delegates"]);
+// //                           return DropdownButtonFormField<String>(
+// //                             decoration: InputDecoration(
+// //                               labelText: _t("اختر المندوب", "Select Delegate"),
+// //                               border: OutlineInputBorder(
+// //                                   borderRadius: BorderRadius.circular(12)),
+// //                             ),
+// //                             initialValue: delegate,
+// //                             items: delegates.map((d) {
+// //                               return DropdownMenuItem(value: d, child: Text(d));
+// //                             }).toList(),
+// //                             onChanged: (v) => setState(() => delegate = v),
+// //                           );
+// //                         },
+// //                       ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // اختيار العيار
+// //                     DropdownButtonFormField<String>(
+// //                       decoration: InputDecoration(
+// //                         labelText: _t("اختر العيار", "Select Carat"),
+// //                         border: OutlineInputBorder(
+// //                           borderRadius: BorderRadius.circular(12),
+// //                         ),
+// //                       ),
+// //                       initialValue: carat,
+// //                       items: ["18", "21", "22"].map((c) {
+// //                         return DropdownMenuItem(value: c, child: Text(c));
+// //                       }).toList(),
+// //                       onChanged: (v) => setState(() => carat = v),
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // الوزن
+// //                     TextField(
+// //                       controller: weightCtrl,
+// //                       decoration: InputDecoration(
+// //                         labelText: _t("⚖ الوزن", "⚖ Weight"),
+// //                         border: OutlineInputBorder(
+// //                             borderRadius: BorderRadius.circular(12)),
+// //                       ),
+// //                       keyboardType: TextInputType.number,
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // الأجر
+// //                     TextField(
+// //                       controller: wageCtrl,
+// //                       decoration: InputDecoration(
+// //                         labelText: _t("💰 الأجر", "💰 Wage"),
+// //                         border: OutlineInputBorder(
+// //                             borderRadius: BorderRadius.circular(12)),
+// //                       ),
+// //                       keyboardType: TextInputType.number,
+// //                     ),
+
+// //                     const SizedBox(height: 24),
+
+// //                     // زر الحفظ
+// //                     ElevatedButton.icon(
+// //                       style: ElevatedButton.styleFrom(
+// //                         minimumSize: const Size(double.infinity, 50),
+// //                         backgroundColor: const Color(0xFFD4AF37),
+// //                         shape: RoundedRectangleBorder(
+// //                             borderRadius: BorderRadius.circular(12)),
+// //                       ),
+// //                       icon: const Icon(Icons.save, color: Colors.white),
+// //                       label: Text(
+// //                         _t("حفظ", "Save"),
+// //                         style: const TextStyle(
+// //                             color: Colors.white,
+// //                             fontSize: 18,
+// //                             fontWeight: FontWeight.bold),
+// //                       ),
+// //                       onPressed: () async {
+// //                         if (supplierId == null ||
+// //                             delegate == null ||
+// //                             carat == null ||
+// //                             weightCtrl.text.isEmpty ||
+// //                             wageCtrl.text.isEmpty) {
+// //                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                             content: Text(_t(
+// //                                 "من فضلك أدخل جميع البيانات المطلوبة",
+// //                                 "Please fill in all required fields")),
+// //                           ));
+// //                           return;
+// //                         }
+
+// //                         await FS.addReceiptVoucher(
+// //                           supplierId: supplierId!,
+// //                           supplierName: supplierName!,
+// //                           delegate: delegate!,
+// //                           carat: carat!,
+// //                           weight: double.parse(weightCtrl.text),
+// //                           wage: double.parse(wageCtrl.text),
+// //                           date: date!,
+// //                         );
+
+// //                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                           content: Text(_t("تم حفظ السند بنجاح ✅",
+// //                               "Receipt voucher saved successfully ✅")),
+// //                         ));
+
+// //                         Navigator.pop(context);
+// //                       },
+// //                     ),
+// //                   ],
+// //                 ),
+// //               ),
+// //             ),
+// //           ],
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // ////////////////////////
+// // /// صفحة سند الصرف   ///
+// // ////////////////////////
+// // class PaymentVoucherPage extends StatefulWidget {
+// //   const PaymentVoucherPage({super.key});
+
+// //   @override
+// //   State<PaymentVoucherPage> createState() => _PaymentVoucherPageState();
+// // }
+
+// // class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
+// //   DateTime? date = DateTime.now();
+// //   String? supplierName;
+// //   String? supplierId;
+// //   String? delegate;
+// //   String? carat;
+// //   String? paymentMethod;
+// //   final weightCtrl = TextEditingController();
+// //   final wageCtrl = TextEditingController();
+// //   final cashCtrl = TextEditingController();
+// //   final networkCtrl = TextEditingController();
+
+// //   String _lang = 'ar';
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Scaffold(
+// //       appBar: AppBar(
+// //         title: Text(_t("سند الصرف", "Payment Voucher")),
+// //         backgroundColor: const Color(0xFFD4AF37),
+// //       ),
+// //       body: Padding(
+// //         padding: const EdgeInsets.all(20),
+// //         child: ListView(
+// //           children: [
+// //             Card(
+// //               elevation: 3,
+// //               shape: RoundedRectangleBorder(
+// //                 borderRadius: BorderRadius.circular(12),
+// //               ),
+// //               child: Padding(
+// //                 padding: const EdgeInsets.all(16),
+// //                 child: Column(
+// //                   children: [
+// //                     // اختيار التاريخ
+// //                     /*ElevatedButton.icon(
+// //                       icon: const Icon(Icons.date_range),
+// //                       label: Text(DateFormat("yyyy-MM-dd").format(date!)),
+// //                       onPressed: () async {
+// //                         final d = await showDatePicker(
+// //                           context: context,
+// //                           initialDate: date!,
+// //                           firstDate: DateTime(2020),
+// //                           lastDate: DateTime(2100),
+// //                         );
+// //                         if (d != null) setState(() => date = d);
+// //                       },
+// //                     ),*/
+// //                     ListTile(
+// //                       leading: const Icon(Icons.calendar_today,
+// //                           color: Color(0xFFD4AF37)),
+// //                       title: Text(_t('التاريخ', 'Date')),
+// //                       subtitle: Text(DateFormat("yyyy-MM-dd").format(date!)),
+// //                       /*trailing: IconButton(
+// //                       icon: const Icon(Icons.date_range),
+// //                       onPressed: () async {
+// //                         final d = await showDatePicker(
+// //                           context: context,
+// //                           initialDate: date,
+// //                           firstDate: DateTime(2000),
+// //                           lastDate: DateTime(2100),
+// //                         );
+// //                         if (d != null) setState(() => date = d);
+// //                       },
+// //                     ),*/
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // المورد
+// //                     FutureBuilder(
+// //                       future: FS.getSuppliers(),
+// //                       builder: (context, snap) {
+// //                         if (!snap.hasData) {
+// //                           return const Center(
+// //                               child: CircularProgressIndicator());
+// //                         }
+// //                         final suppliers = snap.data!;
+// //                         return DropdownButtonFormField<String>(
+// //                           decoration: InputDecoration(
+// //                             labelText: _t("اختر المورد", "Select Supplier"),
+// //                             border: OutlineInputBorder(
+// //                                 borderRadius: BorderRadius.circular(12)),
+// //                           ),
+// //                           initialValue: supplierId,
+// //                           items: suppliers.map((s) {
+// //                             return DropdownMenuItem(
+// //                               value: s["id"].toString(),
+// //                               child: Text(s["name"]),
+// //                             );
+// //                           }).toList(),
+// //                           onChanged: (v) {
+// //                             setState(() {
+// //                               supplierId = v;
+// //                               supplierName = suppliers.firstWhere(
+// //                                   (s) => s["id"].toString() == v)["name"];
+// //                             });
+// //                           },
+// //                         );
+// //                       },
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // المندوب
+// //                     if (supplierId != null)
+// //                       FutureBuilder(
+// //                         future: FS.getSuppliers(),
+// //                         builder: (context, snap) {
+// //                           if (!snap.hasData) return const SizedBox();
+// //                           final supplier = snap.data!
+// //                               .firstWhere((s) => s["id"] == supplierId);
+// //                           final delegates =
+// //                               List<String>.from(supplier["delegates"]);
+// //                           return DropdownButtonFormField<String>(
+// //                             decoration: InputDecoration(
+// //                               labelText: _t("اختر المندوب", "Select Delegate"),
+// //                               border: OutlineInputBorder(
+// //                                   borderRadius: BorderRadius.circular(12)),
+// //                             ),
+// //                             initialValue: delegate,
+// //                             items: delegates.map((d) {
+// //                               return DropdownMenuItem(value: d, child: Text(d));
+// //                             }).toList(),
+// //                             onChanged: (v) => setState(() => delegate = v),
+// //                           );
+// //                         },
+// //                       ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // العيار
+// //                     DropdownButtonFormField<String>(
+// //                       decoration: InputDecoration(
+// //                         labelText: _t("اختر العيار", "Select Carat"),
+// //                         border: OutlineInputBorder(
+// //                           borderRadius: BorderRadius.circular(12),
+// //                         ),
+// //                       ),
+// //                       initialValue: carat,
+// //                       items: ["18", "21", "22"].map((c) {
+// //                         return DropdownMenuItem(value: c, child: Text(c));
+// //                       }).toList(),
+// //                       onChanged: (v) => setState(() => carat = v),
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // الوزن
+// //                     TextField(
+// //                       controller: weightCtrl,
+// //                       decoration: InputDecoration(
+// //                         labelText: _t("⚖ الوزن", "⚖ Weight"),
+// //                         border: OutlineInputBorder(
+// //                             borderRadius: BorderRadius.circular(12)),
+// //                       ),
+// //                       keyboardType: TextInputType.number,
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // الأجر
+// //                     TextField(
+// //                       controller: wageCtrl,
+// //                       decoration: InputDecoration(
+// //                         labelText: _t("💰 الأجر", "💰 Wage"),
+// //                         border: OutlineInputBorder(
+// //                             borderRadius: BorderRadius.circular(12)),
+// //                       ),
+// //                       keyboardType: TextInputType.number,
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // طريقة الدفع
+// //                     DropdownButtonFormField<String>(
+// //                       decoration: InputDecoration(
+// //                         labelText: _t("طريقة الدفع", "Payment Method"),
+// //                         border: OutlineInputBorder(
+// //                             borderRadius: BorderRadius.circular(12)),
+// //                       ),
+// //                       initialValue: paymentMethod,
+// //                       items: [
+// //                         _t("كاش", "Cash"),
+// //                         _t("شبكة", "Network"),
+// //                         _t("متعدد", "Mixed")
+// //                       ].map((m) {
+// //                         return DropdownMenuItem(value: m, child: Text(m));
+// //                       }).toList(),
+// //                       onChanged: (v) => setState(() => paymentMethod = v),
+// //                     ),
+
+// //                     const SizedBox(height: 16),
+
+// //                     // المبلغ كاش
+// //                     if (paymentMethod == _t("كاش", "Cash") ||
+// //                         paymentMethod == _t("متعدد", "Mixed"))
+// //                       TextField(
+// //                         controller: cashCtrl,
+// //                         decoration: InputDecoration(
+// //                           labelText: _t("💵 المبلغ كاش", "💵 Cash Amount"),
+// //                           border: OutlineInputBorder(
+// //                               borderRadius: BorderRadius.circular(12)),
+// //                         ),
+// //                         keyboardType: TextInputType.number,
+// //                       ),
+
+// //                     // المبلغ شبكة
+// //                     if (paymentMethod == _t("شبكة", "Network") ||
+// //                         paymentMethod == _t("متعدد", "Mixed"))
+// //                       Padding(
+// //                         padding: const EdgeInsets.only(top: 16),
+// //                         child: TextField(
+// //                           controller: networkCtrl,
+// //                           decoration: InputDecoration(
+// //                             labelText:
+// //                                 _t("💳 المبلغ شبكة", "💳 Network Amount"),
+// //                             border: OutlineInputBorder(
+// //                                 borderRadius: BorderRadius.circular(12)),
+// //                           ),
+// //                           keyboardType: TextInputType.number,
+// //                         ),
+// //                       ),
+
+// //                     const SizedBox(height: 24),
+
+// //                     // زر الحفظ
+// //                     ElevatedButton.icon(
+// //                       style: ElevatedButton.styleFrom(
+// //                         minimumSize: const Size(double.infinity, 50),
+// //                         backgroundColor: const Color(0xFFD4AF37),
+// //                         shape: RoundedRectangleBorder(
+// //                             borderRadius: BorderRadius.circular(12)),
+// //                       ),
+// //                       icon: const Icon(Icons.save, color: Colors.white),
+// //                       label: Text(
+// //                         _t("حفظ", "Save"),
+// //                         style: const TextStyle(
+// //                             color: Colors.white,
+// //                             fontSize: 18,
+// //                             fontWeight: FontWeight.bold),
+// //                       ),
+// //                       onPressed: () async {
+// //                         if (supplierId == null ||
+// //                             delegate == null ||
+// //                             carat == null ||
+// //                             paymentMethod == null) {
+// //                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                             content: Text(_t("يرجى إدخال جميع البيانات",
+// //                                 "Please fill all required fields")),
+// //                           ));
+// //                           return;
+// //                         }
+
+// //                         await FS.addPaymentVoucher(
+// //                           supplierId: supplierId!,
+// //                           supplierName: supplierName!,
+// //                           delegate: delegate!,
+// //                           carat: carat!,
+// //                           weight: double.parse(weightCtrl.text),
+// //                           wage: double.parse(wageCtrl.text),
+// //                           paymentMethod: paymentMethod!,
+// //                           cash: cashCtrl.text.isEmpty
+// //                               ? null
+// //                               : double.parse(cashCtrl.text),
+// //                           network: networkCtrl.text.isEmpty
+// //                               ? null
+// //                               : double.parse(networkCtrl.text),
+// //                           date: date!,
+// //                         );
+
+// //                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+// //                           content: Text(_t("تم حفظ السند بنجاح ✅",
+// //                               "Payment voucher saved successfully ✅")),
+// //                         ));
+
+// //                         Navigator.pop(context);
+// //                       },
+// //                     ),
+// //                   ],
+// //                 ),
+// //               ),
+// //             ),
+// //           ],
+// //         ),
+// //       ),
+// //     );
+// //   }
+// // }
+
+// // class DelegatesField extends StatefulWidget {
+// //   final List<String> initialDelegates;
+// //   const DelegatesField({super.key, required this.initialDelegates});
+
+// //   @override
+// //   State<DelegatesField> createState() => _DelegatesFieldState();
+// // }
+
+// // class _DelegatesFieldState extends State<DelegatesField> {
+// //   late List<TextEditingController> _controllers;
+// //   String _lang = 'ar';
+
+// //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+// //   @override
+// //   void initState() {
+// //     super.initState();
+// //     _loadLanguage();
+// //     _controllers = widget.initialDelegates
+// //         .map((d) => TextEditingController(text: d))
+// //         .toList();
+// //     if (_controllers.isEmpty) _controllers.add(TextEditingController());
+// //   }
+
+// //   Future<void> _loadLanguage() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     setState(() {
+// //       _lang = prefs.getString('languageCode') ?? 'ar';
+// //     });
+// //   }
+
+// //   @override
+// //   Widget build(BuildContext context) {
+// //     return Column(
+// //       crossAxisAlignment: CrossAxisAlignment.start,
+// //       children: [
+// //         Text(
+// //           _t("المندوبين", "Delegates"),
+// //           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+// //         ),
+// //         const SizedBox(height: 8),
+// //         Column(
+// //           children: [
+// //             for (int i = 0; i < _controllers.length; i++)
+// //               Padding(
+// //                 padding: const EdgeInsets.symmetric(vertical: 4),
+// //                 child: Row(
+// //                   children: [
+// //                     Expanded(
+// //                       child: TextField(
+// //                         controller: _controllers[i],
+// //                         decoration: InputDecoration(
+// //                           labelText: _t("مندوب ${i + 1}", "Delegate ${i + 1}"),
+// //                           border: const OutlineInputBorder(),
+// //                         ),
+// //                       ),
+// //                     ),
+// //                     const SizedBox(width: 8),
+// //                     IconButton(
+// //                       icon: const Icon(Icons.delete, color: Colors.red),
+// //                       tooltip: _t("حذف", "Delete"),
+// //                       onPressed: () {
+// //                         setState(() {
+// //                           _controllers.removeAt(i);
+// //                         });
+// //                       },
+// //                     ),
+// //                   ],
+// //                 ),
+// //               ),
+// //             const SizedBox(height: 8),
+// //             Align(
+// //               alignment: Alignment.centerRight,
+// //               child: ElevatedButton.icon(
+// //                 onPressed: () {
+// //                   setState(() {
+// //                     _controllers.add(TextEditingController());
+// //                   });
+// //                 },
+// //                 icon: const Icon(Icons.add),
+// //                 label: Text(_t("إضافة مندوب", "Add Delegate")),
+// //                 style: ElevatedButton.styleFrom(
+// //                   backgroundColor: Colors.blueAccent,
+// //                 ),
+// //               ),
+// //             ),
+// //           ],
+// //         ),
+// //       ],
+// //     );
+// //   }
+
+// //   List<String> getDelegates() {
+// //     return _controllers
+// //         .map((c) => c.text.trim())
+// //         .where((t) => t.isNotEmpty)
+// //         .toList();
+// //   }
+// // }
+// import 'package:flutter/material.dart';
+// import 'package:uhf_gold_shop/pages/RemainingKitsPage.dart';
+// import '../services/firestore_service.dart';
+// import 'package:intl/intl.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'expenses_page.dart';
+// import 'TransformPage.dart';
+// import 'cash_box_page.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'branches_page.dart';
+// import 'EditPage.dart';
+// import 'external_transactions_page.dart';
+// import 'ExitPermissionPage.dart';
+// import 'settings_page.dart';
+// import 'settings_page.dart' show checkPassword;
+// import 'ReturnsPage.dart';
+// import 'preview_page.dart';
+// import 'DeletedItemsPage.dart';
+
+// class DailyTransactionsPage extends StatefulWidget {
+//   const DailyTransactionsPage({super.key});
+
+//   @override
+//   State<DailyTransactionsPage> createState() => _DailyTransactionsPageState();
+// }
+
+// class _DailyTransactionsPageState extends State<DailyTransactionsPage> {
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   void _openPage(BuildContext context, Widget page) async {
+//     String? pageKey;
+
+//     if (page is PartPage) {
+//       pageKey = 'Suppliers';
+//     } else if (page is Part1Page)
+//       pageKey = 'Vouchers';
+//     else if (page is Part2Page)
+//       pageKey = 'Funds';
+//     else if (page is TransformPage)
+//       pageKey = 'Transfers';
+//     else if (page is EditPage)
+//       pageKey = 'edit';
+//     else if (page is BranchesPage)
+//       pageKey = 'branches';
+//     else if (page is ExternalTransactionsPage)
+//       pageKey = 'Transactions';
+//     else if (page is ExitPermissionPage) pageKey = 'Statements';
+
+//     if (pageKey != null) {
+//       final allowed = await checkPassword(context, pageKey);
+//       if (!allowed) return;
+//     }
+
+//     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("الحركة اليومية", "Daily Transactions")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(30),
+//         child: SingleChildScrollView(
+//           child: Column(
+//             children: [
+//               GridView.count(
+//                 crossAxisCount: 2,
+//                 crossAxisSpacing: 20,
+//                 mainAxisSpacing: 20,
+//                 shrinkWrap: true,
+//                 physics: const NeverScrollableScrollPhysics(),
+//                 children: [
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.people,
+//                     label: _t("الموردين", "Suppliers"),
+//                     page: const PartPage(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.receipt_long,
+//                     label: _t("سندات", "Vouchers"),
+//                     page: const Part1Page(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.monetization_on,
+//                     label: _t("الأموال", "Funds"),
+//                     page: const Part2Page(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.mail_rounded,
+//                     label: _t("التحويل", "Transfers"),
+//                     page: const TransformPage(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.edit_outlined,
+//                     label: _t("التعديل", "edit"),
+//                     page: const EditPage(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.location_city,
+//                     label: _t("الافرع", "branches"),
+//                     page: const BranchesPage(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.outbond_outlined,
+//                     label: _t("التعاملات", "Transactions"),
+//                     page: const ExternalTransactionsPage(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.safety_check,
+//                     label: _t("التصريحات", "Statements"),
+//                     page: const ExitPermissionPage(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.delete,
+//                     label: _t("المحذوفات", "Deletes"),
+//                     page: const DeletedItemsPage(),
+//                   ),
+//                   _buildMenuCard(
+//                     context,
+//                     icon: Icons.keyboard_return_outlined,
+//                     label: _t("المرتجعات", "Returns"),
+//                     page: const ReturnsPage(),
+//                   ),
+//                 ],
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildMenuCard(BuildContext context,
+//       {required IconData icon, required String label, required Widget page}) {
+//     return GestureDetector(
+//       onTap: () => _openPage(context, page),
+//       child: Card(
+//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+//         elevation: 4,
+//         color: const Color(0xFFD4AF37).withOpacity(0.9),
+//         child: Center(
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Icon(icon, size: 30, color: Colors.white),
+//               const SizedBox(height: 10),
+//               Text(
+//                 label,
+//                 textAlign: TextAlign.center,
+//                 style: const TextStyle(
+//                   fontSize: 16,
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================
+// // 🔹 PartPage - صفحة الموردين الرئيسية
+// // ============================================================
+// class PartPage extends StatefulWidget {
+//   const PartPage({super.key});
+
+//   @override
+//   State<PartPage> createState() => _PartPageState();
+// }
+
+// class _PartPageState extends State<PartPage> {
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("الموردين", "Suppliers")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: const SuppliersPage(),
+//     );
+//   }
+// }
+
+// // ============================================================
+// // 🔹 SuppliersPage - صفحة الموردين الموحدة
+// // ============================================================
+// class SuppliersPage extends StatefulWidget {
+//   const SuppliersPage({super.key});
+
+//   @override
+//   State<SuppliersPage> createState() => _SuppliersPageState();
+// }
+
+// class _SuppliersPageState extends State<SuppliersPage> {
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   // متغيرات الإضافة
+//   final _formKey = GlobalKey<FormState>();
+//   final nameCtrl = TextEditingController();
+//   final phoneCtrl = TextEditingController();
+//   final delegateCtrl = TextEditingController();
+//   List<String> delegates = [];
+//   bool isAdding = false;
+
+//   // متغيرات التحكم في الـ Dialog
+//   bool isEditing = false;
+//   String? editingSupplierId;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   // ======================
+//   // 🔹 دوال الإضافة
+//   // ======================
+//   Future<void> _addSupplier() async {
+//     if (nameCtrl.text.trim().isEmpty) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text(_t("ادخل اسم المورد", "Enter supplier name"))),
+//       );
+//       return;
+//     }
+
+//     setState(() => isAdding = true);
+
+//     try {
+//       await FS.addSupplier(
+//         name: nameCtrl.text.trim(),
+//         delegates: delegates,
+//         phone: phoneCtrl.text.trim(),
+//       );
+
+//       nameCtrl.clear();
+//       phoneCtrl.clear();
+//       delegateCtrl.clear();
+//       setState(() => delegates.clear());
+
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text(
+//               _t("تم إضافة المورد بنجاح ✅", "Supplier added successfully ✅")),
+//           backgroundColor: Colors.green,
+//         ),
+//       );
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text('${_t("حدث خطأ", "Error")}: $e'),
+//           backgroundColor: Colors.red,
+//         ),
+//       );
+//     } finally {
+//       setState(() => isAdding = false);
+//     }
+//   }
+
+//   void _addDelegate() {
+//     if (delegateCtrl.text.trim().isNotEmpty) {
+//       setState(() {
+//         delegates.add(delegateCtrl.text.trim());
+//         delegateCtrl.clear();
+//       });
+//     }
+//   }
+
+//   void _removeDelegate(String name) {
+//     setState(() => delegates.remove(name));
+//   }
+
+//   // ======================
+//   // 🔹 دوال التعديل والحذف
+//   // ======================
+//   Future<Map<String, dynamic>> _supplierSummary(String supplierId) async {
+//     final vouchers = await FS.getVouchersForSupplier(supplierId);
+
+//     double payW = 0, recW = 0;
+//     double payG = 0, recG = 0;
+
+//     for (var v in vouchers) {
+//       final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
+//       final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
+
+//       if (v["type"] == "payment") {
+//         payW += weight;
+//         payG += wage;
+//       } else if (v["type"] == "receipt") {
+//         recW += weight;
+//         recG += wage;
+//       }
+//     }
+
+//     final balanceWeight = recW - payW;
+//     final balanceWage = recG - payG;
+//     final cleared = balanceWeight.abs() < 0.0001 && balanceWage.abs() < 0.0001;
+
+//     return {
+//       "cleared": cleared,
+//       "weight": balanceWeight,
+//       "wage": balanceWage,
+//     };
+//   }
+
+//   void _showAddDialog() {
+//     nameCtrl.clear();
+//     phoneCtrl.clear();
+//     delegateCtrl.clear();
+//     setState(() => delegates.clear());
+//     isEditing = false;
+
+//     showDialog(
+//       context: context,
+//       barrierDismissible: true,
+//       builder: (_) => _buildSupplierDialog(
+//         title: _t("إضافة مورد جديد", "Add New Supplier"),
+//         isEditing: false,
+//       ),
+//     );
+//   }
+
+//   void _showEditDialog(Map<String, dynamic> supplier) {
+//     nameCtrl.text = supplier["name"] ?? "";
+//     phoneCtrl.text = supplier["phone"] ?? "";
+//     setState(() {
+//       delegates = List<String>.from(supplier["delegates"] ?? []);
+//       isEditing = true;
+//       editingSupplierId = supplier["id"];
+//     });
+
+//     showDialog(
+//       context: context,
+//       barrierDismissible: true,
+//       builder: (_) => _buildSupplierDialog(
+//         title: _t("تعديل المورد", "Edit Supplier"),
+//         isEditing: true,
+//         supplierId: supplier["id"],
+//       ),
+//     );
+//   }
+
+//   Widget _buildSupplierDialog({
+//     required String title,
+//     required bool isEditing,
+//     String? supplierId,
+//   }) {
+//     return AlertDialog(
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+//       title: Row(
+//         children: [
+//           Icon(
+//             isEditing ? Icons.edit : Icons.person_add,
+//             color: const Color(0xFFD4AF37),
+//           ),
+//           const SizedBox(width: 10),
+//           Text(
+//             title,
+//             style: const TextStyle(
+//               fontWeight: FontWeight.bold,
+//               fontSize: 18,
+//             ),
+//           ),
+//         ],
+//       ),
+//       content: StatefulBuilder(
+//         builder: (context, setStateDialog) {
+//           return SizedBox(
+//             width: MediaQuery.of(context).size.width * 0.85,
+//             child: Column(
+//               mainAxisSize: MainAxisSize.min,
+//               children: [
+//                 TextField(
+//                   controller: nameCtrl,
+//                   decoration: InputDecoration(
+//                     labelText: _t("اسم المورد", "Supplier Name"),
+//                     prefixIcon:
+//                         const Icon(Icons.business, color: Color(0xFFD4AF37)),
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     filled: true,
+//                     fillColor: Colors.grey.shade50,
+//                   ),
+//                 ),
+//                 const SizedBox(height: 12),
+//                 TextField(
+//                   controller: phoneCtrl,
+//                   decoration: InputDecoration(
+//                     labelText: _t("رقم الجوال", "Phone"),
+//                     prefixIcon:
+//                         const Icon(Icons.phone, color: Color(0xFFD4AF37)),
+//                     border: OutlineInputBorder(
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     filled: true,
+//                     fillColor: Colors.grey.shade50,
+//                   ),
+//                   keyboardType: TextInputType.phone,
+//                 ),
+//                 const SizedBox(height: 12),
+//                 Row(
+//                   children: [
+//                     Expanded(
+//                       child: TextField(
+//                         controller: delegateCtrl,
+//                         decoration: InputDecoration(
+//                           labelText: _t("مندوب", "Delegate"),
+//                           prefixIcon: const Icon(Icons.person,
+//                               color: Color(0xFFD4AF37)),
+//                           border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(12),
+//                           ),
+//                           filled: true,
+//                           fillColor: Colors.grey.shade50,
+//                         ),
+//                         onSubmitted: (_) => _addDelegateDialog(setStateDialog),
+//                       ),
+//                     ),
+//                     const SizedBox(width: 8),
+//                     Container(
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFFD4AF37),
+//                         borderRadius: BorderRadius.circular(12),
+//                       ),
+//                       child: IconButton(
+//                         icon: const Icon(Icons.add, color: Colors.white),
+//                         onPressed: () => _addDelegateDialog(setStateDialog),
+//                         padding: EdgeInsets.zero,
+//                         constraints: const BoxConstraints(
+//                           minWidth: 48,
+//                           minHeight: 48,
+//                         ),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//                 if (delegates.isNotEmpty) ...[
+//                   const SizedBox(height: 8),
+//                   Container(
+//                     padding: const EdgeInsets.all(8),
+//                     decoration: BoxDecoration(
+//                       color: Colors.grey.shade100,
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     child: Wrap(
+//                       spacing: 6,
+//                       runSpacing: 4,
+//                       children: delegates
+//                           .map((d) => Chip(
+//                                 label: Text(d,
+//                                     style: const TextStyle(fontSize: 13)),
+//                                 backgroundColor: Colors.white,
+//                                 deleteIcon: const Icon(Icons.close, size: 16),
+//                                 onDeleted: () =>
+//                                     _removeDelegateDialog(d, setStateDialog),
+//                                 side: BorderSide(color: Colors.grey.shade300),
+//                               ))
+//                           .toList(),
+//                     ),
+//                   ),
+//                 ],
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//       actions: [
+//         TextButton(
+//           onPressed: () => Navigator.pop(context),
+//           child: Text(
+//             _t("إلغاء", "Cancel"),
+//             style: TextStyle(color: Colors.grey.shade600),
+//           ),
+//         ),
+//         ElevatedButton(
+//           style: ElevatedButton.styleFrom(
+//             backgroundColor: const Color(0xFFD4AF37),
+//             shape: RoundedRectangleBorder(
+//               borderRadius: BorderRadius.circular(12),
+//             ),
+//             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+//           ),
+//           onPressed: () async {
+//             if (nameCtrl.text.trim().isEmpty) {
+//               ScaffoldMessenger.of(context).showSnackBar(
+//                 SnackBar(
+//                   content: Text(_t("ادخل اسم المورد", "Enter supplier name")),
+//                 ),
+//               );
+//               return;
+//             }
+
+//             if (isEditing && supplierId != null) {
+//               await FS.updateSupplier(
+//                 supplierId,
+//                 {
+//                   "name": nameCtrl.text.trim(),
+//                   "phone": phoneCtrl.text.trim(),
+//                   "delegates": delegates,
+//                 },
+//               );
+//               ScaffoldMessenger.of(context).showSnackBar(
+//                 SnackBar(
+//                   content: Text(_t("تم التعديل ✅", "Updated ✅")),
+//                   backgroundColor: Colors.green,
+//                 ),
+//               );
+//             } else {
+//               await FS.addSupplier(
+//                 name: nameCtrl.text.trim(),
+//                 delegates: delegates,
+//                 phone: phoneCtrl.text.trim(),
+//               );
+//               ScaffoldMessenger.of(context).showSnackBar(
+//                 SnackBar(
+//                   content: Text(_t("تم الإضافة ✅", "Added ✅")),
+//                   backgroundColor: Colors.green,
+//                 ),
+//               );
+//             }
+
+//             nameCtrl.clear();
+//             phoneCtrl.clear();
+//             delegateCtrl.clear();
+//             setState(() => delegates.clear());
+//             Navigator.pop(context);
+//           },
+//           child: Text(
+//             isEditing ? _t("تعديل", "Update") : _t("إضافة", "Add"),
+//             style: const TextStyle(
+//               color: Colors.white,
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   void _addDelegateDialog(StateSetter setStateDialog) {
+//     if (delegateCtrl.text.trim().isNotEmpty) {
+//       setStateDialog(() {
+//         delegates.add(delegateCtrl.text.trim());
+//         delegateCtrl.clear();
+//       });
+//     }
+//   }
+
+//   void _removeDelegateDialog(String name, StateSetter setStateDialog) {
+//     setStateDialog(() => delegates.remove(name));
+//   }
+
+//   Future<void> _deleteSupplier(Map<String, dynamic> supplier) async {
+//     final confirm = await showDialog<bool>(
+//       context: context,
+//       builder: (_) => AlertDialog(
+//         title: Text(_t("تأكيد الحذف", "Delete Confirmation")),
+//         content:
+//             Text(_t("حذف ${supplier["name"]}؟", "Delete ${supplier["name"]}?")),
+//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+//         actions: [
+//           TextButton(
+//             onPressed: () => Navigator.pop(context, false),
+//             child: Text(_t("إلغاء", "Cancel")),
+//           ),
+//           TextButton(
+//             onPressed: () => Navigator.pop(context, true),
+//             child: Text(_t("حذف", "Delete"),
+//                 style: const TextStyle(color: Colors.red)),
+//           ),
+//         ],
+//       ),
+//     );
+
+//     if (confirm == true) {
+//       await FS.deleteSupplier(supplier["id"]);
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(
+//           content: Text(_t("تم الحذف ✅", "Deleted ✅")),
+//           backgroundColor: Colors.redAccent,
+//         ),
+//       );
+//     }
+//   }
+
+//   // ======================
+//   // 🔹 عرض تفاصيل المورد (نسخة محسنة مع تبويبات قبض/صرف ورصيد في الأعلى)
+//   // ======================
+//   void _showSupplierDetails(String supplierId) async {
+//     final vouchers = await FS.getVouchersForSupplier(supplierId);
+
+//     final receiptVouchers =
+//         vouchers.where((v) => v["type"] == "receipt").toList();
+//     final paymentVouchers =
+//         vouchers.where((v) => v["type"] == "payment").toList();
+
+//     Map<String, Map<String, double>> _calculateSummary(
+//         List<Map<String, dynamic>> voucherList) {
+//       final Map<String, double> weightMap = {"18": 0, "21": 0, "22": 0};
+//       final Map<String, double> wageMap = {"18": 0, "21": 0, "22": 0};
+
+//       for (var v in voucherList) {
+//         final carat = (v["carat"] ?? "").toString();
+//         final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
+//         final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
+
+//         if (["18", "21", "22"].contains(carat)) {
+//           weightMap[carat] = (weightMap[carat] ?? 0) + weight;
+//           wageMap[carat] = (wageMap[carat] ?? 0) + wage;
+//         }
+//       }
+//       return {"weight": weightMap, "wage": wageMap};
+//     }
+
+//     final receiptSummary = _calculateSummary(receiptVouchers);
+//     final paymentSummary = _calculateSummary(paymentVouchers);
+
+//     final totalReceiptWeight =
+//         receiptSummary["weight"]!.values.fold(0.0, (a, b) => a + b);
+//     final totalReceiptWage =
+//         receiptSummary["wage"]!.values.fold(0.0, (a, b) => a + b);
+//     final totalPaymentWeight =
+//         paymentSummary["weight"]!.values.fold(0.0, (a, b) => a + b);
+//     final totalPaymentWage =
+//         paymentSummary["wage"]!.values.fold(0.0, (a, b) => a + b);
+
+//     final balanceWeight = totalReceiptWeight - totalPaymentWeight;
+//     final balanceWage = totalReceiptWage - totalPaymentWage;
+//     final allCleared =
+//         balanceWeight.abs() < 0.0001 && balanceWage.abs() < 0.0001;
+
+//     if (!mounted) return;
+
+//     showModalBottomSheet(
+//       context: context,
+//       isScrollControlled: true,
+//       backgroundColor: Colors.transparent,
+//       builder: (context) => DraggableScrollableSheet(
+//         initialChildSize: 0.92,
+//         minChildSize: 0.5,
+//         maxChildSize: 0.95,
+//         builder: (_, scrollController) {
+//           return DefaultTabController(
+//             length: 2,
+//             child: Container(
+//               decoration: const BoxDecoration(
+//                 color: Colors.white,
+//                 borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+//               ),
+//               child: Column(
+//                 children: [
+//                   Container(
+//                     margin: const EdgeInsets.only(top: 12),
+//                     width: 40,
+//                     height: 4,
+//                     decoration: BoxDecoration(
+//                       color: Colors.grey.shade300,
+//                       borderRadius: BorderRadius.circular(2),
+//                     ),
+//                   ),
+//                   const SizedBox(height: 14),
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 20),
+//                     child: Row(
+//                       children: [
+//                         CircleAvatar(
+//                           radius: 24,
+//                           backgroundColor:
+//                               const Color(0xFFD4AF37).withOpacity(0.15),
+//                           child: const Icon(Icons.person,
+//                               color: Color(0xFFD4AF37), size: 26),
+//                         ),
+//                         const SizedBox(width: 12),
+//                         Expanded(
+//                           child: Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               Text(
+//                                 vouchers.isNotEmpty
+//                                     ? (vouchers.first["supplierName"] ?? "")
+//                                     : "",
+//                                 style: const TextStyle(
+//                                   fontWeight: FontWeight.bold,
+//                                   fontSize: 19,
+//                                 ),
+//                                 maxLines: 1,
+//                                 overflow: TextOverflow.ellipsis,
+//                               ),
+//                               const SizedBox(height: 2),
+//                               Text(
+//                                 "${vouchers.length} ${_t("عملية", "transactions")}",
+//                                 style: TextStyle(
+//                                   fontSize: 13,
+//                                   color: Colors.grey.shade600,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ),
+//                         IconButton(
+//                           icon: Icon(Icons.close, color: Colors.grey.shade600),
+//                           onPressed: () => Navigator.pop(context),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   const SizedBox(height: 10),
+//                   Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 20),
+//                     child: Container(
+//                       padding: const EdgeInsets.all(16),
+//                       decoration: BoxDecoration(
+//                         color: allCleared
+//                             ? Colors.green.shade50
+//                             : balanceWeight > 0
+//                                 ? Colors.red.shade50
+//                                 : Colors.green.shade50,
+//                         borderRadius: BorderRadius.circular(18),
+//                         border: Border.all(
+//                           color: allCleared
+//                               ? Colors.green.shade200
+//                               : balanceWeight > 0
+//                                   ? Colors.red.shade200
+//                                   : Colors.green.shade200,
+//                         ),
+//                       ),
+//                       child: Row(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Container(
+//                             padding: const EdgeInsets.all(12),
+//                             decoration: BoxDecoration(
+//                               color: allCleared
+//                                   ? Colors.green
+//                                   : balanceWeight > 0
+//                                       ? Colors.red
+//                                       : Colors.green,
+//                               shape: BoxShape.circle,
+//                             ),
+//                             child: Icon(
+//                               allCleared
+//                                   ? Icons.check_rounded
+//                                   : balanceWeight > 0
+//                                       ? Icons.north_east_rounded
+//                                       : Icons.south_west_rounded,
+//                               color: Colors.white,
+//                               size: 22,
+//                             ),
+//                           ),
+//                           const SizedBox(width: 14),
+//                           Expanded(
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.start,
+//                               children: [
+//                                 Text(
+//                                   allCleared
+//                                       ? _t("✅ الحساب مُصفّى بالكامل",
+//                                           "✅ Fully settled")
+//                                       : balanceWeight > 0
+//                                           ? _t("📤 رصيد للمورد",
+//                                               "📤 Balance owed to supplier")
+//                                           : _t("📥 رصيد على المورد",
+//                                               "📥 Supplier owes us"),
+//                                   style: TextStyle(
+//                                     fontWeight: FontWeight.bold,
+//                                     fontSize: 15,
+//                                     color: allCleared
+//                                         ? Colors.green.shade800
+//                                         : balanceWeight > 0
+//                                             ? Colors.red.shade800
+//                                             : Colors.green.shade800,
+//                                   ),
+//                                 ),
+//                                 if (!allCleared) ...[
+//                                   const SizedBox(height: 8),
+//                                   Wrap(
+//                                     spacing: 16,
+//                                     runSpacing: 4,
+//                                     children: [
+//                                       _summaryValue(
+//                                         icon: Icons.scale_outlined,
+//                                         label: _t("الوزن", "Weight"),
+//                                         value:
+//                                             "${balanceWeight.abs().toStringAsFixed(2)} جم",
+//                                       ),
+//                                       _summaryValue(
+//                                         icon: Icons.payments_outlined,
+//                                         label: _t("الأجر", "Wage"),
+//                                         value: balanceWage
+//                                             .abs()
+//                                             .toStringAsFixed(2),
+//                                       ),
+//                                     ],
+//                                   ),
+//                                 ],
+//                               ],
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                   const SizedBox(height: 12),
+//                   const Divider(height: 1),
+//                   Container(
+//                     color: Colors.white,
+//                     child: TabBar(
+//                       indicatorColor: const Color(0xFFD4AF37),
+//                       indicatorWeight: 3,
+//                       labelColor: const Color(0xFFD4AF37),
+//                       unselectedLabelColor: Colors.grey.shade600,
+//                       labelStyle: const TextStyle(
+//                         fontWeight: FontWeight.bold,
+//                         fontSize: 15,
+//                       ),
+//                       tabs: [
+//                         Tab(text: _t("📥 قبض", "📥 Receipt")),
+//                         Tab(text: _t("📤 صرف", "📤 Payment")),
+//                       ],
+//                     ),
+//                   ),
+//                   Expanded(
+//                     child: TabBarView(
+//                       children: [
+//                         _buildTabContent(
+//                           context,
+//                           scrollController,
+//                           voucherList: receiptVouchers,
+//                           summaryMap: receiptSummary,
+//                           type: 'receipt',
+//                         ),
+//                         _buildTabContent(
+//                           context,
+//                           scrollController,
+//                           voucherList: paymentVouchers,
+//                           summaryMap: paymentSummary,
+//                           type: 'payment',
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   // ==========================================
+//   // 🔹 دالة مساعدة لبناء محتوى كل تبويب
+//   // ==========================================
+//   Widget _buildTabContent(
+//     BuildContext context,
+//     ScrollController scrollController, {
+//     required List<Map<String, dynamic>> voucherList,
+//     required Map<String, Map<String, double>> summaryMap,
+//     required String type,
+//   }) {
+//     final isReceipt = type == 'receipt';
+//     final color = isReceipt ? Colors.green : Colors.red;
+//     final title = isReceipt
+//         ? _t("تفاصيل القبض", "Receipt Details")
+//         : _t("تفاصيل الصرف", "Payment Details");
+
+//     final weightMap = summaryMap["weight"]!;
+//     final wageMap = summaryMap["wage"]!;
+
+//     final caratsWithBalance = ["18", "21", "22"].where((c) {
+//       return weightMap[c]!.abs() > 0.0001 || wageMap[c]!.abs() > 0.0001;
+//     }).toList();
+
+//     final totalWeight = weightMap.values.fold(0.0, (a, b) => a + b);
+//     final totalWage = wageMap.values.fold(0.0, (a, b) => a + b);
+//     final allCleared = caratsWithBalance.isEmpty;
+
+//     return Padding(
+//       padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+//       child: ListView(
+//         controller: scrollController,
+//         children: [
+//           Container(
+//             padding: const EdgeInsets.all(16),
+//             decoration: BoxDecoration(
+//               color:
+//                   allCleared ? Colors.grey.shade100 : color.withOpacity(0.07),
+//               borderRadius: BorderRadius.circular(18),
+//               border: Border.all(
+//                 color:
+//                     allCleared ? Colors.grey.shade300 : color.withOpacity(0.3),
+//               ),
+//             ),
+//             child: Row(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Container(
+//                   padding: const EdgeInsets.all(12),
+//                   decoration: BoxDecoration(
+//                     color: allCleared ? Colors.grey : color,
+//                     shape: BoxShape.circle,
+//                   ),
+//                   child: Icon(
+//                     allCleared
+//                         ? Icons.check_rounded
+//                         : isReceipt
+//                             ? Icons.south_west_rounded
+//                             : Icons.north_east_rounded,
+//                     color: Colors.white,
+//                     size: 22,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 14),
+//                 Expanded(
+//                   child: Column(
+//                     crossAxisAlignment: CrossAxisAlignment.start,
+//                     children: [
+//                       Text(
+//                         allCleared
+//                             ? _t("لا توجد معاملات", "No transactions")
+//                             : title,
+//                         style: TextStyle(
+//                           fontWeight: FontWeight.bold,
+//                           fontSize: 15,
+//                           color: allCleared ? Colors.grey.shade600 : color,
+//                         ),
+//                       ),
+//                       if (!allCleared) ...[
+//                         const SizedBox(height: 8),
+//                         Wrap(
+//                           spacing: 16,
+//                           runSpacing: 4,
+//                           children: [
+//                             _summaryValue(
+//                               icon: Icons.scale_outlined,
+//                               label: _t("الوزن", "Weight"),
+//                               value:
+//                                   "${totalWeight.abs().toStringAsFixed(2)} جم",
+//                             ),
+//                             _summaryValue(
+//                               icon: Icons.payments_outlined,
+//                               label: _t("الأجر", "Wage"),
+//                               value: totalWage.abs().toStringAsFixed(2),
+//                             ),
+//                           ],
+//                         ),
+//                       ],
+//                     ],
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           if (!allCleared) ...[
+//             const SizedBox(height: 18),
+//             Row(
+//               children: [
+//                 Icon(
+//                   Icons.category_outlined,
+//                   color: color,
+//                   size: 18,
+//                 ),
+//                 const SizedBox(width: 8),
+//                 Text(
+//                   _t("تفاصيل العيارات", "Carat Breakdown"),
+//                   style: TextStyle(
+//                     fontWeight: FontWeight.bold,
+//                     fontSize: 14,
+//                     color: Colors.grey.shade700,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 10),
+//             SizedBox(
+//               height: 120,
+//               child: ListView.builder(
+//                 scrollDirection: Axis.horizontal,
+//                 itemCount: caratsWithBalance.length,
+//                 itemBuilder: (context, index) {
+//                   final carat = caratsWithBalance[index];
+//                   final weight = weightMap[carat]!;
+//                   final wage = wageMap[carat]!;
+//                   final isZero = weight.abs() < 0.0001 && wage.abs() < 0.0001;
+
+//                   Color cardColor;
+//                   if (isZero) {
+//                     cardColor = Colors.grey;
+//                   } else {
+//                     cardColor = isReceipt ? Colors.green : Colors.red;
+//                   }
+
+//                   return Container(
+//                     width: 140,
+//                     margin: const EdgeInsets.only(right: 12),
+//                     padding: const EdgeInsets.all(16),
+//                     decoration: BoxDecoration(
+//                       color: cardColor.withOpacity(0.08),
+//                       borderRadius: BorderRadius.circular(16),
+//                       border: Border.all(
+//                         color: cardColor.withOpacity(0.3),
+//                       ),
+//                     ),
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Text(
+//                           _t("عيار $carat", "K$carat"),
+//                           style: const TextStyle(
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 16,
+//                           ),
+//                         ),
+//                         const SizedBox(height: 8),
+//                         if (!isZero) ...[
+//                           Row(
+//                             mainAxisAlignment: MainAxisAlignment.center,
+//                             children: [
+//                               const Icon(Icons.scale_outlined,
+//                                   size: 16, color: Colors.grey),
+//                               const SizedBox(width: 4),
+//                               Text(
+//                                 "${weight.abs().toStringAsFixed(2)} جم",
+//                                 style: TextStyle(
+//                                   fontWeight: FontWeight.w700,
+//                                   fontSize: 14,
+//                                   color: cardColor,
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                           const SizedBox(height: 4),
+//                           Row(
+//                             mainAxisAlignment: MainAxisAlignment.center,
+//                             children: [
+//                               const Icon(Icons.payments_outlined,
+//                                   size: 16, color: Colors.grey),
+//                               const SizedBox(width: 4),
+//                               Text(
+//                                 "${wage.abs().toStringAsFixed(2)} ${_t("أجر", "wage")}",
+//                                 style: TextStyle(
+//                                   fontSize: 13,
+//                                   color: cardColor.withOpacity(0.85),
+//                                 ),
+//                               ),
+//                             ],
+//                           ),
+//                         ] else ...[
+//                           Text(
+//                             _t("مصفى", "Cleared"),
+//                             style: TextStyle(
+//                               color: Colors.grey.shade500,
+//                               fontWeight: FontWeight.w600,
+//                             ),
+//                           ),
+//                         ],
+//                       ],
+//                     ),
+//                   );
+//                 },
+//               ),
+//             ),
+//           ],
+//           const SizedBox(height: 24),
+//           Row(
+//             children: [
+//               Icon(
+//                 isReceipt ? Icons.south_west_rounded : Icons.north_east_rounded,
+//                 color: color,
+//                 size: 18,
+//               ),
+//               const SizedBox(width: 8),
+//               Text(
+//                 isReceipt
+//                     ? _t("سندات القبض", "Receipt Vouchers")
+//                     : _t("سندات الصرف", "Payment Vouchers"),
+//                 style: const TextStyle(
+//                   fontWeight: FontWeight.bold,
+//                   fontSize: 15,
+//                 ),
+//               ),
+//               const Spacer(),
+//               Container(
+//                 padding:
+//                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+//                 decoration: BoxDecoration(
+//                   color: color.withOpacity(0.1),
+//                   borderRadius: BorderRadius.circular(12),
+//                 ),
+//                 child: Text(
+//                   "${voucherList.length}",
+//                   style: TextStyle(
+//                     fontSize: 13,
+//                     fontWeight: FontWeight.w700,
+//                     color: color,
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//           const SizedBox(height: 10),
+//           if (voucherList.isEmpty)
+//             Padding(
+//               padding: const EdgeInsets.symmetric(vertical: 30),
+//               child: Center(
+//                 child: Text(
+//                   _t("لا توجد سندات", "No vouchers"),
+//                   style: TextStyle(color: Colors.grey.shade500),
+//                 ),
+//               ),
+//             )
+//           else
+//             ...voucherList.map((v) {
+//               return Container(
+//                 margin: const EdgeInsets.only(bottom: 10),
+//                 padding: const EdgeInsets.all(12),
+//                 decoration: BoxDecoration(
+//                   color: Colors.white,
+//                   borderRadius: BorderRadius.circular(14),
+//                   border: Border.all(color: Colors.grey.shade200),
+//                   boxShadow: [
+//                     BoxShadow(
+//                       color: Colors.black.withOpacity(0.03),
+//                       blurRadius: 6,
+//                       offset: const Offset(0, 2),
+//                     ),
+//                   ],
+//                 ),
+//                 child: Row(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     CircleAvatar(
+//                       radius: 18,
+//                       backgroundColor:
+//                           isReceipt ? Colors.green.shade50 : Colors.red.shade50,
+//                       child: Icon(
+//                         isReceipt
+//                             ? Icons.south_west_rounded
+//                             : Icons.north_east_rounded,
+//                         color: isReceipt ? Colors.green : Colors.red,
+//                         size: 18,
+//                       ),
+//                     ),
+//                     const SizedBox(width: 12),
+//                     Expanded(
+//                       child: Column(
+//                         crossAxisAlignment: CrossAxisAlignment.start,
+//                         children: [
+//                           Row(
+//                             children: [
+//                               Text(
+//                                 isReceipt
+//                                     ? _t("سند قبض", "Receipt")
+//                                     : _t("سند صرف", "Payment"),
+//                                 style: const TextStyle(
+//                                   fontWeight: FontWeight.bold,
+//                                   fontSize: 14,
+//                                 ),
+//                               ),
+//                               const Spacer(),
+//                               if (v["date"] != null)
+//                                 Text(
+//                                   DateFormat("dd/MM/yyyy").format(
+//                                     (v["date"] as Timestamp).toDate(),
+//                                   ),
+//                                   style: TextStyle(
+//                                     fontSize: 11,
+//                                     color: Colors.grey.shade500,
+//                                   ),
+//                                 ),
+//                             ],
+//                           ),
+//                           const SizedBox(height: 6),
+//                           Wrap(
+//                             spacing: 8,
+//                             runSpacing: 6,
+//                             children: [
+//                               _voucherChip(_t("مندوب", "Delegate"),
+//                                   v["delegate"]?.toString() ?? "-"),
+//                               _voucherChip(_t("عيار", "Carat"),
+//                                   v["carat"]?.toString() ?? "-"),
+//                               _voucherChip(_t("وزن", "Weight"),
+//                                   "${v["weight"] ?? 0} جم"),
+//                               _voucherChip(
+//                                   _t("أجر", "Wage"), "${v["wage"] ?? 0}"),
+//                             ],
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               );
+//             }).toList(),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _summaryValue({
+//     required IconData icon,
+//     required String label,
+//     required String value,
+//   }) {
+//     return Row(
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         Icon(icon, size: 14, color: Colors.grey.shade700),
+//         const SizedBox(width: 4),
+//         Text(
+//           "$label: $value",
+//           style: TextStyle(
+//             fontSize: 12,
+//             fontWeight: FontWeight.w600,
+//             color: Colors.grey.shade800,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget _voucherChip(String label, String value) {
+//     return Container(
+//       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+//       decoration: BoxDecoration(
+//         color: Colors.grey.shade100,
+//         borderRadius: BorderRadius.circular(8),
+//       ),
+//       child: Text(
+//         "$label: $value",
+//         style: TextStyle(
+//           fontSize: 11,
+//           color: Colors.grey.shade700,
+//           fontWeight: FontWeight.w500,
+//         ),
+//       ),
+//     );
+//   }
+
+//   // ======================
+//   // 🔹 BUILD
+//   // ======================
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.grey.shade50,
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: _showAddDialog,
+//         backgroundColor: const Color(0xFFD4AF37),
+//         child: const Icon(Icons.add, color: Colors.white, size: 30),
+//       ),
+//       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+//       body: Column(
+//         children: [
+//           Container(
+//             padding: const EdgeInsets.all(12),
+//             color: Colors.white,
+//             child: Row(
+//               children: [
+//                 Expanded(
+//                   child: Container(
+//                     padding: const EdgeInsets.symmetric(horizontal: 12),
+//                     decoration: BoxDecoration(
+//                       color: Colors.grey.shade100,
+//                       borderRadius: BorderRadius.circular(12),
+//                     ),
+//                     child: TextField(
+//                       decoration: InputDecoration(
+//                         hintText:
+//                             _t("🔍 بحث عن مورد...", "🔍 Search supplier..."),
+//                         border: InputBorder.none,
+//                         hintStyle: TextStyle(
+//                           fontSize: 14,
+//                           color: Colors.grey.shade500,
+//                         ),
+//                       ),
+//                       onChanged: (value) {
+//                         // يمكن إضافة منطق البحث هنا
+//                       },
+//                     ),
+//                   ),
+//                 ),
+//                 const SizedBox(width: 8),
+//                 Container(
+//                   padding: const EdgeInsets.all(10),
+//                   decoration: BoxDecoration(
+//                     color: const Color(0xFFD4AF37).withOpacity(0.15),
+//                     borderRadius: BorderRadius.circular(12),
+//                   ),
+//                   child: Text(
+//                     _t("عدد الموردين", "Suppliers"),
+//                     style: TextStyle(
+//                       fontSize: 12,
+//                       fontWeight: FontWeight.bold,
+//                       color: const Color(0xFFD4AF37),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           const SizedBox(height: 8),
+//           Expanded(
+//             child: StreamBuilder<List<Map<String, dynamic>>>(
+//               stream: FS.suppliersStream(),
+//               builder: (context, snap) {
+//                 if (!snap.hasData) {
+//                   return const Center(child: CircularProgressIndicator());
+//                 }
+
+//                 final suppliers = snap.data!;
+
+//                 if (suppliers.isEmpty) {
+//                   return Center(
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Icon(
+//                           Icons.people_outline,
+//                           size: 64,
+//                           color: Colors.grey.shade300,
+//                         ),
+//                         const SizedBox(height: 12),
+//                         Text(
+//                           _t("لا يوجد موردين", "No suppliers"),
+//                           style: TextStyle(
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.w600,
+//                             color: Colors.grey.shade600,
+//                           ),
+//                         ),
+//                         const SizedBox(height: 4),
+//                         Text(
+//                           _t("اضغط على زر + لإضافة مورد",
+//                               "Tap + to add a supplier"),
+//                           style: TextStyle(
+//                             fontSize: 14,
+//                             color: Colors.grey.shade400,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   );
+//                 }
+
+//                 return ListView.builder(
+//                   padding: const EdgeInsets.symmetric(horizontal: 12),
+//                   itemCount: suppliers.length,
+//                   itemBuilder: (_, i) {
+//                     final s = suppliers[i];
+//                     return _buildSupplierCard(s);
+//                   },
+//                 );
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   // ======================
+//   // 🔹 بطاقة المورد
+//   // ======================
+//   Widget _buildSupplierCard(Map<String, dynamic> supplier) {
+//     return Card(
+//       elevation: 2,
+//       margin: const EdgeInsets.symmetric(vertical: 6),
+//       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+//       child: FutureBuilder<Map<String, dynamic>>(
+//         future: _supplierSummary(supplier["id"]),
+//         builder: (context, snap) {
+//           final isCleared = snap.hasData ? snap.data!["cleared"] : false;
+//           final balanceWeight = snap.hasData ? snap.data!["weight"] : 0.0;
+//           final balanceWage = snap.hasData ? snap.data!["wage"] : 0.0;
+
+//           Color statusColor;
+//           String statusText;
+//           IconData statusIcon;
+
+//           if (isCleared) {
+//             statusColor = Colors.green;
+//             statusText = _t("مصفى", "Cleared");
+//             statusIcon = Icons.check_circle;
+//           } else if (balanceWeight > 0) {
+//             statusColor = Colors.red;
+//             statusText = _t("له", "Owed");
+//             statusIcon = Icons.arrow_upward;
+//           } else {
+//             statusColor = Colors.green;
+//             statusText = _t("عليه", "Owes");
+//             statusIcon = Icons.arrow_downward;
+//           }
+
+//           return InkWell(
+//             onTap: () => _showSupplierDetails(supplier["id"]),
+//             borderRadius: BorderRadius.circular(14),
+//             child: Padding(
+//               padding: const EdgeInsets.all(12),
+//               child: Row(
+//                 children: [
+//                   CircleAvatar(
+//                     radius: 24,
+//                     backgroundColor: const Color(0xFFD4AF37).withOpacity(0.15),
+//                     child: const Icon(Icons.person,
+//                         color: Color(0xFFD4AF37), size: 28),
+//                   ),
+//                   const SizedBox(width: 14),
+//                   Expanded(
+//                     child: Column(
+//                       crossAxisAlignment: CrossAxisAlignment.start,
+//                       children: [
+//                         Text(
+//                           supplier["name"],
+//                           style: const TextStyle(
+//                             fontWeight: FontWeight.bold,
+//                             fontSize: 16,
+//                           ),
+//                           maxLines: 1,
+//                           overflow: TextOverflow.ellipsis,
+//                         ),
+//                         const SizedBox(height: 2),
+//                         if (supplier["phone"] != null &&
+//                             supplier["phone"].toString().isNotEmpty)
+//                           Text(
+//                             "📞 ${supplier["phone"]}",
+//                             style: TextStyle(
+//                               fontSize: 13,
+//                               color: Colors.grey.shade600,
+//                             ),
+//                           ),
+//                         if (supplier["delegates"] != null &&
+//                             supplier["delegates"].isNotEmpty)
+//                           Text(
+//                             "👤 ${supplier["delegates"].join(", ")}",
+//                             style: TextStyle(
+//                               fontSize: 12,
+//                               color: Colors.grey.shade500,
+//                             ),
+//                             maxLines: 1,
+//                             overflow: TextOverflow.ellipsis,
+//                           ),
+//                         const SizedBox(height: 4),
+//                         Container(
+//                           padding: const EdgeInsets.symmetric(
+//                               horizontal: 8, vertical: 2),
+//                           decoration: BoxDecoration(
+//                             color: statusColor.withOpacity(0.1),
+//                             borderRadius: BorderRadius.circular(12),
+//                           ),
+//                           child: Row(
+//                             mainAxisSize: MainAxisSize.min,
+//                             children: [
+//                               Icon(statusIcon, color: statusColor, size: 14),
+//                               const SizedBox(width: 4),
+//                               Text(
+//                                 statusText,
+//                                 style: TextStyle(
+//                                   color: statusColor,
+//                                   fontWeight: FontWeight.w600,
+//                                   fontSize: 12,
+//                                 ),
+//                               ),
+//                               if (!isCleared) ...[
+//                                 const SizedBox(width: 6),
+//                                 Text(
+//                                   "${balanceWeight.abs().toStringAsFixed(1)} جم",
+//                                   style: TextStyle(
+//                                     color: statusColor,
+//                                     fontWeight: FontWeight.w500,
+//                                     fontSize: 12,
+//                                   ),
+//                                 ),
+//                               ],
+//                             ],
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   PopupMenuButton<String>(
+//                     icon: Icon(Icons.more_vert, color: Colors.grey.shade600),
+//                     onSelected: (value) {
+//                       if (value == 'edit') _showEditDialog(supplier);
+//                       if (value == 'delete') _deleteSupplier(supplier);
+//                     },
+//                     itemBuilder: (context) => [
+//                       PopupMenuItem(
+//                         value: 'edit',
+//                         child: Row(
+//                           children: [
+//                             const Icon(Icons.edit,
+//                                 color: Colors.orange, size: 20),
+//                             const SizedBox(width: 8),
+//                             Text(_t("تعديل", "Edit")),
+//                           ],
+//                         ),
+//                       ),
+//                       PopupMenuItem(
+//                         value: 'delete',
+//                         child: Row(
+//                           children: [
+//                             const Icon(Icons.delete,
+//                                 color: Colors.red, size: 20),
+//                             const SizedBox(width: 8),
+//                             Text(_t("حذف", "Delete")),
+//                           ],
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================
+// // 🔹 Part1Page - صفحة السندات
+// // ============================================================
+// class Part1Page extends StatefulWidget {
+//   const Part1Page({super.key});
+
+//   @override
+//   State<Part1Page> createState() => _Part1PageState();
+// }
+
+// class _Part1PageState extends State<Part1Page> {
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("السندات", "Vouchers")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: Container(
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               theme.colorScheme.surface,
+//               theme.colorScheme.surface.withOpacity(0.8),
+//             ],
+//           ),
+//         ),
+//         child: Center(
+//           child: Padding(
+//             padding: const EdgeInsets.all(20),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 GridView.count(
+//                   shrinkWrap: true,
+//                   physics: const NeverScrollableScrollPhysics(),
+//                   crossAxisCount: 1,
+//                   mainAxisSpacing: 12,
+//                   childAspectRatio: 4,
+//                   children: [
+//                     _buildMenuCard(
+//                       context,
+//                       icon: Icons.receipt_long,
+//                       label: _t("سند قبض", "Receipt Voucher"),
+//                       page: const ReceiptVoucherPage(),
+//                     ),
+//                     _buildMenuCard(
+//                       context,
+//                       icon: Icons.payments,
+//                       label: _t("سند صرف", "Payment Voucher"),
+//                       page: const PaymentVoucherPage(),
+//                     ),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 10),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildMenuCard(
+//     BuildContext context, {
+//     required IconData icon,
+//     required String label,
+//     Widget? page,
+//     VoidCallback? onTap,
+//   }) {
+//     return GestureDetector(
+//       onTap: onTap ??
+//           () {
+//             if (page != null) {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(builder: (_) => page),
+//               );
+//             }
+//           },
+//       child: Card(
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(16),
+//         ),
+//         elevation: 4,
+//         color: const Color(0xFFD4AF37).withOpacity(0.9),
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 20),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Icon(icon, size: 36, color: Colors.white),
+//               const SizedBox(width: 20),
+//               Text(
+//                 label,
+//                 style: const TextStyle(
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================
+// // 🔹 Part2Page - صفحة الأموال
+// // ============================================================
+// class Part2Page extends StatefulWidget {
+//   const Part2Page({super.key});
+
+//   @override
+//   State<Part2Page> createState() => _Part2PageState();
+// }
+
+// class _Part2PageState extends State<Part2Page> {
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("الأموال", "Funds")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: Container(
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               theme.colorScheme.surface,
+//               theme.colorScheme.surface.withOpacity(0.8),
+//             ],
+//           ),
+//         ),
+//         child: Center(
+//           child: Padding(
+//             padding: const EdgeInsets.all(20),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 GridView.count(
+//                   shrinkWrap: true,
+//                   physics: const NeverScrollableScrollPhysics(),
+//                   crossAxisCount: 1,
+//                   mainAxisSpacing: 12,
+//                   childAspectRatio: 4,
+//                   children: [
+//                     _buildMenuCard(
+//                       context,
+//                       icon: Icons.account_balance_wallet,
+//                       label: _t("الصندوق", "Cash Box"),
+//                       page: const CashBoxPage(),
+//                     ),
+//                     _buildMenuCard(
+//                       context,
+//                       icon: Icons.monetization_on,
+//                       label: _t("المصروفات", "Expenses"),
+//                       page: const ExpensesPage(),
+//                     ),
+//                   ],
+//                 ),
+//                 const SizedBox(height: 10),
+//               ],
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildMenuCard(
+//     BuildContext context, {
+//     required IconData icon,
+//     required String label,
+//     Widget? page,
+//     VoidCallback? onTap,
+//   }) {
+//     return GestureDetector(
+//       onTap: onTap ??
+//           () {
+//             if (page != null) {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(builder: (_) => page),
+//               );
+//             }
+//           },
+//       child: Card(
+//         shape: RoundedRectangleBorder(
+//           borderRadius: BorderRadius.circular(16),
+//         ),
+//         elevation: 4,
+//         color: const Color(0xFFD4AF37).withOpacity(0.9),
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 20),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               Icon(icon, size: 36, color: Colors.white),
+//               const SizedBox(width: 20),
+//               Text(
+//                 label,
+//                 style: const TextStyle(
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold,
+//                   color: Colors.white,
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================
+// // 🔹 صفحة سند القبض
+// // ============================================================
+// class ReceiptVoucherPage extends StatefulWidget {
+//   const ReceiptVoucherPage({super.key});
+
+//   @override
+//   State<ReceiptVoucherPage> createState() => _ReceiptVoucherPageState();
+// }
+
+// class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
+//   DateTime? date = DateTime.now();
+//   String? supplierName;
+//   String? supplierId;
+//   String? delegate;
+//   String? carat;
+//   final weightCtrl = TextEditingController();
+//   final wageCtrl = TextEditingController();
+
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("سند القبض", "Receipt Voucher")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(20),
+//         child: ListView(
+//           children: [
+//             Card(
+//               elevation: 3,
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(12),
+//               ),
+//               child: Padding(
+//                 padding: const EdgeInsets.all(16),
+//                 child: Column(
+//                   children: [
+//                     ListTile(
+//                       leading: const Icon(Icons.calendar_today,
+//                           color: Color(0xFFD4AF37)),
+//                       title: Text(_t('التاريخ', 'Date')),
+//                       subtitle: Text(DateFormat("yyyy-MM-dd").format(date!)),
+//                     ),
+//                     const SizedBox(height: 16),
+//                     FutureBuilder(
+//                       future: FS.getSuppliers(),
+//                       builder: (context, snap) {
+//                         if (!snap.hasData) {
+//                           return const Center(
+//                               child: CircularProgressIndicator());
+//                         }
+//                         final suppliers = snap.data!;
+//                         return DropdownButtonFormField<String>(
+//                           decoration: InputDecoration(
+//                             labelText: _t("اختر المورد", "Select Supplier"),
+//                             border: OutlineInputBorder(
+//                               borderRadius: BorderRadius.circular(12),
+//                             ),
+//                           ),
+//                           initialValue: supplierId,
+//                           items: suppliers.map((s) {
+//                             return DropdownMenuItem(
+//                               value: s["id"].toString(),
+//                               child: Text(s["name"]),
+//                             );
+//                           }).toList(),
+//                           onChanged: (v) {
+//                             setState(() {
+//                               supplierId = v;
+//                               supplierName = suppliers.firstWhere(
+//                                   (s) => s["id"].toString() == v)["name"];
+//                             });
+//                           },
+//                         );
+//                       },
+//                     ),
+//                     const SizedBox(height: 16),
+//                     if (supplierId != null)
+//                       FutureBuilder(
+//                         future: FS.getSuppliers(),
+//                         builder: (context, snap) {
+//                           if (!snap.hasData) return const SizedBox();
+//                           final supplier = snap.data!
+//                               .firstWhere((s) => s["id"] == supplierId);
+//                           final delegates =
+//                               List<String>.from(supplier["delegates"]);
+//                           return DropdownButtonFormField<String>(
+//                             decoration: InputDecoration(
+//                               labelText: _t("اختر المندوب", "Select Delegate"),
+//                               border: OutlineInputBorder(
+//                                   borderRadius: BorderRadius.circular(12)),
+//                             ),
+//                             initialValue: delegate,
+//                             items: delegates.map((d) {
+//                               return DropdownMenuItem(value: d, child: Text(d));
+//                             }).toList(),
+//                             onChanged: (v) => setState(() => delegate = v),
+//                           );
+//                         },
+//                       ),
+//                     const SizedBox(height: 16),
+//                     DropdownButtonFormField<String>(
+//                       decoration: InputDecoration(
+//                         labelText: _t("اختر العيار", "Select Carat"),
+//                         border: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(12),
+//                         ),
+//                       ),
+//                       initialValue: carat,
+//                       items: ["18", "21", "22"].map((c) {
+//                         return DropdownMenuItem(value: c, child: Text(c));
+//                       }).toList(),
+//                       onChanged: (v) => setState(() => carat = v),
+//                     ),
+//                     const SizedBox(height: 16),
+//                     TextField(
+//                       controller: weightCtrl,
+//                       decoration: InputDecoration(
+//                         labelText: _t("⚖ الوزن", "⚖ Weight"),
+//                         border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(12)),
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                     ),
+//                     const SizedBox(height: 16),
+//                     TextField(
+//                       controller: wageCtrl,
+//                       decoration: InputDecoration(
+//                         labelText: _t("💰 الأجر", "💰 Wage"),
+//                         border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(12)),
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                     ),
+//                     const SizedBox(height: 24),
+//                     ElevatedButton.icon(
+//                       style: ElevatedButton.styleFrom(
+//                         minimumSize: const Size(double.infinity, 50),
+//                         backgroundColor: const Color(0xFFD4AF37),
+//                         shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(12)),
+//                       ),
+//                       icon: const Icon(Icons.save, color: Colors.white),
+//                       label: Text(
+//                         _t("حفظ", "Save"),
+//                         style: const TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.bold),
+//                       ),
+//                       onPressed: () async {
+//                         if (supplierId == null ||
+//                             delegate == null ||
+//                             carat == null ||
+//                             weightCtrl.text.isEmpty ||
+//                             wageCtrl.text.isEmpty) {
+//                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                             content: Text(_t(
+//                                 "من فضلك أدخل جميع البيانات المطلوبة",
+//                                 "Please fill in all required fields")),
+//                           ));
+//                           return;
+//                         }
+
+//                         await FS.addReceiptVoucher(
+//                           supplierId: supplierId!,
+//                           supplierName: supplierName!,
+//                           delegate: delegate!,
+//                           carat: carat!,
+//                           weight: double.parse(weightCtrl.text),
+//                           wage: double.parse(wageCtrl.text),
+//                           date: date!,
+//                         );
+
+//                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                           content: Text(_t("تم حفظ السند بنجاح ✅",
+//                               "Receipt voucher saved successfully ✅")),
+//                         ));
+
+//                         Navigator.pop(context);
+//                       },
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// // ============================================================
+// // 🔹 صفحة سند الصرف
+// // ============================================================
+// class PaymentVoucherPage extends StatefulWidget {
+//   const PaymentVoucherPage({super.key});
+
+//   @override
+//   State<PaymentVoucherPage> createState() => _PaymentVoucherPageState();
+// }
+
+// class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
+//   DateTime? date = DateTime.now();
+//   String? supplierName;
+//   String? supplierId;
+//   String? delegate;
+//   String? carat;
+//   String? paymentMethod;
+//   final weightCtrl = TextEditingController();
+//   final wageCtrl = TextEditingController();
+//   final cashCtrl = TextEditingController();
+//   final networkCtrl = TextEditingController();
+
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("سند الصرف", "Payment Voucher")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(20),
+//         child: ListView(
+//           children: [
+//             Card(
+//               elevation: 3,
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(12),
+//               ),
+//               child: Padding(
+//                 padding: const EdgeInsets.all(16),
+//                 child: Column(
+//                   children: [
+//                     ListTile(
+//                       leading: const Icon(Icons.calendar_today,
+//                           color: Color(0xFFD4AF37)),
+//                       title: Text(_t('التاريخ', 'Date')),
+//                       subtitle: Text(DateFormat("yyyy-MM-dd").format(date!)),
+//                     ),
+//                     const SizedBox(height: 16),
+//                     FutureBuilder(
+//                       future: FS.getSuppliers(),
+//                       builder: (context, snap) {
+//                         if (!snap.hasData) {
+//                           return const Center(
+//                               child: CircularProgressIndicator());
+//                         }
+//                         final suppliers = snap.data!;
+//                         return DropdownButtonFormField<String>(
+//                           decoration: InputDecoration(
+//                             labelText: _t("اختر المورد", "Select Supplier"),
+//                             border: OutlineInputBorder(
+//                                 borderRadius: BorderRadius.circular(12)),
+//                           ),
+//                           initialValue: supplierId,
+//                           items: suppliers.map((s) {
+//                             return DropdownMenuItem(
+//                               value: s["id"].toString(),
+//                               child: Text(s["name"]),
+//                             );
+//                           }).toList(),
+//                           onChanged: (v) {
+//                             setState(() {
+//                               supplierId = v;
+//                               supplierName = suppliers.firstWhere(
+//                                   (s) => s["id"].toString() == v)["name"];
+//                             });
+//                           },
+//                         );
+//                       },
+//                     ),
+//                     const SizedBox(height: 16),
+//                     if (supplierId != null)
+//                       FutureBuilder(
+//                         future: FS.getSuppliers(),
+//                         builder: (context, snap) {
+//                           if (!snap.hasData) return const SizedBox();
+//                           final supplier = snap.data!
+//                               .firstWhere((s) => s["id"] == supplierId);
+//                           final delegates =
+//                               List<String>.from(supplier["delegates"]);
+//                           return DropdownButtonFormField<String>(
+//                             decoration: InputDecoration(
+//                               labelText: _t("اختر المندوب", "Select Delegate"),
+//                               border: OutlineInputBorder(
+//                                   borderRadius: BorderRadius.circular(12)),
+//                             ),
+//                             initialValue: delegate,
+//                             items: delegates.map((d) {
+//                               return DropdownMenuItem(value: d, child: Text(d));
+//                             }).toList(),
+//                             onChanged: (v) => setState(() => delegate = v),
+//                           );
+//                         },
+//                       ),
+//                     const SizedBox(height: 16),
+//                     DropdownButtonFormField<String>(
+//                       decoration: InputDecoration(
+//                         labelText: _t("اختر العيار", "Select Carat"),
+//                         border: OutlineInputBorder(
+//                           borderRadius: BorderRadius.circular(12),
+//                         ),
+//                       ),
+//                       initialValue: carat,
+//                       items: ["18", "21", "22"].map((c) {
+//                         return DropdownMenuItem(value: c, child: Text(c));
+//                       }).toList(),
+//                       onChanged: (v) => setState(() => carat = v),
+//                     ),
+//                     const SizedBox(height: 16),
+//                     TextField(
+//                       controller: weightCtrl,
+//                       decoration: InputDecoration(
+//                         labelText: _t("⚖ الوزن", "⚖ Weight"),
+//                         border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(12)),
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                     ),
+//                     const SizedBox(height: 16),
+//                     TextField(
+//                       controller: wageCtrl,
+//                       decoration: InputDecoration(
+//                         labelText: _t("💰 الأجر", "💰 Wage"),
+//                         border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(12)),
+//                       ),
+//                       keyboardType: TextInputType.number,
+//                     ),
+//                     const SizedBox(height: 16),
+//                     DropdownButtonFormField<String>(
+//                       decoration: InputDecoration(
+//                         labelText: _t("طريقة الدفع", "Payment Method"),
+//                         border: OutlineInputBorder(
+//                             borderRadius: BorderRadius.circular(12)),
+//                       ),
+//                       initialValue: paymentMethod,
+//                       items: [
+//                         _t("كاش", "Cash"),
+//                         _t("شبكة", "Network"),
+//                         _t("متعدد", "Mixed")
+//                       ].map((m) {
+//                         return DropdownMenuItem(value: m, child: Text(m));
+//                       }).toList(),
+//                       onChanged: (v) => setState(() => paymentMethod = v),
+//                     ),
+//                     const SizedBox(height: 16),
+//                     if (paymentMethod == _t("كاش", "Cash") ||
+//                         paymentMethod == _t("متعدد", "Mixed"))
+//                       TextField(
+//                         controller: cashCtrl,
+//                         decoration: InputDecoration(
+//                           labelText: _t("💵 المبلغ كاش", "💵 Cash Amount"),
+//                           border: OutlineInputBorder(
+//                               borderRadius: BorderRadius.circular(12)),
+//                         ),
+//                         keyboardType: TextInputType.number,
+//                       ),
+//                     if (paymentMethod == _t("شبكة", "Network") ||
+//                         paymentMethod == _t("متعدد", "Mixed"))
+//                       Padding(
+//                         padding: const EdgeInsets.only(top: 16),
+//                         child: TextField(
+//                           controller: networkCtrl,
+//                           decoration: InputDecoration(
+//                             labelText:
+//                                 _t("💳 المبلغ شبكة", "💳 Network Amount"),
+//                             border: OutlineInputBorder(
+//                                 borderRadius: BorderRadius.circular(12)),
+//                           ),
+//                           keyboardType: TextInputType.number,
+//                         ),
+//                       ),
+//                     const SizedBox(height: 24),
+//                     ElevatedButton.icon(
+//                       style: ElevatedButton.styleFrom(
+//                         minimumSize: const Size(double.infinity, 50),
+//                         backgroundColor: const Color(0xFFD4AF37),
+//                         shape: RoundedRectangleBorder(
+//                             borderRadius: BorderRadius.circular(12)),
+//                       ),
+//                       icon: const Icon(Icons.save, color: Colors.white),
+//                       label: Text(
+//                         _t("حفظ", "Save"),
+//                         style: const TextStyle(
+//                             color: Colors.white,
+//                             fontSize: 18,
+//                             fontWeight: FontWeight.bold),
+//                       ),
+//                       onPressed: () async {
+//                         if (supplierId == null ||
+//                             delegate == null ||
+//                             carat == null ||
+//                             paymentMethod == null) {
+//                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                             content: Text(_t("يرجى إدخال جميع البيانات",
+//                                 "Please fill all required fields")),
+//                           ));
+//                           return;
+//                         }
+
+//                         await FS.addPaymentVoucher(
+//                           supplierId: supplierId!,
+//                           supplierName: supplierName!,
+//                           delegate: delegate!,
+//                           carat: carat!,
+//                           weight: double.parse(weightCtrl.text),
+//                           wage: double.parse(wageCtrl.text),
+//                           paymentMethod: paymentMethod!,
+//                           cash: cashCtrl.text.isEmpty
+//                               ? null
+//                               : double.parse(cashCtrl.text),
+//                           network: networkCtrl.text.isEmpty
+//                               ? null
+//                               : double.parse(networkCtrl.text),
+//                           date: date!,
+//                         );
+
+//                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+//                           content: Text(_t("تم حفظ السند بنجاح ✅",
+//                               "Payment voucher saved successfully ✅")),
+//                         ));
+
+//                         Navigator.pop(context);
+//                       },
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+import 'package:flutter/material.dart';
+import 'package:uhf_gold_shop/pages/RemainingKitsPage.dart';
+import '../services/firestore_service.dart';
+import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'expenses_page.dart';
+import 'TransformPage.dart';
+import 'cash_box_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'branches_page.dart';
+import 'EditPage.dart';
+import 'external_transactions_page.dart';
+import 'ExitPermissionPage.dart';
+import 'settings_page.dart';
+import 'settings_page.dart' show checkPassword;
+import 'ReturnsPage.dart';
+import 'preview_page.dart';
+import 'DeletedItemsPage.dart';
+
+class DailyTransactionsPage extends StatefulWidget {
+  const DailyTransactionsPage({super.key});
+
+  @override
+  State<DailyTransactionsPage> createState() => _DailyTransactionsPageState();
+}
+
+class _DailyTransactionsPageState extends State<DailyTransactionsPage> {
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  void _openPage(BuildContext context, Widget page) async {
+    String? pageKey;
+
+    if (page is PartPage) {
+      pageKey = 'Suppliers';
+    } else if (page is Part1Page)
+      pageKey = 'Vouchers';
+    else if (page is Part2Page)
+      pageKey = 'Funds';
+    else if (page is TransformPage)
+      pageKey = 'Transfers';
+    else if (page is EditPage)
+      pageKey = 'edit';
+    else if (page is BranchesPage)
+      pageKey = 'branches';
+    else if (page is ExternalTransactionsPage)
+      pageKey = 'Transactions';
+    else if (page is ExitPermissionPage) pageKey = 'Statements';
+
+    if (pageKey != null) {
+      final allowed = await checkPassword(context, pageKey);
+      if (!allowed) return;
+    }
+
+    Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_t("الحركة اليومية", "Daily Transactions")),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(30),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 20,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.people,
+                    label: _t("الموردين", "Suppliers"),
+                    page: const PartPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.receipt_long,
+                    label: _t("سندات", "Vouchers"),
+                    page: const Part1Page(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.monetization_on,
+                    label: _t("الأموال", "Funds"),
+                    page: const Part2Page(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.mail_rounded,
+                    label: _t("التحويل", "Transfers"),
+                    page: const TransformPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.edit_outlined,
+                    label: _t("التعديل", "edit"),
+                    page: const EditPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.location_city,
+                    label: _t("الافرع", "branches"),
+                    page: const BranchesPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.outbond_outlined,
+                    label: _t("التعاملات", "Transactions"),
+                    page: const ExternalTransactionsPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.safety_check,
+                    label: _t("التصريحات", "Statements"),
+                    page: const ExitPermissionPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.delete,
+                    label: _t("المحذوفات", "Deletes"),
+                    page: const DeletedItemsPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.keyboard_return_outlined,
+                    label: _t("المرتجعات", "Returns"),
+                    page: const ReturnsPage(),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuCard(BuildContext context,
+      {required IconData icon, required String label, required Widget page}) {
+    return GestureDetector(
+      onTap: () => _openPage(context, page),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        elevation: 4,
+        color: const Color(0xFFD4AF37).withOpacity(0.9),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 30, color: Colors.white),
+              const SizedBox(height: 10),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// 🔹 PartPage - صفحة الموردين الرئيسية
+// ============================================================
+class PartPage extends StatefulWidget {
+  const PartPage({super.key});
+
+  @override
+  State<PartPage> createState() => _PartPageState();
+}
+
+class _PartPageState extends State<PartPage> {
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_t("الموردين", "Suppliers")),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
+      body: const SuppliersPage(),
+    );
+  }
+}
+
+// ============================================================
+// 🔹 SuppliersPage - صفحة الموردين الموحدة
+// ============================================================
+class SuppliersPage extends StatefulWidget {
+  const SuppliersPage({super.key});
+
+  @override
+  State<SuppliersPage> createState() => _SuppliersPageState();
+}
+
+class _SuppliersPageState extends State<SuppliersPage> {
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  final _formKey = GlobalKey<FormState>();
+  final nameCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
+  final delegateCtrl = TextEditingController();
+  List<String> delegates = [];
+  bool isAdding = false;
+
+  bool isEditing = false;
+  String? editingSupplierId;
+
+  // دالة تحويل الوزن إلى 24 قيراط
+  double _convertTo24Karat(double weight, String carat) {
+    switch (carat) {
+      case '18':
+        return weight * (18 / 24);
+      case '21':
+        return weight * (21 / 24);
+      case '22':
+        return weight * (22 / 24);
+      default:
+        return weight;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  Future<void> _addSupplier() async {
+    if (nameCtrl.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_t("ادخل اسم المورد", "Enter supplier name"))),
+      );
+      return;
+    }
+
+    setState(() => isAdding = true);
+
+    try {
+      await FS.addSupplier(
+        name: nameCtrl.text.trim(),
+        delegates: delegates,
+        phone: phoneCtrl.text.trim(),
+      );
+
+      nameCtrl.clear();
+      phoneCtrl.clear();
+      delegateCtrl.clear();
+      setState(() => delegates.clear());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              _t("تم إضافة المورد بنجاح ✅", "Supplier added successfully ✅")),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${_t("حدث خطأ", "Error")}: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() => isAdding = false);
+    }
+  }
+
+  void _addDelegate() {
+    if (delegateCtrl.text.trim().isNotEmpty) {
+      setState(() {
+        delegates.add(delegateCtrl.text.trim());
+        delegateCtrl.clear();
+      });
+    }
+  }
+
+  void _removeDelegate(String name) {
+    setState(() => delegates.remove(name));
+  }
+
+  Future<Map<String, dynamic>> _supplierSummary(String supplierId) async {
+    final vouchers = await FS.getVouchersForSupplier(supplierId);
+
+    double payW = 0, recW = 0;
+    double payG = 0, recG = 0;
+
+    for (var v in vouchers) {
+      final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
+      final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
+      final carat = (v["carat"] ?? "").toString();
+
+      // تحويل الوزن إلى 24 قيراط
+      final weightIn24 = _convertTo24Karat(weight, carat);
+
+      if (v["type"] == "payment") {
+        payW += weightIn24;
+        payG += wage;
+      } else if (v["type"] == "receipt") {
+        recW += weightIn24;
+        recG += wage;
+      }
+    }
+
+    final balanceWeight = recW - payW;
+    final balanceWage = recG - payG;
+    final cleared = balanceWeight.abs() < 0.0001 && balanceWage.abs() < 0.0001;
+
+    return {
+      "cleared": cleared,
+      "weight": balanceWeight,
+      "wage": balanceWage,
+    };
+  }
+
+  void _showAddDialog() {
+    nameCtrl.clear();
+    phoneCtrl.clear();
+    delegateCtrl.clear();
+    setState(() => delegates.clear());
+    isEditing = false;
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => _buildSupplierDialog(
+        title: _t("إضافة مورد جديد", "Add New Supplier"),
+        isEditing: false,
+      ),
+    );
+  }
+
+  void _showEditDialog(Map<String, dynamic> supplier) {
+    nameCtrl.text = supplier["name"] ?? "";
+    phoneCtrl.text = supplier["phone"] ?? "";
+    setState(() {
+      delegates = List<String>.from(supplier["delegates"] ?? []);
+      isEditing = true;
+      editingSupplierId = supplier["id"];
+    });
+
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (_) => _buildSupplierDialog(
+        title: _t("تعديل المورد", "Edit Supplier"),
+        isEditing: true,
+        supplierId: supplier["id"],
+      ),
+    );
+  }
+
+  Widget _buildSupplierDialog({
+    required String title,
+    required bool isEditing,
+    String? supplierId,
+  }) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      title: Row(
+        children: [
+          Icon(
+            isEditing ? Icons.edit : Icons.person_add,
+            color: const Color(0xFFD4AF37),
+          ),
+          const SizedBox(width: 10),
+          Text(
+            title,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ],
+      ),
+      content: StatefulBuilder(
+        builder: (context, setStateDialog) {
+          return SizedBox(
+            width: MediaQuery.of(context).size.width * 0.85,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameCtrl,
+                  decoration: InputDecoration(
+                    labelText: _t("اسم المورد", "Supplier Name"),
+                    prefixIcon:
+                        const Icon(Icons.business, color: Color(0xFFD4AF37)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: phoneCtrl,
+                  decoration: InputDecoration(
+                    labelText: _t("رقم الجوال", "Phone"),
+                    prefixIcon:
+                        const Icon(Icons.phone, color: Color(0xFFD4AF37)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: delegateCtrl,
+                        decoration: InputDecoration(
+                          labelText: _t("مندوب", "Delegate"),
+                          prefixIcon: const Icon(Icons.person,
+                              color: Color(0xFFD4AF37)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          filled: true,
+                          fillColor: Colors.grey.shade50,
+                        ),
+                        onSubmitted: (_) => _addDelegateDialog(setStateDialog),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFD4AF37),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.add, color: Colors.white),
+                        onPressed: () => _addDelegateDialog(setStateDialog),
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 48,
+                          minHeight: 48,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (delegates.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: delegates
+                          .map((d) => Chip(
+                                label: Text(d,
+                                    style: const TextStyle(fontSize: 13)),
+                                backgroundColor: Colors.white,
+                                deleteIcon: const Icon(Icons.close, size: 16),
+                                onDeleted: () =>
+                                    _removeDelegateDialog(d, setStateDialog),
+                                side: BorderSide(color: Colors.grey.shade300),
+                              ))
+                          .toList(),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            _t("إلغاء", "Cancel"),
+            style: TextStyle(color: Colors.grey.shade600),
+          ),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFD4AF37),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          ),
+          onPressed: () async {
+            if (nameCtrl.text.trim().isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(_t("ادخل اسم المورد", "Enter supplier name")),
+                ),
+              );
+              return;
+            }
+
+            if (isEditing && supplierId != null) {
+              await FS.updateSupplier(
+                supplierId,
+                {
+                  "name": nameCtrl.text.trim(),
+                  "phone": phoneCtrl.text.trim(),
+                  "delegates": delegates,
+                },
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(_t("تم التعديل ✅", "Updated ✅")),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            } else {
+              await FS.addSupplier(
+                name: nameCtrl.text.trim(),
+                delegates: delegates,
+                phone: phoneCtrl.text.trim(),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(_t("تم الإضافة ✅", "Added ✅")),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+
+            nameCtrl.clear();
+            phoneCtrl.clear();
+            delegateCtrl.clear();
+            setState(() => delegates.clear());
+            Navigator.pop(context);
+          },
+          child: Text(
+            isEditing ? _t("تعديل", "Update") : _t("إضافة", "Add"),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _addDelegateDialog(StateSetter setStateDialog) {
+    if (delegateCtrl.text.trim().isNotEmpty) {
+      setStateDialog(() {
+        delegates.add(delegateCtrl.text.trim());
+        delegateCtrl.clear();
+      });
+    }
+  }
+
+  void _removeDelegateDialog(String name, StateSetter setStateDialog) {
+    setStateDialog(() => delegates.remove(name));
+  }
+
+  Future<void> _deleteSupplier(Map<String, dynamic> supplier) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text(_t("تأكيد الحذف", "Delete Confirmation")),
+        content:
+            Text(_t("حذف ${supplier["name"]}؟", "Delete ${supplier["name"]}?")),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(_t("إلغاء", "Cancel")),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(_t("حذف", "Delete"),
+                style: const TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await FS.deleteSupplier(supplier["id"]);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_t("تم الحذف ✅", "Deleted ✅")),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
+
+  // ======================
+  // 🔹 عرض تفاصيل المورد
+  // ======================
+  void _showSupplierDetails(String supplierId) async {
+    final vouchers = await FS.getVouchersForSupplier(supplierId);
+
+    final receiptVouchers =
+        vouchers.where((v) => v["type"] == "receipt").toList();
+    final paymentVouchers =
+        vouchers.where((v) => v["type"] == "payment").toList();
+
+    Map<String, Map<String, double>> _calculateSummary(
+        List<Map<String, dynamic>> voucherList) {
+      final Map<String, double> weightMap = {"18": 0, "21": 0, "22": 0};
+      final Map<String, double> wageMap = {"18": 0, "21": 0, "22": 0};
+      final Map<String, double> weight24Map = {"18": 0, "21": 0, "22": 0};
+
+      for (var v in voucherList) {
+        final carat = (v["carat"] ?? "").toString();
+        final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
+        final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
+
+        if (["18", "21", "22"].contains(carat)) {
+          weightMap[carat] = (weightMap[carat] ?? 0) + weight;
+          wageMap[carat] = (wageMap[carat] ?? 0) + wage;
+          weight24Map[carat] =
+              (weight24Map[carat] ?? 0) + _convertTo24Karat(weight, carat);
+        }
+      }
+      return {"weight": weightMap, "wage": wageMap, "weight24": weight24Map};
+    }
+
+    final receiptSummary = _calculateSummary(receiptVouchers);
+    final paymentSummary = _calculateSummary(paymentVouchers);
+
+    final totalReceiptWeight24 =
+        receiptSummary["weight24"]!.values.fold(0.0, (a, b) => a + b);
+    final totalReceiptWage =
+        receiptSummary["wage"]!.values.fold(0.0, (a, b) => a + b);
+    final totalPaymentWeight24 =
+        paymentSummary["weight24"]!.values.fold(0.0, (a, b) => a + b);
+    final totalPaymentWage =
+        paymentSummary["wage"]!.values.fold(0.0, (a, b) => a + b);
+
+    final balanceWeight24 = totalReceiptWeight24 - totalPaymentWeight24;
+    final balanceWage = totalReceiptWage - totalPaymentWage;
+    final allCleared =
+        balanceWeight24.abs() < 0.0001 && balanceWage.abs() < 0.0001;
+
+    if (!mounted) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.92,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, scrollController) {
+          return DefaultTabController(
+            length: 2,
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 12),
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundColor:
+                              const Color(0xFFD4AF37).withOpacity(0.15),
+                          child: const Icon(Icons.person,
+                              color: Color(0xFFD4AF37), size: 26),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                vouchers.isNotEmpty
+                                    ? (vouchers.first["supplierName"] ?? "")
+                                    : "",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 19,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                "${vouchers.length} ${_t("عملية", "transactions")}",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.close, color: Colors.grey.shade600),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // ===== كارت الرصيد الإجمالي =====
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: allCleared
+                            ? Colors.green.shade50
+                            : balanceWeight24 > 0
+                                ? Colors.red.shade50
+                                : Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: allCleared
+                              ? Colors.green.shade200
+                              : balanceWeight24 > 0
+                                  ? Colors.red.shade200
+                                  : Colors.green.shade200,
+                        ),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: allCleared
+                                  ? Colors.green
+                                  : balanceWeight24 > 0
+                                      ? Colors.red
+                                      : Colors.green,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              allCleared
+                                  ? Icons.check_rounded
+                                  : balanceWeight24 > 0
+                                      ? Icons.north_east_rounded
+                                      : Icons.south_west_rounded,
+                              color: Colors.white,
+                              size: 22,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  allCleared
+                                      ? _t("✅ الحساب مُصفّى بالكامل",
+                                          "✅ Fully settled")
+                                      : balanceWeight24 > 0
+                                          ? _t("📤 رصيد للمورد ( 24 قيراط)",
+                                              "📤 Balance owed to supplier (equiv. 24K)")
+                                          : _t("📥 رصيد على المورد ( 24 قيراط)",
+                                              "📥 Supplier owes us (equiv. 24K)"),
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                    color: allCleared
+                                        ? Colors.green.shade800
+                                        : balanceWeight24 > 0
+                                            ? Colors.red.shade800
+                                            : Colors.green.shade800,
+                                  ),
+                                ),
+                                if (!allCleared) ...[
+                                  const SizedBox(height: 8),
+                                  Wrap(
+                                    spacing: 16,
+                                    runSpacing: 4,
+                                    children: [
+                                      _summaryValue(
+                                        icon: Icons.scale_outlined,
+                                        label: _t("الوزن", "Weight"),
+                                        value:
+                                            "${balanceWeight24.abs().toStringAsFixed(2)} جم",
+                                      ),
+                                      _summaryValue(
+                                        icon: Icons.payments_outlined,
+                                        label: _t("الأجر", "Wage"),
+                                        value: balanceWage
+                                            .abs()
+                                            .toStringAsFixed(2),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+                  const Divider(height: 1),
+
+                  Container(
+                    color: Colors.white,
+                    child: TabBar(
+                      indicatorColor: const Color(0xFFD4AF37),
+                      indicatorWeight: 3,
+                      labelColor: const Color(0xFFD4AF37),
+                      unselectedLabelColor: Colors.grey.shade600,
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                      tabs: [
+                        Tab(text: _t("📥 قبض", "📥 Receipt")),
+                        Tab(text: _t("📤 صرف", "📤 Payment")),
+                      ],
+                    ),
+                  ),
+
+                  Expanded(
+                    child: TabBarView(
+                      children: [
+                        _buildTabContent(
+                          context,
+                          scrollController,
+                          voucherList: receiptVouchers,
+                          summaryMap: receiptSummary,
+                          type: 'receipt',
+                        ),
+                        _buildTabContent(
+                          context,
+                          scrollController,
+                          voucherList: paymentVouchers,
+                          summaryMap: paymentSummary,
+                          type: 'payment',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // ==========================================
+  // 🔹 دالة مساعدة لبناء محتوى كل تبويب
+  // ==========================================
+  Widget _buildTabContent(
+    BuildContext context,
+    ScrollController scrollController, {
+    required List<Map<String, dynamic>> voucherList,
+    required Map<String, Map<String, double>> summaryMap,
+    required String type,
+  }) {
+    final isReceipt = type == 'receipt';
+    final color = isReceipt ? Colors.green : Colors.red;
+    final title = isReceipt
+        ? _t("تفاصيل القبض", "Receipt Details")
+        : _t("تفاصيل الصرف", "Payment Details");
+
+    final weightMap = summaryMap["weight"]!;
+    final wageMap = summaryMap["wage"]!;
+    final weight24Map = summaryMap["weight24"]!;
+
+    final caratsWithBalance = ["18", "21", "22"].where((c) {
+      return weightMap[c]!.abs() > 0.0001 || wageMap[c]!.abs() > 0.0001;
+    }).toList();
+
+    final totalWeight = weightMap.values.fold(0.0, (a, b) => a + b);
+    final totalWage = wageMap.values.fold(0.0, (a, b) => a + b);
+    final totalWeight24 = weight24Map.values.fold(0.0, (a, b) => a + b);
+    final allCleared = caratsWithBalance.isEmpty;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+      child: ListView(
+        controller: scrollController,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color:
+                  allCleared ? Colors.grey.shade100 : color.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color:
+                    allCleared ? Colors.grey.shade300 : color.withOpacity(0.3),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: allCleared ? Colors.grey : color,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    allCleared
+                        ? Icons.check_rounded
+                        : isReceipt
+                            ? Icons.south_west_rounded
+                            : Icons.north_east_rounded,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        allCleared
+                            ? _t("لا توجد معاملات", "No transactions")
+                            : title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                          color: allCleared ? Colors.grey.shade600 : color,
+                        ),
+                      ),
+                      if (!allCleared) ...[
+                        const SizedBox(height: 8),
+                        Wrap(
+                          spacing: 16,
+                          runSpacing: 4,
+                          children: [
+                            _summaryValue(
+                              icon: Icons.scale_outlined,
+                              label: _t("الوزن", "Weight"),
+                              value:
+                                  "${totalWeight.abs().toStringAsFixed(2)} جم",
+                            ),
+                            // _summaryValue(
+                            //   icon: Icons.scale_outlined,
+                            //   label: _t("معادل 24", "Equiv. 24K"),
+                            //   value:
+                            //       "${totalWeight24.abs().toStringAsFixed(2)} جم",
+                            // ),
+                            _summaryValue(
+                              icon: Icons.payments_outlined,
+                              label: _t("الأجر", "Wage"),
+                              value: totalWage.abs().toStringAsFixed(2),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (!allCleared) ...[
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Icon(
+                  Icons.category_outlined,
+                  color: color,
+                  size: 18,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  _t("تفاصيل العيارات", "Carat Breakdown"),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Colors.grey.shade700,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 130,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: caratsWithBalance.length,
+                itemBuilder: (context, index) {
+                  final carat = caratsWithBalance[index];
+                  final weight = weightMap[carat]!;
+                  final wage = wageMap[carat]!;
+                  final weight24 = weight24Map[carat]!;
+                  final isZero = weight.abs() < 0.0001 && wage.abs() < 0.0001;
+
+                  Color cardColor;
+                  if (isZero) {
+                    cardColor = Colors.grey;
+                  } else {
+                    cardColor = isReceipt ? Colors.green : Colors.red;
+                  }
+
+                  return Container(
+                    width: 150,
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: cardColor.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: cardColor.withOpacity(0.3),
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          _t("عيار $carat", "K$carat"),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        if (!isZero) ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.scale_outlined,
+                                  size: 14, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Text(
+                                "${weight.abs().toStringAsFixed(2)} جم",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13,
+                                  color: cardColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          // const SizedBox(height: 2),
+                          // Text(
+                          //   "→ ${weight24.abs().toStringAsFixed(2)} جم (24K)",
+                          //   style: TextStyle(
+                          //     fontSize: 11,
+                          //     color: Colors.grey.shade600,
+                          //   ),
+                          // ),
+                          const SizedBox(height: 2),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(Icons.payments_outlined,
+                                  size: 14, color: Colors.grey),
+                              const SizedBox(width: 4),
+                              Text(
+                                "${wage.abs().toStringAsFixed(2)} ${_t("أجر", "wage")}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: cardColor.withOpacity(0.85),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ] else ...[
+                          Text(
+                            _t("مصفى", "Cleared"),
+                            style: TextStyle(
+                              color: Colors.grey.shade500,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+          const SizedBox(height: 24),
+          Row(
+            children: [
+              Icon(
+                isReceipt ? Icons.south_west_rounded : Icons.north_east_rounded,
+                color: color,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                isReceipt
+                    ? _t("سندات القبض", "Receipt Vouchers")
+                    : _t("سندات الصرف", "Payment Vouchers"),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  "${voucherList.length}",
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: color,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (voucherList.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 30),
+              child: Center(
+                child: Text(
+                  _t("لا توجد سندات", "No vouchers"),
+                  style: TextStyle(color: Colors.grey.shade500),
+                ),
+              ),
+            )
+          else
+            ...voucherList.map((v) {
+              final carat = (v["carat"] ?? "").toString();
+              final weight =
+                  double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
+              final weight24 = _convertTo24Karat(weight, carat);
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: Colors.grey.shade200),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.03),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 18,
+                      backgroundColor:
+                          isReceipt ? Colors.green.shade50 : Colors.red.shade50,
+                      child: Icon(
+                        isReceipt
+                            ? Icons.south_west_rounded
+                            : Icons.north_east_rounded,
+                        color: isReceipt ? Colors.green : Colors.red,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                isReceipt
+                                    ? _t("سند قبض", "Receipt")
+                                    : _t("سند صرف", "Payment"),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const Spacer(),
+                              if (v["date"] != null)
+                                Text(
+                                  DateFormat("dd/MM/yyyy").format(
+                                    (v["date"] as Timestamp).toDate(),
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    color: Colors.grey.shade500,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 6,
+                            children: [
+                              _voucherChip(_t("مندوب", "Delegate"),
+                                  v["delegate"]?.toString() ?? "-"),
+                              _voucherChip(_t("عيار", "Carat"), carat),
+                              _voucherChip(_t("وزن", "Weight"),
+                                  "${weight.toStringAsFixed(2)} جم"),
+                              // _voucherChip(_t("معادل 24", "Equiv. 24K"),
+                              //     "${weight24.toStringAsFixed(2)} جم"),
+                              _voucherChip(
+                                  _t("أجر", "Wage"), "${v["wage"] ?? 0}"),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryValue({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14, color: Colors.grey.shade700),
+        const SizedBox(width: 4),
+        Text(
+          "$label: $value",
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade800,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _voucherChip(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        "$label: $value",
+        style: TextStyle(
+          fontSize: 11,
+          color: Colors.grey.shade700,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  // ======================
+  // 🔹 BUILD
+  // ======================
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddDialog,
+        backgroundColor: const Color(0xFFD4AF37),
+        child: const Icon(Icons.add, color: Colors.white, size: 30),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      body: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            color: Colors.white,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: TextField(
+                      decoration: InputDecoration(
+                        hintText:
+                            _t("🔍 بحث عن مورد...", "🔍 Search supplier..."),
+                        border: InputBorder.none,
+                        hintStyle: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      onChanged: (value) {
+                        // يمكن إضافة منطق البحث هنا
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD4AF37).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    _t(" الموردين", "Suppliers"),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xFFD4AF37),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: FS.suppliersStream(),
+              builder: (context, snap) {
+                if (!snap.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final suppliers = snap.data!;
+
+                if (suppliers.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.people_outline,
+                          size: 64,
+                          color: Colors.grey.shade300,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          _t("لا يوجد موردين", "No suppliers"),
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _t("اضغط على زر + لإضافة مورد",
+                              "Tap + to add a supplier"),
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: suppliers.length,
+                  itemBuilder: (_, i) {
+                    final s = suppliers[i];
+                    return _buildSupplierCard(s);
+                  },
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ======================
+  // 🔹 بطاقة المورد
+  // ======================
+  Widget _buildSupplierCard(Map<String, dynamic> supplier) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: FutureBuilder<Map<String, dynamic>>(
+        future: _supplierSummary(supplier["id"]),
+        builder: (context, snap) {
+          final isCleared = snap.hasData ? snap.data!["cleared"] : false;
+          final balanceWeight = snap.hasData ? snap.data!["weight"] : 0.0;
+          final balanceWage = snap.hasData ? snap.data!["wage"] : 0.0;
+
+          Color statusColor;
+          String statusText;
+          IconData statusIcon;
+
+          if (isCleared) {
+            statusColor = Colors.green;
+            statusText = _t("مصفى", "Cleared");
+            statusIcon = Icons.check_circle;
+          } else if (balanceWeight > 0) {
+            statusColor = Colors.red;
+            statusText = _t("له", "Owed");
+            statusIcon = Icons.arrow_upward;
+          } else {
+            statusColor = Colors.green;
+            statusText = _t("عليه", "Owes");
+            statusIcon = Icons.arrow_downward;
+          }
+
+          return InkWell(
+            onTap: () => _showSupplierDetails(supplier["id"]),
+            borderRadius: BorderRadius.circular(14),
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: const Color(0xFFD4AF37).withOpacity(0.15),
+                    child: const Icon(Icons.person,
+                        color: Color(0xFFD4AF37), size: 28),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          supplier["name"],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 2),
+                        if (supplier["phone"] != null &&
+                            supplier["phone"].toString().isNotEmpty)
+                          Text(
+                            "📞 ${supplier["phone"]}",
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        if (supplier["delegates"] != null &&
+                            supplier["delegates"].isNotEmpty)
+                          Text(
+                            "👤 ${supplier["delegates"].join(", ")}",
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade500,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: statusColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(statusIcon, color: statusColor, size: 14),
+                              const SizedBox(width: 4),
+                              Text(
+                                statusText,
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              if (!isCleared) ...[
+                                const SizedBox(width: 6),
+                                Text(
+                                  "${balanceWeight.abs().toStringAsFixed(1)} جم",
+                                  style: TextStyle(
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  PopupMenuButton<String>(
+                    icon: Icon(Icons.more_vert, color: Colors.grey.shade600),
+                    onSelected: (value) {
+                      if (value == 'edit') _showEditDialog(supplier);
+                      if (value == 'delete') _deleteSupplier(supplier);
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.edit,
+                                color: Colors.orange, size: 20),
+                            const SizedBox(width: 8),
+                            Text(_t("تعديل", "Edit")),
+                          ],
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            const Icon(Icons.delete,
+                                color: Colors.red, size: 20),
+                            const SizedBox(width: 8),
+                            Text(_t("حذف", "Delete")),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+// ============================================================
+// 🔹 Part1Page - صفحة السندات
+// ============================================================
+class Part1Page extends StatefulWidget {
+  const Part1Page({super.key});
+
+  @override
+  State<Part1Page> createState() => _Part1PageState();
+}
+
+class _Part1PageState extends State<Part1Page> {
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_t("السندات", "Vouchers")),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              theme.colorScheme.surface,
+              theme.colorScheme.surface.withOpacity(0.8),
+            ],
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 1,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 4,
+                  children: [
+                    _buildMenuCard(
+                      context,
+                      icon: Icons.receipt_long,
+                      label: _t("سند قبض", "Receipt Voucher"),
+                      page: const ReceiptVoucherPage(),
+                    ),
+                    _buildMenuCard(
+                      context,
+                      icon: Icons.payments,
+                      label: _t("سند صرف", "Payment Voucher"),
+                      page: const PaymentVoucherPage(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    Widget? page,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap ??
+          () {
+            if (page != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => page),
+              );
+            }
+          },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 4,
+        color: const Color(0xFFD4AF37).withOpacity(0.9),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 36, color: Colors.white),
+              const SizedBox(width: 20),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// 🔹 Part2Page - صفحة الأموال
+// ============================================================
+class Part2Page extends StatefulWidget {
+  const Part2Page({super.key});
+
+  @override
+  State<Part2Page> createState() => _Part2PageState();
+}
+
+class _Part2PageState extends State<Part2Page> {
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_t("الأموال", "Funds")),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              theme.colorScheme.surface,
+              theme.colorScheme.surface.withOpacity(0.8),
+            ],
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 1,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 4,
+                  children: [
+                    _buildMenuCard(
+                      context,
+                      icon: Icons.account_balance_wallet,
+                      label: _t("الصندوق", "Cash Box"),
+                      page: const CashBoxPage(),
+                    ),
+                    _buildMenuCard(
+                      context,
+                      icon: Icons.monetization_on,
+                      label: _t("المصروفات", "Expenses"),
+                      page: const ExpensesPage(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    Widget? page,
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap ??
+          () {
+            if (page != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => page),
+              );
+            }
+          },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        elevation: 4,
+        color: const Color(0xFFD4AF37).withOpacity(0.9),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 36, color: Colors.white),
+              const SizedBox(width: 20),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// 🔹 صفحة سند القبض
+// ============================================================
+class ReceiptVoucherPage extends StatefulWidget {
+  const ReceiptVoucherPage({super.key});
+
+  @override
+  State<ReceiptVoucherPage> createState() => _ReceiptVoucherPageState();
+}
+
+class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
+  DateTime? date = DateTime.now();
+  String? supplierName;
+  String? supplierId;
+  String? delegate;
+  String? carat;
+  final weightCtrl = TextEditingController();
+  final wageCtrl = TextEditingController();
+
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_t("سند القبض", "Receipt Voucher")),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: ListView(
+          children: [
+            Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.calendar_today,
+                          color: Color(0xFFD4AF37)),
+                      title: Text(_t('التاريخ', 'Date')),
+                      subtitle: Text(DateFormat("yyyy-MM-dd").format(date!)),
+                    ),
+                    const SizedBox(height: 16),
+                    FutureBuilder(
+                      future: FS.getSuppliers(),
+                      builder: (context, snap) {
+                        if (!snap.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final suppliers = snap.data!;
+                        return DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: _t("اختر المورد", "Select Supplier"),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          initialValue: supplierId,
+                          items: suppliers.map((s) {
+                            return DropdownMenuItem(
+                              value: s["id"].toString(),
+                              child: Text(s["name"]),
+                            );
+                          }).toList(),
+                          onChanged: (v) {
+                            setState(() {
+                              supplierId = v;
+                              supplierName = suppliers.firstWhere(
+                                  (s) => s["id"].toString() == v)["name"];
+                            });
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    if (supplierId != null)
+                      FutureBuilder(
+                        future: FS.getSuppliers(),
+                        builder: (context, snap) {
+                          if (!snap.hasData) return const SizedBox();
+                          final supplier = snap.data!
+                              .firstWhere((s) => s["id"] == supplierId);
+                          final delegates =
+                              List<String>.from(supplier["delegates"]);
+                          return DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              labelText: _t("اختر المندوب", "Select Delegate"),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                            ),
+                            initialValue: delegate,
+                            items: delegates.map((d) {
+                              return DropdownMenuItem(value: d, child: Text(d));
+                            }).toList(),
+                            onChanged: (v) => setState(() => delegate = v),
+                          );
+                        },
+                      ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: _t("اختر العيار", "Select Carat"),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      initialValue: carat,
+                      items: ["18", "21", "22"].map((c) {
+                        return DropdownMenuItem(value: c, child: Text(c));
+                      }).toList(),
+                      onChanged: (v) => setState(() => carat = v),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: weightCtrl,
+                      decoration: InputDecoration(
+                        labelText: _t("⚖ الوزن", "⚖ Weight"),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: wageCtrl,
+                      decoration: InputDecoration(
+                        labelText: _t("💰 الأجر", "💰 Wage"),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        backgroundColor: const Color(0xFFD4AF37),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      icon: const Icon(Icons.save, color: Colors.white),
+                      label: Text(
+                        _t("حفظ", "Save"),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () async {
+                        if (supplierId == null ||
+                            delegate == null ||
+                            carat == null ||
+                            weightCtrl.text.isEmpty ||
+                            wageCtrl.text.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(_t(
+                                "من فضلك أدخل جميع البيانات المطلوبة",
+                                "Please fill in all required fields")),
+                          ));
+                          return;
+                        }
+
+                        await FS.addReceiptVoucher(
+                          supplierId: supplierId!,
+                          supplierName: supplierName!,
+                          delegate: delegate!,
+                          carat: carat!,
+                          weight: double.parse(weightCtrl.text),
+                          wage: double.parse(wageCtrl.text),
+                          date: date!,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(_t("تم حفظ السند بنجاح ✅",
+                              "Receipt voucher saved successfully ✅")),
+                        ));
+
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// 🔹 صفحة سند الصرف
+// ============================================================
+class PaymentVoucherPage extends StatefulWidget {
+  const PaymentVoucherPage({super.key});
+
+  @override
+  State<PaymentVoucherPage> createState() => _PaymentVoucherPageState();
+}
+
+class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
+  DateTime? date = DateTime.now();
+  String? supplierName;
+  String? supplierId;
+  String? delegate;
+  String? carat;
+  String? paymentMethod;
+  final weightCtrl = TextEditingController();
+  final wageCtrl = TextEditingController();
+  final cashCtrl = TextEditingController();
+  final networkCtrl = TextEditingController();
+
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_t("سند الصرف", "Payment Voucher")),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: ListView(
+          children: [
+            Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.calendar_today,
+                          color: Color(0xFFD4AF37)),
+                      title: Text(_t('التاريخ', 'Date')),
+                      subtitle: Text(DateFormat("yyyy-MM-dd").format(date!)),
+                    ),
+                    const SizedBox(height: 16),
+                    FutureBuilder(
+                      future: FS.getSuppliers(),
+                      builder: (context, snap) {
+                        if (!snap.hasData) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final suppliers = snap.data!;
+                        return DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            labelText: _t("اختر المورد", "Select Supplier"),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                          initialValue: supplierId,
+                          items: suppliers.map((s) {
+                            return DropdownMenuItem(
+                              value: s["id"].toString(),
+                              child: Text(s["name"]),
+                            );
+                          }).toList(),
+                          onChanged: (v) {
+                            setState(() {
+                              supplierId = v;
+                              supplierName = suppliers.firstWhere(
+                                  (s) => s["id"].toString() == v)["name"];
+                            });
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    if (supplierId != null)
+                      FutureBuilder(
+                        future: FS.getSuppliers(),
+                        builder: (context, snap) {
+                          if (!snap.hasData) return const SizedBox();
+                          final supplier = snap.data!
+                              .firstWhere((s) => s["id"] == supplierId);
+                          final delegates =
+                              List<String>.from(supplier["delegates"]);
+                          return DropdownButtonFormField<String>(
+                            decoration: InputDecoration(
+                              labelText: _t("اختر المندوب", "Select Delegate"),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                            ),
+                            initialValue: delegate,
+                            items: delegates.map((d) {
+                              return DropdownMenuItem(value: d, child: Text(d));
+                            }).toList(),
+                            onChanged: (v) => setState(() => delegate = v),
+                          );
+                        },
+                      ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: _t("اختر العيار", "Select Carat"),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      initialValue: carat,
+                      items: ["18", "21", "22"].map((c) {
+                        return DropdownMenuItem(value: c, child: Text(c));
+                      }).toList(),
+                      onChanged: (v) => setState(() => carat = v),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: weightCtrl,
+                      decoration: InputDecoration(
+                        labelText: _t("⚖ الوزن", "⚖ Weight"),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: wageCtrl,
+                      decoration: InputDecoration(
+                        labelText: _t("💰 الأجر", "💰 Wage"),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: _t("طريقة الدفع", "Payment Method"),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      initialValue: paymentMethod,
+                      items: [
+                        _t("كاش", "Cash"),
+                        _t("شبكة", "Network"),
+                        _t("متعدد", "Mixed")
+                      ].map((m) {
+                        return DropdownMenuItem(value: m, child: Text(m));
+                      }).toList(),
+                      onChanged: (v) => setState(() => paymentMethod = v),
+                    ),
+                    const SizedBox(height: 16),
+                    if (paymentMethod == _t("كاش", "Cash") ||
+                        paymentMethod == _t("متعدد", "Mixed"))
+                      TextField(
+                        controller: cashCtrl,
+                        decoration: InputDecoration(
+                          labelText: _t("💵 المبلغ كاش", "💵 Cash Amount"),
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        keyboardType: TextInputType.number,
+                      ),
+                    if (paymentMethod == _t("شبكة", "Network") ||
+                        paymentMethod == _t("متعدد", "Mixed"))
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16),
+                        child: TextField(
+                          controller: networkCtrl,
+                          decoration: InputDecoration(
+                            labelText:
+                                _t("💳 المبلغ شبكة", "💳 Network Amount"),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        backgroundColor: const Color(0xFFD4AF37),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      icon: const Icon(Icons.save, color: Colors.white),
+                      label: Text(
+                        _t("حفظ", "Save"),
+                        style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () async {
+                        if (supplierId == null ||
+                            delegate == null ||
+                            carat == null ||
+                            paymentMethod == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text(_t("يرجى إدخال جميع البيانات",
+                                "Please fill all required fields")),
+                          ));
+                          return;
+                        }
+
+                        await FS.addPaymentVoucher(
+                          supplierId: supplierId!,
+                          supplierName: supplierName!,
+                          delegate: delegate!,
+                          carat: carat!,
+                          weight: double.parse(weightCtrl.text),
+                          wage: double.parse(wageCtrl.text),
+                          paymentMethod: paymentMethod!,
+                          cash: cashCtrl.text.isEmpty
+                              ? null
+                              : double.parse(cashCtrl.text),
+                          network: networkCtrl.text.isEmpty
+                              ? null
+                              : double.parse(networkCtrl.text),
+                          date: date!,
+                        );
+
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(_t("تم حفظ السند بنجاح ✅",
+                              "Payment voucher saved successfully ✅")),
+                        ));
+
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

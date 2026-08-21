@@ -1,0 +1,104 @@
+name: uhf_gold_shop
+description: "Gold & Jewelry shop with SEUIC UHF RFID + Firebase"
+publish_to: "none"
+version: 1.0.6+16
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  bluetooth_classic: ^0.0.4
+  font_awesome_flutter: ^10.7.0
+  http: ^1.2.0
+  dio: ^5.4.0
+  #gal: ^2.3.0
+
+
+  #image: ^4.0.15
+
+
+  image_picker: ^1.0.7
+  flutter_image_compress: ^2.3.0
+
+  flutter_localizations:
+    sdk: flutter
+  wakelock_plus: ^1.2.3
+
+
+  share_plus: ^10.0.0
+  open_filex: ^4.5.0
+  path_provider: ^2.1.2
+  #permission_handler: ^11.3.1
+  path: ^1.9.0
+
+  workmanager: ^0.7.0
+  pdf: ^3.10.7
+  printing: ^5.13.1
+
+
+  url_launcher: ^6.3.0
+  restart_app: ^1.2.1
+  shared_preferences: ^2.3.2
+
+  uuid: ^4.5.0
+  qr_flutter: ^4.1.0
+  barcode_widget: ^2.0.3
+
+  fl_chart: ^0.66.0
+  flutter:
+    sdk: flutter
+
+  # Firebase + Auth + Firestore
+  firebase_core: ^2.25.4
+  firebase_auth: ^4.15.4
+  cloud_firestore: ^4.13.5
+  firebase_storage: ^11.6.0
+
+  # Google Sign-In
+  google_sign_in: ^6.2.1
+
+  # Utilities
+  barcode: ^2.2.2
+  intl: ^0.20.2
+  provider: ^6.1.2
+
+  # iOS style icons (اختياري)
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+
+  flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  change_app_package_name: ^1.5.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/fonts/NotoSansArabic-Bold.ttf
+    - assets/fonts/NotoSansArabic-Regular.ttf
+    - assets/gold.png
+    - assets/icon/app_icon.jpeg
+
+
+  # assets:
+  #   - assets/
+  # fonts:
+  #   - family: Cairo
+  #     fonts:
+  #       - asset: fonts/Cairo-Regular.ttf
+  #       - asset: fonts/Cairo-Bold.ttf
+  #         weight: 700
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/app_icon.jpeg"
+
+flutter_native_splash:
+  color: "#ffffff"  # لون الخلفية
+  image: assets/icon/app_icon.jpeg  # صورة السبلش
+  android: true
+  ios: true
