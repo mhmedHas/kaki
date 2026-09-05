@@ -6316,40 +6316,58 @@ class _GeneralBalancePageState extends State<GeneralBalancePage> {
   }
 
   /// 🔥 دالة لحساب وزن الكسر بعيار 24
+
   Future<double> _calculateScrapWeight24K() async {
-    double totalScrap24K = 0.0;
+    double balance24K = 0.0;
 
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid;
-      if (uid == null) return 0;
+      final snapshot = await FS.scrapCol().get(
+            const GetOptions(source: Source.server),
+          );
 
-      // جلب كل معاملات الكسر
-      final scrapSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .collection('scrapTransactions')
-          .get();
+      final allTx = snapshot.docs.map((d) {
+        final data = d.data() as Map<String, dynamic>;
+        data["id"] = d.id;
+        return data;
+      }).toList();
 
-      for (var doc in scrapSnapshot.docs) {
-        final data = doc.data();
-        final type = data['type'] ?? '';
-        final carat = (data['carat'] ?? '18').toString();
-        final weight = (data['weight'] ?? 0).toDouble();
+      // ✅ نفس القوائم المعروفة اللي في ScrapReports
+      const knownCarats = ["14", "18", "21", "22", "24"];
+      const knownTypes = ["add", "sale", "payment", "transform"];
 
-        // تحويل الوزن إلى عيار 24
-        double convertedWeight = _convertTo24Karat(weight, carat);
+      for (var t in allTx) {
+        final type = t["type"] ?? "";
 
-        if (type == 'add' || type == 'transform') {
-          totalScrap24K += convertedWeight;
-        } else if (type == 'sale' || type == 'payment') {
-          totalScrap24K -= convertedWeight.abs();
+        if (type == "payment" &&
+            t["carats"] != null &&
+            (t["carats"] as List).isNotEmpty) {
+          final carats = t["carats"] as List;
+          for (var c in carats) {
+            final carat = (c['carat'] ?? "18").toString();
+            final weight = (c['weight'] ?? 0).toDouble();
+            double convertedWeight = _convertTo24Karat(weight, carat);
+            balance24K -= convertedWeight.abs();
+          }
+        } else {
+          final carat = (t["carat"] ?? "18").toString();
+          final weight = (t["weight"] ?? 0).toDouble();
+
+          // ✅ الشرط المفقود: تجاهل أي عيار مش من القوائم المعروفة
+          if (knownTypes.contains(type) && knownCarats.contains(carat)) {
+            double convertedWeight = _convertTo24Karat(weight, carat);
+            if (type == "add" || type == "transform") {
+              balance24K += convertedWeight;
+            } else if (type == "sale" || type == "payment") {
+              balance24K -= convertedWeight.abs();
+            }
+          }
         }
       }
     } catch (e) {
       print('Error calculating scrap weight: $e');
     }
 
-    return totalScrap24K;
+    return balance24K;
   }
 
   // ✅ شاشة التحميل المحسنة
@@ -7218,7 +7236,7 @@ class _GeneralBalancePageState extends State<GeneralBalancePage> {
               childAspectRatio: 1.4,
               children: [
                 statCard(
-                  title: 'اجمالي الوزن العام',
+                  title: 'اجمالي الوزن العام(24K)',
                   value: '${totalWeight24K.toStringAsFixed(3)} جرام',
                   icon: Icons.balance,
                   color: Colors.blue,

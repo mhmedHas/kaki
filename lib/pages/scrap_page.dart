@@ -4044,6 +4044,9 @@ class _ScrapReportsState extends State<ScrapReports> {
                 double balance24K = 0;
 
                 for (var t in allTx) {
+                  print(
+                      '📗 ${t["id"]} | type=${t["type"]} | carat=${t["carat"]} | weight=${t["weight"]} | carats=${t["carats"]}');
+
                   final type = t["type"] ?? "";
 
                   // ✅ معالجة العيارات المتعددة في سند الصرف

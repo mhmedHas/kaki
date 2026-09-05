@@ -1741,6 +1741,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:uhf_gold_shop/pages/opening_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/firestore_service.dart';
 import 'input_page.dart';
@@ -2349,7 +2350,7 @@ class _HomeScaffoldState extends State<HomeScaffold> {
                             context,
                             icon: Icons.account_balance_wallet,
                             label: _t('opening', _lang),
-                            page: const InputPage(fromOpeningBalance: true),
+                            page: const OpeningBalanceEntryPage(),
                             aspectRatio: _hasRemainingKits ? 3.5 : 2.8,
                           ),
                         ),

@@ -19313,6 +19313,7 @@
 // }
 import 'package:flutter/material.dart';
 import 'package:uhf_gold_shop/pages/RemainingKitsPage.dart';
+import 'package:uhf_gold_shop/pages/taskirat.dart';
 import '../services/firestore_service.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -19405,6 +19406,12 @@ class _DailyTransactionsPageState extends State<DailyTransactionsPage> {
                     icon: Icons.people,
                     label: _t("الموردين", "Suppliers"),
                     page: const PartPage(),
+                  ),
+                  _buildMenuCard(
+                    context,
+                    icon: Icons.account_balance,
+                    label: _t("التسكيرات", "Minting"),
+                    page: const MintingPage(),
                   ),
                   _buildMenuCard(
                     context,
