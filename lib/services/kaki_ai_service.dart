@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Service for communicating with the deployed Kaki AI Firebase callable function.
 class KakiAiService {
@@ -15,6 +16,21 @@ class KakiAiService {
     }
 
     try {
+      // The callable function requires req.auth. Make sure the same Firebase
+      // Auth session used by the app has a valid ID token before calling it.
+      final auth = FirebaseAuth.instance;
+      final user = auth.currentUser;
+
+      if (user == null) {
+        throw const KakiAiException(
+          'لا يوجد مستخدم مسجل الدخول في Firebase Auth. سجّل الدخول أولاً.',
+        );
+      }
+
+      // Force-refresh the token during integration so the callable request
+      // definitely carries the current Firebase Auth credentials.
+      await user.getIdToken(true);
+
       final callable = _functions.httpsCallable(
         'analyze_gold_business_system',
         options: HttpsCallableOptions(
@@ -44,8 +60,6 @@ class KakiAiService {
       final message = e.message?.trim();
       final details = e.details?.toString().trim();
 
-      // Keep the real Firebase error visible while diagnosing the deployed
-      // callable function. This is much more useful than a generic message.
       if (message != null && message.isNotEmpty) {
         throw KakiAiException(
           'خطأ من خادم كاكي: $message\nالكود: ${e.code}',
@@ -62,7 +76,10 @@ class KakiAiService {
         'فشل الاتصال بالمساعد الذكي.\nالكود: ${e.code}',
       );
     } catch (e) {
-      // Do not hide the actual exception during integration/debugging.
+      if (e is KakiAiException) {
+        rethrow;
+      }
+
       throw KakiAiException('خطأ أثناء الاتصال بكاكي: $e');
     }
   }
