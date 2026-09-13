@@ -1,7 +1,7 @@
 name: uhf_gold_shop
 description: "Gold & Jewelry shop with SEUIC UHF RFID + Firebase"
 publish_to: "none"
-version: 1.0.6+16
+version: 1.0.6+17
 
 environment:
   sdk: ">=3.3.0 <4.0.0"
