@@ -11,11 +11,10 @@ dependencies:
   font_awesome_flutter: ^10.7.0
   http: ^1.2.0
   dio: ^5.4.0
+  cloud_functions: ^4.7.6
   #gal: ^2.3.0
 
-
   #image: ^4.0.15
-
 
   image_picker: ^1.0.7
   flutter_image_compress: ^2.3.0
@@ -23,7 +22,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   wakelock_plus: ^1.2.3
-
 
   share_plus: ^10.0.0
   open_filex: ^4.5.0
@@ -34,7 +32,6 @@ dependencies:
   workmanager: ^0.7.0
   pdf: ^3.10.7
   printing: ^5.13.1
-
 
   url_launcher: ^6.3.0
   restart_app: ^1.2.1
@@ -81,7 +78,6 @@ flutter:
     - assets/fonts/NotoSansArabic-Regular.ttf
     - assets/gold.png
     - assets/icon/app_icon.jpeg
-
 
   # assets:
   #   - assets/
