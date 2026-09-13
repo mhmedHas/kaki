@@ -14,10 +14,10 @@ class DefaultFirebaseOptions {
     }
   }
 
-  // Android (com.example.uhf_gold_shop)
+  // Android (com.kaki_rfid.uhf_gold_shop)
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAeQl4oLMUu807w0ylWTsBmQAoLw6e3ZoE',
-    appId: '1:687907492866:android:ad879051128b83222a831b',
+    appId: '1:687907492866:android:e4df04ed1c37d1fe2a831b',
     messagingSenderId: '687907492866',
     projectId: 'kaki-f9832',
     storageBucket: 'kaki-f9832.firebasestorage.app',
