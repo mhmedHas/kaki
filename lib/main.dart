@@ -4,6 +4,7 @@ import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'pages/login_page.dart';
 import 'pages/home_scaffold.dart';
+import 'pages/kaki_chat_page.dart';
 import 'package:flutter/services.dart';
 import 'utils/hardware_barcode_listener.dart';
 import 'package:workmanager/workmanager.dart';
@@ -15,8 +16,8 @@ void main() async {
 
   // ✅ Workmanager initialize
   await Workmanager().initialize(
-    callbackDispatcher, // موجودة في background_tasks.dart
-    isInDebugMode: true, // خليه true وقت التطوير بس
+    callbackDispatcher,
+    isInDebugMode: true,
   );
 
   // ✅ نسجل التاسك على حسب الإعداد (يومي / أسبوعي / شهري)
@@ -26,13 +27,14 @@ void main() async {
 
 class App extends StatelessWidget {
   const App({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'UHF Gold Shop',
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: const Color(0xFFD4AF37), // Gold color
+        colorSchemeSeed: const Color(0xFFD4AF37),
         brightness: Brightness.light,
         appBarTheme: const AppBarTheme(
           elevation: 0,
@@ -138,12 +140,48 @@ class App extends StatelessWidget {
         builder: (ctx, snap) {
           if (snap.connectionState == ConnectionState.waiting) {
             return const Scaffold(
-                body: Center(child: CircularProgressIndicator()));
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
           if (snap.data == null) return const LoginPage();
-          return const HomeScaffold();
+          return const KakiHomeOverlay();
         },
       ),
+    );
+  }
+}
+
+/// Keeps the existing HomeScaffold unchanged and places the Kaki AI button
+/// above it, so the existing home UI/navigation is not disturbed.
+class KakiHomeOverlay extends StatelessWidget {
+  const KakiHomeOverlay({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        const HomeScaffold(),
+        Positioned(
+          right: 20,
+          bottom: 20,
+          child: SafeArea(
+            child: FloatingActionButton.extended(
+              heroTag: 'kaki_ai_chat_button',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const KakiChatPage(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('شات كاكي'),
+              tooltip: 'شات كاكي - المساعد الذكي',
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
