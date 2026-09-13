@@ -1,14 +1,12 @@
-import 'dart:convert';
+import 'package:cloud_functions/cloud_functions.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:http/http.dart' as http;
-
-/// Service for communicating with the deployed Kaki AI HTTP endpoint.
+/// Service for communicating with the deployed Kaki AI Firebase callable function.
 class KakiAiService {
   KakiAiService._();
 
-  static const String endpoint =
-      'https://analyze-gold-business-system-usqjvtuvvq-uc.a.run.app';
+  static final FirebaseFunctions _functions = FirebaseFunctions.instanceFor(
+    region: 'us-central1',
+  );
 
   static Future<String> ask(String question) async {
     final trimmedQuestion = question.trim();
@@ -16,78 +14,45 @@ class KakiAiService {
       throw const KakiAiException('اكتب السؤال أولاً.');
     }
 
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw const KakiAiException('يجب تسجيل الدخول أولاً.');
-    }
-
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
-
-    // Send the Firebase ID token when available. The backend can verify it
-    // without exposing any Firebase credentials in the Flutter app.
     try {
-      final token = await user.getIdToken();
-      if (token != null && token.isNotEmpty) {
-        headers['Authorization'] = 'Bearer $token';
-      }
-    } catch (_) {
-      // Keep the request usable for deployments where the endpoint is public.
-    }
+      final callable = _functions.httpsCallable(
+        'analyze_gold_business_system',
+      );
 
-    final response = await http
-        .post(
-          Uri.parse(endpoint),
-          headers: headers,
-          body: jsonEncode({
-            'query': trimmedQuestion,
-          }),
-        )
-        .timeout(const Duration(seconds: 90));
+      final response = await callable.call(<String, dynamic>{
+        'query': trimmedQuestion,
+      });
 
-    return _parseResponse(response);
-  }
+      final data = response.data;
 
-  static String _parseResponse(http.Response response) {
-    dynamic data;
-
-    try {
-      data = jsonDecode(utf8.decode(response.bodyBytes));
-    } catch (_) {
-      data = utf8.decode(response.bodyBytes);
-    }
-
-    if (response.statusCode < 200 || response.statusCode >= 300) {
-      String message = 'تعذر الحصول على رد من خادم كاكي.';
-
-      if (data is Map<String, dynamic>) {
-        final value = data['error'] ?? data['message'] ?? data['detail'];
-        if (value != null && value.toString().trim().isNotEmpty) {
-          message = value.toString();
-        }
-      } else if (data is String && data.trim().isNotEmpty) {
-        message = data.trim();
-      }
-
-      throw KakiAiException('$message (HTTP ${response.statusCode})');
-    }
-
-    if (data is Map<String, dynamic>) {
-      for (final key in const ['answer', 'response', 'result', 'message']) {
-        final value = data[key];
-        if (value != null && value.toString().trim().isNotEmpty) {
-          return value.toString().trim();
+      if (data is Map) {
+        final answer = data['answer'];
+        if (answer != null && answer.toString().trim().isNotEmpty) {
+          return answer.toString().trim();
         }
       }
-    }
 
-    if (data is String && data.trim().isNotEmpty) {
-      return data.trim();
-    }
+      if (data != null && data.toString().trim().isNotEmpty) {
+        return data.toString().trim();
+      }
 
-    throw const KakiAiException('وصل رد فارغ من خادم كاكي.');
+      throw const KakiAiException('وصل رد فارغ من خادم كاكي.');
+    } on FirebaseFunctionsException catch (e) {
+      final details = e.message?.trim();
+      if (details != null && details.isNotEmpty) {
+        throw KakiAiException('$details (${e.code})');
+      }
+
+      throw KakiAiException(
+        'فشل الاتصال بالمساعد الذكي (${e.code}).',
+      );
+    } catch (e) {
+      if (e is KakiAiException) {
+        rethrow;
+      }
+
+      throw KakiAiException('حدث خطأ غير متوقع أثناء الاتصال بالمساعد الذكي.');
+    }
   }
 }
 
