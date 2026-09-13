@@ -17,6 +17,9 @@ class KakiAiService {
     try {
       final callable = _functions.httpsCallable(
         'analyze_gold_business_system',
+        options: HttpsCallableOptions(
+          timeout: const Duration(seconds: 120),
+        ),
       );
 
       final response = await callable.call(<String, dynamic>{
@@ -38,20 +41,29 @@ class KakiAiService {
 
       throw const KakiAiException('وصل رد فارغ من خادم كاكي.');
     } on FirebaseFunctionsException catch (e) {
-      final details = e.message?.trim();
+      final message = e.message?.trim();
+      final details = e.details?.toString().trim();
+
+      // Keep the real Firebase error visible while diagnosing the deployed
+      // callable function. This is much more useful than a generic message.
+      if (message != null && message.isNotEmpty) {
+        throw KakiAiException(
+          'خطأ من خادم كاكي: $message\nالكود: ${e.code}',
+        );
+      }
+
       if (details != null && details.isNotEmpty) {
-        throw KakiAiException('$details (${e.code})');
+        throw KakiAiException(
+          'خطأ من خادم كاكي: $details\nالكود: ${e.code}',
+        );
       }
 
       throw KakiAiException(
-        'فشل الاتصال بالمساعد الذكي (${e.code}).',
+        'فشل الاتصال بالمساعد الذكي.\nالكود: ${e.code}',
       );
     } catch (e) {
-      if (e is KakiAiException) {
-        rethrow;
-      }
-
-      throw KakiAiException('حدث خطأ غير متوقع أثناء الاتصال بالمساعد الذكي.');
+      // Do not hide the actual exception during integration/debugging.
+      throw KakiAiException('خطأ أثناء الاتصال بكاكي: $e');
     }
   }
 }
