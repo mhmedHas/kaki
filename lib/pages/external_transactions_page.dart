@@ -17,19 +17,18 @@ class ExternalTransactionsPage extends StatefulWidget {
       _ExternalTransactionsPageState();
 }
 
-class _ExternalTransactionsPageState
-    extends State<ExternalTransactionsPage> {
+class _ExternalTransactionsPageState extends State<ExternalTransactionsPage> {
   StreamSubscription<String>? _tagSubscription;
 
-  String epcHex = '';
+  //String epcHex = '';
   bool isReading = false;
   bool busy = false;
   String? msg;
   String _lang = 'ar';
   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
-
-
-  Map<String, dynamic>? itemData;
+  final List<String> epcs = [];
+  final Map<String, Map<String, dynamic>> itemsData = {};
+  //Map<String, dynamic>? itemData;
 
   final shopController = TextEditingController();
   final managerController = TextEditingController();
@@ -43,13 +42,29 @@ class _ExternalTransactionsPageState
     _loadUserNames();
     _loadLanguage();
 
-    _tagSubscription = SeuicUhfService.tagStream.listen((tag) {
+    /*_tagSubscription = SeuicUhfService.tagStream.listen((tag) {
       if (mounted) {
         setState(() {
           epcHex = tag;
           isReading = false;
         });
         _loadItemData();
+      }
+    });*/
+    _tagSubscription = SeuicUhfService.tagStream.listen((tag) async {
+      if (!mounted) return;
+
+      final epc = tag.trim();
+      final result = await FS.epcandcode(epc);
+
+      if (!epcs.contains(epc) &&
+          !epcs.contains(result?['epcHex']) &&
+          !epcs.contains(result?['qrCode'])) {
+        setState(() {
+          epcs.add(epc);
+          isReading = false;
+        });
+        _loadItemData(epc);
       }
     });
 
@@ -63,6 +78,7 @@ class _ExternalTransactionsPageState
       if (userNames.isNotEmpty) selectedUser = userNames.first;
     });
   }
+
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -78,31 +94,7 @@ class _ExternalTransactionsPageState
     super.dispose();
   }
 
-  Future<void> _readChip() async {
-    setState(() {
-      isReading = true;
-      msg = null;
-    });
-
-    try {
-      final result = await SeuicUhfService.inventoryOnce();
-      if (result == null || result.isEmpty) {
-        setState(() => isReading = false);
-        _showMsg("لم يتم العثور على شريحة", false);
-      } else {
-        setState(() {
-          epcHex = result.toUpperCase();
-          isReading = false;
-        });
-        _loadItemData();
-      }
-    } catch (e) {
-      setState(() => isReading = false);
-      _showMsg("خطأ في القراءة: $e", false);
-    }
-  }
-
-  Future<void> _loadItemData() async {
+  /*Future<void> _loadItemData(String epc) async {
     if (epcHex.isEmpty) return;
 
     try {
@@ -113,9 +105,26 @@ class _ExternalTransactionsPageState
     } catch (e) {
       _showMsg("فشل تحميل البيانات", false);
     }
+  }*/
+  Future<void> _loadItemData(String epc) async {
+    if (epc.isEmpty) return;
+
+    try {
+      final data = await FS.findItemByEpc(epc);
+
+      if (!mounted) return;
+
+      if (data != null) {
+        setState(() {
+          itemsData[epc] = data;
+        });
+      }
+    } catch (e) {
+      debugPrint("❌ فشل تحميل بيانات الشريحة $epc: $e");
+    }
   }
 
-  Future<void> _sendExternal() async {
+  /*Future<void> _sendExternal() async {
     if (itemData == null) {
       _showMsg("اقرأ شريحة أولاً", false);
       return;
@@ -157,9 +166,100 @@ class _ExternalTransactionsPageState
     } finally {
       setState(() => busy = false);
     }
-  }
-  void _showReceiveDialog(String epc) {
+  }*/
+  Future<void> _sendExternal() async {
+    if (epcs.isEmpty) {
+      _showMsg("اقرأ شريحة واحدة على الأقل", false);
+      return;
+    }
 
+    if (shopController.text.trim().isEmpty ||
+        managerController.text.trim().isEmpty) {
+      _showMsg("اكتب اسم المحل واسم المستلم", false);
+      return;
+    }
+
+    if (selectedUser == null) {
+      _showMsg("يرجى ضبط اسم المستخدم من الإعدادات", false);
+      return;
+    }
+
+    setState(() {
+      busy = true;
+    });
+
+    int successCount = 0;
+    int failedCount = 0;
+
+    try {
+      final shopName = shopController.text.trim();
+      final managerName = managerController.text.trim();
+      final sentBy = selectedUser!;
+
+      // نسجل كل شريحة لوحدها
+      for (final epc in List<String>.from(epcs)) {
+        try {
+          final data = itemsData[epc];
+
+          if (data == null) {
+            debugPrint("⚠️ لا توجد بيانات للشريحة: $epc");
+            failedCount++;
+            continue;
+          }
+
+          debugPrint("📤 إرسال الشريحة: $epc");
+
+          await FS.sendToExternal(
+            epc: epc,
+            itemData: data,
+            shopName: shopName,
+            managerName: managerName,
+            sentBy: sentBy,
+          );
+
+          successCount++;
+
+          debugPrint("✅ تم إرسال الشريحة: $epc");
+        } catch (e) {
+          failedCount++;
+
+          debugPrint(
+            "❌ فشل إرسال الشريحة $epc: $e",
+          );
+        }
+      }
+
+      if (!mounted) return;
+
+      if (failedCount == 0) {
+        _showMsg(
+          "✅ تم إرسال جميع الشرائح بنجاح (${successCount} شريحة)",
+          true,
+        );
+      } else {
+        _showMsg(
+          "تم إرسال $successCount شريحة، وفشل إرسال $failedCount شريحة",
+          false,
+        );
+      }
+
+      // تنظيف القائمة بعد الانتهاء
+      setState(() {
+        epcs.clear();
+        itemsData.clear();
+      });
+    } catch (e) {
+      _showMsg("فشل الإرسال: $e", false);
+    } finally {
+      if (mounted) {
+        setState(() {
+          busy = false;
+        });
+      }
+    }
+  }
+
+  void _showReceiveDialog(String epc) {
     String paymentType = "cash";
 
     final cashController = TextEditingController();
@@ -175,17 +275,13 @@ class _ExternalTransactionsPageState
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-
                   DropdownButton<String>(
                     value: paymentType,
                     isExpanded: true,
                     items: const [
-                      DropdownMenuItem(
-                          value: "cash", child: Text("كاش")),
-                      DropdownMenuItem(
-                          value: "visa", child: Text("شبكة")),
-                      DropdownMenuItem(
-                          value: "multi", child: Text("متعدد")),
+                      DropdownMenuItem(value: "cash", child: Text("كاش")),
+                      DropdownMenuItem(value: "visa", child: Text("شبكة")),
+                      DropdownMenuItem(value: "multi", child: Text("متعدد")),
                     ],
                     onChanged: (val) {
                       setState(() {
@@ -193,11 +289,8 @@ class _ExternalTransactionsPageState
                       });
                     },
                   ),
-
                   const SizedBox(height: 10),
-
-                  if (paymentType == "cash" ||
-                      paymentType == "multi")
+                  if (paymentType == "cash" || paymentType == "multi")
                     TextField(
                       controller: cashController,
                       keyboardType: TextInputType.number,
@@ -206,9 +299,7 @@ class _ExternalTransactionsPageState
                       ),
                     ),
                   const SizedBox(height: 10),
-
-                  if (paymentType == "visa" ||
-                      paymentType == "multi")
+                  if (paymentType == "visa" || paymentType == "multi")
                     TextField(
                       controller: visaController,
                       keyboardType: TextInputType.number,
@@ -225,12 +316,9 @@ class _ExternalTransactionsPageState
                 ),
                 ElevatedButton(
                   onPressed: () async {
+                    final cash = double.tryParse(cashController.text) ?? 0;
 
-                    final cash =
-                        double.tryParse(cashController.text) ?? 0;
-
-                    final visa =
-                        double.tryParse(visaController.text) ?? 0;
+                    final visa = double.tryParse(visaController.text) ?? 0;
 
                     final total = cash + visa;
 
@@ -259,6 +347,7 @@ class _ExternalTransactionsPageState
       },
     );
   }
+
   Future<void> _deleteItemImages(String epc) async {
     try {
       final uid = FirebaseAuth.instance.currentUser!.uid;
@@ -303,8 +392,6 @@ class _ExternalTransactionsPageState
     }
   }
 
-
-
   void _showHistoryDialog() {
     showDialog(
       context: context,
@@ -329,18 +416,15 @@ class _ExternalTransactionsPageState
                   padding: const EdgeInsets.all(16),
                   itemCount: docs.length,
                   itemBuilder: (context, index) {
-                    final data =
-                    docs[index].data() as Map<String, dynamic>;
+                    final data = docs[index].data() as Map<String, dynamic>;
                     final epc = data['epc'];
                     final payload = data['payload'] as Map<String, dynamic>;
-
 
                     final sentAt = data['sentAt'] as Timestamp?;
                     final dateString = sentAt != null
                         ? "${sentAt.toDate().day}/${sentAt.toDate().month}/${sentAt.toDate().year} - "
-                        "${sentAt.toDate().hour}:${sentAt.toDate().minute}"
+                            "${sentAt.toDate().hour}:${sentAt.toDate().minute}"
                         : "";
-
 
                     return Card(
                       margin: const EdgeInsets.only(bottom: 16),
@@ -351,16 +435,15 @@ class _ExternalTransactionsPageState
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-
                               /// 👇 المعلومات + زرار الصورة في نفس السطر
                               Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-
                                   /// المعلومات
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           "EPC: $epc",
@@ -370,21 +453,26 @@ class _ExternalTransactionsPageState
                                         ),
                                         const SizedBox(height: 6),
                                         if (payload['carat'] != null)
-                                          Text(_t("العيار: ${payload['carat']}", "carat: ${payload['carat']}")),
+                                          Text(_t("العيار: ${payload['carat']}",
+                                              "carat: ${payload['carat']}")),
                                         if (payload['kind'] != null)
-                                          Text(_t("القسم: ${payload['kind']}", "kind: ${payload['kind']}")),
+                                          Text(_t("القسم: ${payload['kind']}",
+                                              "kind: ${payload['kind']}")),
                                         if (payload['type'] != null)
-                                          Text(_t("القسم: ${payload['type']}", "kind: ${payload['type']}")),
+                                          Text(_t("القسم: ${payload['type']}",
+                                              "kind: ${payload['type']}")),
                                         if (data['category'] == "bullion")
-                                          Text(_t("القسم: سبائك", "kind: bullion")),
+                                          Text(_t(
+                                              "القسم: سبائك", "kind: bullion")),
                                         if (payload['weight'] != null)
-                                          Text(_t("الوزن: ${payload['weight']}", "weight: ${payload['weight']}")),
+                                          Text(_t("الوزن: ${payload['weight']}",
+                                              "weight: ${payload['weight']}")),
                                         if (payload['wage'] != null)
-                                          Text(_t("الأجر: ${payload['wage']}", "Wage: ${payload['wage']}")),
+                                          Text(_t("الأجر: ${payload['wage']}",
+                                              "Wage: ${payload['wage']}")),
                                         if (payload['cost'] != null)
-                                          Text(_t("التكلفة: ${payload['cost']}", "Wage: ${payload['wage']}")),
-
-
+                                          Text(_t("التكلفة: ${payload['cost']}",
+                                              "Wage: ${payload['wage']}")),
                                         Text("المحل: ${data['shopName']}"),
                                         Text("المستلم: ${data['managerName']}"),
                                         Text("بواسطة: ${data['sentBy']}"),
@@ -395,12 +483,17 @@ class _ExternalTransactionsPageState
 
                                   /// زرار عرض الصور
                                   IconButton(
-                                    icon: const Icon(Icons.image, color: Colors.blue ,size: 35,),
+                                    icon: const Icon(
+                                      Icons.image,
+                                      color: Colors.blue,
+                                      size: 35,
+                                    ),
                                     onPressed: () async {
-                                      final uid =
-                                          FirebaseAuth.instance.currentUser!.uid;
+                                      final uid = FirebaseAuth
+                                          .instance.currentUser!.uid;
 
-                                      final storageRef = FirebaseStorage.instance
+                                      final storageRef = FirebaseStorage
+                                          .instance
                                           .ref()
                                           .child('images')
                                           .child('users')
@@ -408,71 +501,63 @@ class _ExternalTransactionsPageState
                                           .child(epc);
 
                                       try {
-                                        final result = await storageRef.listAll();
+                                        final result =
+                                            await storageRef.listAll();
 
                                         if (result.items.isEmpty) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
                                               content:
-                                              Text("لا يوجد صور محفوظة"),
+                                                  Text("لا يوجد صور محفوظة"),
                                             ),
                                           );
                                           return;
                                         }
 
                                         final urls = await Future.wait(
-                                          result.items
-                                              .map((ref) =>
-                                              ref.getDownloadURL()),
+                                          result.items.map(
+                                              (ref) => ref.getDownloadURL()),
                                         );
 
                                         showDialog(
                                           context: context,
                                           builder: (_) => Dialog(
                                             child: Container(
-                                              padding:
-                                              const EdgeInsets.all(8),
+                                              padding: const EdgeInsets.all(8),
                                               width: double.maxFinite,
                                               child: Column(
-                                                mainAxisSize:
-                                                MainAxisSize.min,
+                                                mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   const Text(
                                                     "صور الشريحة",
                                                     style: TextStyle(
                                                       fontWeight:
-                                                      FontWeight.bold,
+                                                          FontWeight.bold,
                                                       fontSize: 16,
                                                     ),
                                                   ),
-                                                  const SizedBox(
-                                                      height: 8),
+                                                  const SizedBox(height: 8),
                                                   SizedBox(
                                                     height: 400,
-                                                    child:
-                                                    ListView.builder(
+                                                    child: ListView.builder(
                                                       scrollDirection:
-                                                      Axis.horizontal,
-                                                      itemCount:
-                                                      urls.length,
-                                                      itemBuilder:
-                                                          (_, i) =>
+                                                          Axis.horizontal,
+                                                      itemCount: urls.length,
+                                                      itemBuilder: (_, i) =>
                                                           Padding(
-                                                            padding:
+                                                        padding:
                                                             const EdgeInsets
                                                                 .all(4),
-                                                            child: Image.network(
-                                                                urls[i]),
-                                                          ),
+                                                        child: Image.network(
+                                                            urls[i]),
+                                                      ),
                                                     ),
                                                   ),
                                                   TextButton(
                                                     onPressed: () =>
-                                                        Navigator.pop(
-                                                            context),
-                                                    child: const Text(
-                                                        "إغلاق"),
+                                                        Navigator.pop(context),
+                                                    child: const Text("إغلاق"),
                                                   ),
                                                 ],
                                               ),
@@ -483,8 +568,7 @@ class _ExternalTransactionsPageState
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           const SnackBar(
-                                            content:
-                                            Text("فشل تحميل الصور"),
+                                            content: Text("فشل تحميل الصور"),
                                           ),
                                         );
                                       }
@@ -501,9 +585,8 @@ class _ExternalTransactionsPageState
                                   Expanded(
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.red,
-                                        foregroundColor: Colors.white
-                                      ),
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white),
                                       onPressed: () async {
                                         await FS.returnExternal(epc);
                                       },
@@ -514,8 +597,8 @@ class _ExternalTransactionsPageState
                                   Expanded(
                                     child: ElevatedButton(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.green, foregroundColor: Colors.white
-                                      ),
+                                          backgroundColor: Colors.green,
+                                          foregroundColor: Colors.white),
                                       onPressed: () {
                                         _showReceiveDialog(epc);
                                       },
@@ -529,8 +612,6 @@ class _ExternalTransactionsPageState
                         ),
                       ),
                     );
-
-
                   },
                 );
               },
@@ -547,7 +628,7 @@ class _ExternalTransactionsPageState
     });
   }
 
-  List<Widget> _buildDetails() {
+  /*List<Widget> _buildDetails() {
     if (itemData == null) return [];
 
     final payload = itemData!['payload'] ?? {};
@@ -634,11 +715,162 @@ class _ExternalTransactionsPageState
     }
 
     return details;
+  }*/
+  List<Widget> _buildDetails(Map<String, dynamic> data) {
+    final payload = data['payload'] ?? {};
+    final category = data['category'] ?? '';
+
+    final List<Widget> details = [];
+
+    details.add(
+      Text(
+        _t(
+          "الفئة: ${_getCategoryName(category)}",
+          "Category: ${_getCategoryName(category)}",
+        ),
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+
+    details.add(const SizedBox(height: 5));
+
+    switch (category) {
+      case "gold":
+        details.addAll([
+          _buildInfoRow(
+            _t("العيار", "Carat"),
+            payload['carat'],
+          ),
+          _buildInfoRow(
+            _t("الوزن", "Weight"),
+            payload['weight'],
+          ),
+          _buildInfoRow(
+            _t("الأجر", "Wage"),
+            payload['wage'],
+          ),
+          _buildInfoRow(
+            _t("الكود", "Code"),
+            payload['qrCode'],
+          ),
+          _buildInfoRow(
+            _t("ملاحظات", "Notes"),
+            payload['notes'],
+          ),
+        ]);
+        break;
+
+      case "scrap":
+        details.addAll([
+          _buildInfoRow(
+            _t("العيار", "Carat"),
+            payload['carat'],
+          ),
+          _buildInfoRow(
+            _t("الوزن", "Weight"),
+            payload['weight'],
+          ),
+          _buildInfoRow(
+            _t("الكود", "Code"),
+            payload['qrCode'],
+          ),
+          _buildInfoRow(
+            _t("ملاحظات", "Notes"),
+            payload['notes'],
+          ),
+        ]);
+        break;
+
+      case "bullion":
+        details.addAll([
+          _buildInfoRow(
+            _t("الوزن", "Weight"),
+            payload['weight'],
+          ),
+          _buildInfoRow(
+            _t("الأجر", "Wage"),
+            payload['wage'],
+          ),
+          _buildInfoRow(
+            _t("الكود", "Code"),
+            payload['qrCode'],
+          ),
+          _buildInfoRow(
+            _t("ملاحظات", "Notes"),
+            payload['notes'],
+          ),
+        ]);
+        break;
+
+      case "gem":
+        details.addAll([
+          _buildInfoRow(
+            _t("نوع الحجر", "Gem Type"),
+            payload['type'],
+          ),
+          _buildInfoRow(
+            _t("التكلفة", "Cost"),
+            payload['cost'],
+          ),
+          _buildInfoRow(
+            _t("الكود", "Code"),
+            payload['qrCode'],
+          ),
+          _buildInfoRow(
+            _t("ملاحظات", "Notes"),
+            payload['notes'],
+          ),
+        ]);
+        break;
+
+      default:
+        details.add(
+          Text(
+            _t(
+              "❌ نوع غير معروف",
+              "❌ Unknown Type",
+            ),
+            style: const TextStyle(
+              color: Colors.red,
+            ),
+          ),
+        );
+    }
+
+    // QR / Barcode
+    if (payload['qrCode'] != null && payload['qrCode'].toString().isNotEmpty) {
+      details.add(const SizedBox(height: 5));
+
+      details.add(
+        Center(
+          child: (payload['showQr'] == true)
+              ? QrImageView(
+                  data: payload['qrCode'],
+                  version: QrVersions.auto,
+                  size: 80.0,
+                  backgroundColor: Colors.white,
+                )
+              : BarcodeWidget(
+                  barcode: Barcode.code128(),
+                  data: payload['qrCode'],
+                  width: 100,
+                  height: 40,
+                ),
+        ),
+      );
+
+      details.add(const SizedBox(height: 16));
+    }
+
+    return details;
   }
 
   Widget _buildInfoRow(String label, dynamic value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 1),
       child: Row(
         children: [
           Expanded(
@@ -650,7 +882,8 @@ class _ExternalTransactionsPageState
           ),
           Expanded(
             flex: 3,
-            child: Text(value?.toString() ?? '-', style: const TextStyle(fontSize: 14)),
+            child: Text(value?.toString() ?? '-',
+                style: const TextStyle(fontSize: 14)),
           ),
         ],
       ),
@@ -671,6 +904,7 @@ class _ExternalTransactionsPageState
         return cat;
     }
   }
+
   void _showManualEpcDialog() {
     final controller = TextEditingController();
 
@@ -700,7 +934,8 @@ class _ExternalTransactionsPageState
       ),
     );
   }
-  void AddEpcManualy(String Epc){
+
+  void AddEpcManualy(String Epc) {
     SeuicUhfService.addEpcManualy(Epc);
   }
 
@@ -733,7 +968,6 @@ class _ExternalTransactionsPageState
                   _t("اختر اسم المستخدم:", "Select User:"),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-
                 DropdownButton<String>(
                   value: selectedUser,
                   isExpanded: true,
@@ -755,7 +989,7 @@ class _ExternalTransactionsPageState
               ),*/
               const SizedBox(height: 20),
 
-              if (itemData != null) ...[
+              /*if (itemData != null) ...[
                 Card(
                   child: Padding(
                     padding: const EdgeInsets.all(12),
@@ -800,16 +1034,140 @@ class _ExternalTransactionsPageState
                   ),
                 )
 
-              ],
+              ],*/
+              if (epcs.isNotEmpty) ...[
+                Column(
+                  children: [
+                    ...epcs.map((epc) {
+                      final data = itemsData[epc];
 
+                      if (data == null) {
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 20),
+                          child: const Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        );
+                      }
+
+                      return Card(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Padding(
+                          padding: const EdgeInsets.all(5),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // EPC
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.nfc,
+                                    color: Color(0xFFD4AF37),
+                                  ),
+                                  const SizedBox(width: 8),
+
+                                  Expanded(
+                                    child: Text(
+                                      "EPC: $epc",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
+
+                                  // حذف الشريحة من القائمة
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                    ),
+                                    onPressed: busy
+                                        ? null
+                                        : () {
+                                            setState(() {
+                                              epcs.remove(epc);
+                                              itemsData.remove(epc);
+                                            });
+                                          },
+                                  ),
+                                ],
+                              ),
+
+                              const Divider(),
+
+                              // نفس تفاصيل الشريحة القديمة بالضبط
+                              ..._buildDetails(data),
+                            ],
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                // اسم المحل مرة واحدة
+                TextField(
+                  controller: shopController,
+                  decoration: const InputDecoration(
+                    labelText: "اسم المحل",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // اسم المستلم مرة واحدة
+                TextField(
+                  controller: managerController,
+                  decoration: const InputDecoration(
+                    labelText: "اسم المستلم",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: busy ? null : _sendExternal,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                      ),
+                    ),
+                    child: busy
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            "إرسال ${epcs.length} شريحة",
+                            style: const TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
               if (msg != null) ...[
                 const SizedBox(height: 20),
                 Text(
                   msg!,
                   style: TextStyle(
-                    color: msg!.contains("✅")
-                        ? Colors.green
-                        : Colors.red,
+                    color: msg!.contains("✅") ? Colors.green : Colors.red,
                   ),
                 ),
               ]
