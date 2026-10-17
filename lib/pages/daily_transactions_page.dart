@@ -260,12 +260,16 @@
 //   // دالة تحويل الوزن إلى 24 قيراط
 //   double _convertTo24Karat(double weight, String carat) {
 //     switch (carat) {
+//       case '14':
+//         return weight * (14 / 24);
 //       case '18':
 //         return weight * (18 / 24);
 //       case '21':
 //         return weight * (21 / 24);
 //       case '22':
 //         return weight * (22 / 24);
+//       case '24':
+//         return weight;
 //       default:
 //         return weight;
 //     }
@@ -700,9 +704,27 @@
 //     // ✅ حساب تفاصيل العيارات مع دعم العيارات المتعددة
 //     Map<String, Map<String, double>> _calculateSummary(
 //         List<Map<String, dynamic>> voucherList) {
-//       final Map<String, double> weightMap = {"18": 0, "21": 0, "22": 0};
-//       final Map<String, double> wageMap = {"18": 0, "21": 0, "22": 0};
-//       final Map<String, double> weight24Map = {"18": 0, "21": 0, "22": 0};
+//       final Map<String, double> weightMap = {
+//         "14": 0,
+//         "18": 0,
+//         "21": 0,
+//         "22": 0,
+//         "24": 0
+//       };
+//       final Map<String, double> wageMap = {
+//         "14": 0,
+//         "18": 0,
+//         "21": 0,
+//         "22": 0,
+//         "24": 0
+//       };
+//       final Map<String, double> weight24Map = {
+//         "14": 0,
+//         "18": 0,
+//         "21": 0,
+//         "22": 0,
+//         "24": 0
+//       };
 
 //       for (var v in voucherList) {
 //         // التحقق من وجود عيارات متعددة
@@ -715,7 +737,7 @@
 //             final weight = (c["weight"] ?? 0).toDouble();
 //             final wage = (c["wage"] ?? 0).toDouble();
 
-//             if (["18", "21", "22"].contains(carat)) {
+//             if (["14", "18", "21", "22", "24"].contains(carat)) {
 //               weightMap[carat] = (weightMap[carat] ?? 0) + weight;
 //               wageMap[carat] = (wageMap[carat] ?? 0) + wage;
 //               weight24Map[carat] =
@@ -728,7 +750,7 @@
 //           final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
 //           final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
 
-//           if (["18", "21", "22"].contains(carat)) {
+//           if (["14", "18", "21", "22", "24"].contains(carat)) {
 //             weightMap[carat] = (weightMap[carat] ?? 0) + weight;
 //             wageMap[carat] = (wageMap[carat] ?? 0) + wage;
 //             weight24Map[carat] =
@@ -1002,7 +1024,7 @@
 //     final wageMap = summaryMap["wage"]!;
 //     final weight24Map = summaryMap["weight24"]!;
 
-//     final caratsWithBalance = ["18", "21", "22"].where((c) {
+//     final caratsWithBalance = ["14", "18", "21", "22", "24"].where((c) {
 //       return weightMap[c]!.abs() > 0.0001 || wageMap[c]!.abs() > 0.0001;
 //     }).toList();
 
@@ -1999,7 +2021,7 @@
 // }
 
 // // ============================================================
-// // 🔹 صفحة سند القبض (متعددة العيارات مع عرض الرصيد)
+// // 🔹 صفحة سند القبض (متعددة العيارات مع عرض الرصيد + Scroll)
 // // ============================================================
 // class ReceiptVoucherPage extends StatefulWidget {
 //   const ReceiptVoucherPage({super.key});
@@ -2057,12 +2079,16 @@
 //   // دالة تحويل الوزن إلى 24 قيراط
 //   double _convertTo24Karat(double weight, String carat) {
 //     switch (carat) {
+//       case '14':
+//         return weight * (14 / 24);
 //       case '18':
 //         return weight * (18 / 24);
 //       case '21':
 //         return weight * (21 / 24);
 //       case '22':
 //         return weight * (22 / 24);
+//       case '24':
+//         return weight;
 //       default:
 //         return weight;
 //     }
@@ -2171,7 +2197,7 @@
 //         title: Text(_t("سند القبض", "Receipt Voucher")),
 //         backgroundColor: const Color(0xFFD4AF37),
 //       ),
-//       body: Padding(
+//       body: SingleChildScrollView(
 //         padding: const EdgeInsets.all(12),
 //         child: Column(
 //           children: [
@@ -2333,292 +2359,187 @@
 //               ),
 //             ),
 
-//             // ===== كارت الرصيد =====
-//             // if (supplierId != null) ...[
-//             //   const SizedBox(height: 8),
-//             //   Container(
-//             //     padding: const EdgeInsets.all(12),
-//             //     decoration: BoxDecoration(
-//             //       color: _getNewBalance() > 0
-//             //           ? Colors.green.shade50
-//             //           : _getNewBalance() < 0
-//             //               ? Colors.red.shade50
-//             //               : Colors.grey.shade50,
-//             //       borderRadius: BorderRadius.circular(12),
-//             //       border: Border.all(
-//             //         color: _getNewBalance() > 0
-//             //             ? Colors.green.shade300
-//             //             : _getNewBalance() < 0
-//             //                 ? Colors.red.shade300
-//             //                 : Colors.grey.shade300,
-//             //       ),
-//             //     ),
-//             //     child: Column(
-//             //       children: [
-//             //         Row(
-//             //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             //           children: [
-//             //             Text(
-//             //               _t("الرصيد الحالي (24 قيراط)",
-//             //                   "Current Balance (24K)"),
-//             //               style: const TextStyle(
-//             //                 fontWeight: FontWeight.bold,
-//             //                 fontSize: 14,
-//             //               ),
-//             //             ),
-//             //             if (_isLoadingBalance)
-//             //               const SizedBox(
-//             //                 width: 20,
-//             //                 height: 20,
-//             //                 child: CircularProgressIndicator(strokeWidth: 2),
-//             //               )
-//             //             else
-//             //               Text(
-//             //                 "${_balanceWeight24.toStringAsFixed(2)} ${_t('جم', 'g')}",
-//             //                 style: TextStyle(
-//             //                   fontWeight: FontWeight.bold,
-//             //                   fontSize: 16,
-//             //                   color: _balanceWeight24 > 0
-//             //                       ? Colors.red
-//             //                       : _balanceWeight24 < 0
-//             //                           ? Colors.green
-//             //                           : Colors.grey,
-//             //                 ),
-//             //               ),
-//             //           ],
-//             //         ),
-//             //         const SizedBox(height: 4),
-//             //         Row(
-//             //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             //           children: [
-//             //             Text(
-//             //               _t("الرصيد بعد الإضافة", "Balance After Addition"),
-//             //               style: const TextStyle(
-//             //                 fontWeight: FontWeight.bold,
-//             //                 fontSize: 14,
-//             //               ),
-//             //             ),
-//             //             Text(
-//             //               "${_getNewBalance().toStringAsFixed(2)} ${_t('جم', 'g')}",
-//             //               style: TextStyle(
-//             //                 fontWeight: FontWeight.bold,
-//             //                 fontSize: 16,
-//             //                 color: _getNewBalance() > 0
-//             //                     ? Colors.red
-//             //                     : _getNewBalance() < 0
-//             //                         ? Colors.green
-//             //                         : Colors.grey,
-//             //               ),
-//             //             ),
-//             //           ],
-//             //         ),
-//             //         if (_calculateTotalWeight24() > 0) ...[
-//             //           const SizedBox(height: 4),
-//             //           Container(
-//             //             padding: const EdgeInsets.symmetric(
-//             //                 horizontal: 8, vertical: 2),
-//             //             decoration: BoxDecoration(
-//             //               color: Colors.blue.shade50,
-//             //               borderRadius: BorderRadius.circular(8),
-//             //             ),
-//             //             child: Text(
-//             //               "${_t('قيد الإضافة', 'Adding')}: ${_calculateTotalWeight24().toStringAsFixed(2)} ${_t('جم (معادل 24)', 'g (equiv. 24K)')}",
-//             //               style: TextStyle(
-//             //                 fontSize: 12,
-//             //                 color: Colors.blue.shade700,
-//             //               ),
-//             //             ),
-//             //           ),
-//             //         ],
-//             //       ],
-//             //     ),
-//             //   ),
-//             // ],
-
 //             const SizedBox(height: 8),
 
 //             // بطاقة العيارات المتعددة
-//             Expanded(
-//               child: Card(
-//                 elevation: 2,
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(12),
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Row(
-//                         children: [
-//                           const Icon(Icons.category,
-//                               color: Color(0xFFD4AF37), size: 20),
-//                           const SizedBox(width: 6),
-//                           Text(
-//                             _t("العيارات", "Carats"),
+//             Card(
+//               elevation: 2,
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(12),
+//               ),
+//               child: Padding(
+//                 padding: const EdgeInsets.all(12),
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Row(
+//                       children: [
+//                         const Icon(Icons.category,
+//                             color: Color(0xFFD4AF37), size: 20),
+//                         const SizedBox(width: 6),
+//                         Text(
+//                           _t("العيارات", "Carats"),
+//                           style: const TextStyle(
+//                             fontSize: 16,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         const Spacer(),
+//                         IconButton(
+//                           icon: const Icon(Icons.add_circle,
+//                               color: Color(0xFFD4AF37), size: 28),
+//                           onPressed: _addNewCaratItem,
+//                           tooltip: _t("إضافة عيار", "Add Carat"),
+//                         ),
+//                         Container(
+//                           padding: const EdgeInsets.symmetric(
+//                               horizontal: 10, vertical: 4),
+//                           decoration: BoxDecoration(
+//                             color: const Color(0xFFD4AF37).withOpacity(0.1),
+//                             borderRadius: BorderRadius.circular(12),
+//                           ),
+//                           child: Text(
+//                             "${_t('الإجمالي', 'Total')}: ${_calculateTotalWeight().toStringAsFixed(2)} ${_t('جم', 'g')}",
 //                             style: const TextStyle(
-//                               fontSize: 16,
 //                               fontWeight: FontWeight.bold,
+//                               fontSize: 13,
+//                               color: Color(0xFFD4AF37),
 //                             ),
 //                           ),
-//                           const Spacer(),
-//                           IconButton(
-//                             icon: const Icon(Icons.add_circle,
-//                                 color: Color(0xFFD4AF37), size: 28),
-//                             onPressed: _addNewCaratItem,
-//                             tooltip: _t("إضافة عيار", "Add Carat"),
-//                           ),
-//                           Container(
-//                             padding: const EdgeInsets.symmetric(
-//                                 horizontal: 10, vertical: 4),
-//                             decoration: BoxDecoration(
-//                               color: const Color(0xFFD4AF37).withOpacity(0.1),
-//                               borderRadius: BorderRadius.circular(12),
+//                         ),
+//                       ],
+//                     ),
+//                     const Divider(height: 12),
+
+//                     // قائمة العيارات (Column بدل ListView للسماح بالسكرول الكلي)
+//                     Column(
+//                       children: caratItems
+//                           .asMap()
+//                           .entries
+//                           .map((e) => _buildCaratItem(e.key, e.value))
+//                           .toList(),
+//                     ),
+
+//                     const SizedBox(height: 4),
+
+//                     // إجمالي الأجور
+//                     Container(
+//                       padding: const EdgeInsets.symmetric(
+//                           horizontal: 12, vertical: 8),
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFFD4AF37).withOpacity(0.08),
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Text(
+//                             _t("إجمالي الأجور", "Total Wages"),
+//                             style: const TextStyle(
+//                               fontWeight: FontWeight.bold,
+//                               fontSize: 14,
 //                             ),
-//                             child: Text(
-//                               "${_t('الإجمالي', 'Total')}: ${_calculateTotalWeight().toStringAsFixed(2)} ${_t('جم', 'g')}",
-//                               style: const TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 13,
-//                                 color: Color(0xFFD4AF37),
-//                               ),
+//                           ),
+//                           Text(
+//                             "${_calculateTotalWage().toStringAsFixed(2)}",
+//                             style: const TextStyle(
+//                               fontWeight: FontWeight.bold,
+//                               fontSize: 16,
+//                               color: Color(0xFFD4AF37),
 //                             ),
 //                           ),
 //                         ],
 //                       ),
-//                       const Divider(height: 12),
+//                     ),
 
-//                       // قائمة العيارات
-//                       Expanded(
-//                         child: ListView.builder(
-//                           itemCount: caratItems.length,
-//                           itemBuilder: (context, index) {
-//                             final item = caratItems[index];
-//                             return _buildCaratItem(index, item);
-//                           },
-//                         ),
-//                       ),
+//                     const SizedBox(height: 8),
 
-//                       // إجمالي الأجور
-//                       Container(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 12, vertical: 8),
-//                         decoration: BoxDecoration(
-//                           color: const Color(0xFFD4AF37).withOpacity(0.08),
-//                           borderRadius: BorderRadius.circular(10),
+//                     // زر الحفظ
+//                     SizedBox(
+//                       width: double.infinity,
+//                       height: 44,
+//                       child: ElevatedButton.icon(
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: const Color(0xFFD4AF37),
+//                           shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(10)),
 //                         ),
-//                         child: Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             Text(
-//                               _t("إجمالي الأجور", "Total Wages"),
-//                               style: const TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 14,
+//                         icon: const Icon(Icons.save,
+//                             color: Colors.white, size: 20),
+//                         label: Text(
+//                           _t("حفظ", "Save"),
+//                           style: const TextStyle(
+//                               color: Colors.white,
+//                               fontSize: 16,
+//                               fontWeight: FontWeight.bold),
+//                         ),
+//                         onPressed: () async {
+//                           if (supplierId == null || delegate == null) {
+//                             ScaffoldMessenger.of(context).showSnackBar(
+//                               SnackBar(
+//                                 content: Text(_t("يرجى اختيار المورد والمندوب",
+//                                     "Please select supplier and delegate")),
+//                                 backgroundColor: Colors.orange,
 //                               ),
-//                             ),
-//                             Text(
-//                               "${_calculateTotalWage().toStringAsFixed(2)}",
-//                               style: const TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 16,
-//                                 color: Color(0xFFD4AF37),
-//                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       ),
-
-//                       const SizedBox(height: 8),
-
-//                       // زر الحفظ
-//                       SizedBox(
-//                         width: double.infinity,
-//                         height: 44,
-//                         child: ElevatedButton.icon(
-//                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: const Color(0xFFD4AF37),
-//                             shape: RoundedRectangleBorder(
-//                                 borderRadius: BorderRadius.circular(10)),
-//                           ),
-//                           icon: const Icon(Icons.save,
-//                               color: Colors.white, size: 20),
-//                           label: Text(
-//                             _t("حفظ", "Save"),
-//                             style: const TextStyle(
-//                                 color: Colors.white,
-//                                 fontSize: 16,
-//                                 fontWeight: FontWeight.bold),
-//                           ),
-//                           onPressed: () async {
-//                             if (supplierId == null || delegate == null) {
-//                               ScaffoldMessenger.of(context).showSnackBar(
-//                                 SnackBar(
-//                                   content: Text(_t(
-//                                       "يرجى اختيار المورد والمندوب",
-//                                       "Please select supplier and delegate")),
-//                                   backgroundColor: Colors.orange,
-//                                 ),
-//                               );
-//                               return;
-//                             }
-
-//                             final validItems = caratItems
-//                                 .where((item) =>
-//                                     item['carat'] != null && item['weight'] > 0)
-//                                 .toList();
-
-//                             if (validItems.isEmpty) {
-//                               ScaffoldMessenger.of(context).showSnackBar(
-//                                 SnackBar(
-//                                   content: Text(_t(
-//                                       "يرجى إدخال عيار واحد على الأقل",
-//                                       "Please enter at least one carat")),
-//                                   backgroundColor: Colors.orange,
-//                                 ),
-//                               );
-//                               return;
-//                             }
-
-//                             // تجهيز بيانات العيارات المتعددة
-//                             List<Map<String, dynamic>> caratsData = [];
-//                             for (var item in validItems) {
-//                               caratsData.add({
-//                                 'carat': item['carat'].toString(),
-//                                 'weight': item['weight'],
-//                                 'wage': item['wage'] ?? 0,
-//                               });
-//                             }
-
-//                             // حفظ السند مع جميع العيارات
-//                             await FS.addReceiptVoucher(
-//                               supplierId: supplierId!,
-//                               supplierName: supplierName!,
-//                               delegate: delegate!,
-//                               carat: 'multiple',
-//                               weight: _calculateTotalWeight(),
-//                               wage: _calculateTotalWage(),
-//                               date: date!,
-//                               carats: caratsData,
 //                             );
+//                             return;
+//                           }
 
+//                           final validItems = caratItems
+//                               .where((item) =>
+//                                   item['carat'] != null && item['weight'] > 0)
+//                               .toList();
+
+//                           if (validItems.isEmpty) {
 //                             ScaffoldMessenger.of(context).showSnackBar(
 //                               SnackBar(
 //                                 content: Text(_t(
-//                                     "تم حفظ السند بنجاح ✅ مع ${validItems.length} عيار",
-//                                     "Receipt voucher saved successfully ✅ with ${validItems.length} carats")),
-//                                 backgroundColor: Colors.green,
+//                                     "يرجى إدخال عيار واحد على الأقل",
+//                                     "Please enter at least one carat")),
+//                                 backgroundColor: Colors.orange,
 //                               ),
 //                             );
+//                             return;
+//                           }
 
-//                             Future.delayed(const Duration(seconds: 1), () {
-//                               Navigator.pop(context);
+//                           // تجهيز بيانات العيارات المتعددة
+//                           List<Map<String, dynamic>> caratsData = [];
+//                           for (var item in validItems) {
+//                             caratsData.add({
+//                               'carat': item['carat'].toString(),
+//                               'weight': item['weight'],
+//                               'wage': item['wage'] ?? 0,
 //                             });
-//                           },
-//                         ),
+//                           }
+
+//                           // حفظ السند مع جميع العيارات
+//                           await FS.addReceiptVoucher(
+//                             supplierId: supplierId!,
+//                             supplierName: supplierName!,
+//                             delegate: delegate!,
+//                             carat: 'multiple',
+//                             weight: _calculateTotalWeight(),
+//                             wage: _calculateTotalWage(),
+//                             date: date!,
+//                             carats: caratsData,
+//                           );
+
+//                           ScaffoldMessenger.of(context).showSnackBar(
+//                             SnackBar(
+//                               content: Text(_t(
+//                                   "تم حفظ السند بنجاح ✅ مع ${validItems.length} عيار",
+//                                   "Receipt voucher saved successfully ✅ with ${validItems.length} carats")),
+//                               backgroundColor: Colors.green,
+//                             ),
+//                           );
+
+//                           Future.delayed(const Duration(seconds: 1), () {
+//                             Navigator.pop(context);
+//                           });
+//                         },
 //                       ),
-//                     ],
-//                   ),
+//                     ),
+//                   ],
 //                 ),
 //               ),
 //             ),
@@ -2653,7 +2574,7 @@
 //                 isDense: true,
 //               ),
 //               value: item['carat']?.toString(),
-//               items: ["18", "21", "22"].map((c) {
+//               items: ["14", "18", "21", "22", "24"].map((c) {
 //                 return DropdownMenuItem(
 //                   value: c,
 //                   child: Text(c),
@@ -2728,10 +2649,10 @@
 // }
 
 // // ============================================================
-// // 🔹 صفحة سند الصرف (متعددة العيارات مع عرض الرصيد)
-// // ============================================================
-// // ============================================================
-// // 🔹 صفحة سند الصرف (متعددة العيارات مع عرض الرصيد)
+// // 🔹 صفحة سند الصرف (متعددة العيارات + خيار الدفع)
+// //     ✅ تم إضافة: خصم من رصيد المورد دايماً
+// //     ✅ تم إضافة: خصم من الكسر فقط عند اختيار "من الكسر"
+// //     ✅ تم إضافة: إنشاء تسكيرة عند اختيار "من مكتب التسكيرات"
 // // ============================================================
 // class PaymentVoucherPage extends StatefulWidget {
 //   const PaymentVoucherPage({super.key});
@@ -2757,6 +2678,14 @@
 //   double _balanceWage = 0.0;
 //   bool _isLoadingBalance = false;
 
+//   // ===== خيار نوع الدفع =====
+//   String _paymentType =
+//       'scrap'; // 'scrap' = من الكسر | 'mint' = من مكتب التسكيرات
+//   String? _selectedOfficeId;
+//   String? _selectedOfficeName;
+//   List<Map<String, dynamic>> _offices = [];
+//   bool _isLoadingOffices = false;
+
 //   String _lang = 'ar';
 //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
 
@@ -2765,6 +2694,7 @@
 //     super.initState();
 //     _loadLanguage();
 //     _addNewCaratItem();
+//     _loadOffices();
 //   }
 
 //   Future<void> _loadLanguage() async {
@@ -2772,6 +2702,25 @@
 //     setState(() {
 //       _lang = prefs.getString('languageCode') ?? 'ar';
 //     });
+//   }
+
+//   // تحميل مكاتب التسكيرات
+//   Future<void> _loadOffices() async {
+//     setState(() => _isLoadingOffices = true);
+//     try {
+//       final list = await FS.getMintOffices();
+//       setState(() {
+//         _offices = list;
+//         if (_offices.isNotEmpty) {
+//           _selectedOfficeId = _offices.first['id'].toString();
+//           _selectedOfficeName = _offices.first['name'];
+//         }
+//       });
+//     } catch (e) {
+//       print('❌ خطأ في تحميل المكاتب: $e');
+//     } finally {
+//       setState(() => _isLoadingOffices = false);
+//     }
 //   }
 
 //   void _addNewCaratItem() {
@@ -2793,12 +2742,16 @@
 //   // دالة تحويل الوزن إلى 24 قيراط
 //   double _convertTo24Karat(double weight, String carat) {
 //     switch (carat) {
+//       case '14':
+//         return weight * (14 / 24);
 //       case '18':
 //         return weight * (18 / 24);
 //       case '21':
 //         return weight * (21 / 24);
 //       case '22':
 //         return weight * (22 / 24);
+//       case '24':
+//         return weight;
 //       default:
 //         return weight;
 //     }
@@ -2834,7 +2787,7 @@
 //     return total;
 //   }
 
-//   // ✅ جلب رصيد المورد محول إلى 24 قيراط (مصحح)
+//   // ✅ جلب رصيد المورد محول إلى 24 قيراط
 //   Future<void> _loadSupplierBalance(String supplierId) async {
 //     setState(() => _isLoadingBalance = true);
 //     try {
@@ -2844,11 +2797,9 @@
 //       double payG = 0, recG = 0;
 
 //       for (var v in vouchers) {
-//         // التحقق من وجود عيارات متعددة
 //         final carats = v["carats"] as List?;
 
 //         if (carats != null && carats.isNotEmpty) {
-//           // إذا كان السند يحتوي على عيارات متعددة
 //           for (var c in carats) {
 //             final weight = (c["weight"] ?? 0).toDouble();
 //             final wage = (c["wage"] ?? 0).toDouble();
@@ -2864,7 +2815,6 @@
 //             }
 //           }
 //         } else {
-//           // السند العادي (عيار واحد)
 //           final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
 //           final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
 //           final carat = (v["carat"] ?? "").toString();
@@ -2880,7 +2830,6 @@
 //         }
 //       }
 
-//       // ✅ الرصيد = القبض - الصرف (محول إلى 24 قيراط)
 //       final balanceWeight = recW - payW;
 //       final balanceWage = recG - payG;
 
@@ -2895,7 +2844,6 @@
 //     }
 //   }
 
-//   // حساب الرصيد المتبقي بعد الخصم
 //   double _getRemainingBalance() {
 //     return _balanceWeight24 - _calculateTotalWeight24();
 //   }
@@ -2907,7 +2855,7 @@
 //         title: Text(_t("سند الصرف", "Payment Voucher")),
 //         backgroundColor: const Color(0xFFD4AF37),
 //       ),
-//       body: Padding(
+//       body: SingleChildScrollView(
 //         padding: const EdgeInsets.all(12),
 //         child: Column(
 //           children: [
@@ -3088,6 +3036,116 @@
 //                       }).toList(),
 //                       onChanged: (v) => setState(() => paymentMethod = v),
 //                     ),
+
+//                     // ===== نوع الدفع (من الكسر / من مكتب التسكيرات) =====
+//                     const SizedBox(height: 12),
+//                     Text(
+//                       _t("نوع الدفع", "Payment Type"),
+//                       style: const TextStyle(
+//                           fontWeight: FontWeight.w600, fontSize: 14),
+//                     ),
+//                     const SizedBox(height: 6),
+//                     Container(
+//                       decoration: BoxDecoration(
+//                         color: Colors.grey.shade100,
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       padding: const EdgeInsets.all(4),
+//                       child: Row(
+//                         children: [
+//                           Expanded(
+//                             child: GestureDetector(
+//                               onTap: () =>
+//                                   setState(() => _paymentType = 'scrap'),
+//                               child: AnimatedContainer(
+//                                 duration: const Duration(milliseconds: 200),
+//                                 padding:
+//                                     const EdgeInsets.symmetric(vertical: 10),
+//                                 decoration: BoxDecoration(
+//                                   color: _paymentType == 'scrap'
+//                                       ? const Color(0xFFD4AF37)
+//                                       : Colors.transparent,
+//                                   borderRadius: BorderRadius.circular(8),
+//                                 ),
+//                                 child: Center(
+//                                   child: Text(
+//                                     _t("من الكسر", "From Scrap"),
+//                                     style: TextStyle(
+//                                       color: _paymentType == 'scrap'
+//                                           ? Colors.white
+//                                           : Colors.black87,
+//                                       fontWeight: FontWeight.bold,
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                           Expanded(
+//                             child: GestureDetector(
+//                               onTap: () =>
+//                                   setState(() => _paymentType = 'mint'),
+//                               child: AnimatedContainer(
+//                                 duration: const Duration(milliseconds: 200),
+//                                 padding:
+//                                     const EdgeInsets.symmetric(vertical: 10),
+//                                 decoration: BoxDecoration(
+//                                   color: _paymentType == 'mint'
+//                                       ? const Color(0xFFD4AF37)
+//                                       : Colors.transparent,
+//                                   borderRadius: BorderRadius.circular(8),
+//                                 ),
+//                                 child: Center(
+//                                   child: Text(
+//                                     _t("من مكتب التسكيرات", "From Mint Office"),
+//                                     style: TextStyle(
+//                                       color: _paymentType == 'mint'
+//                                           ? Colors.white
+//                                           : Colors.black87,
+//                                       fontWeight: FontWeight.bold,
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ),
+//                             ),
+//                           ),
+//                         ],
+//                       ),
+//                     ),
+
+//                     // اختيار المكتب (يظهر فقط عند اختيار mint)
+//                     if (_paymentType == 'mint') ...[
+//                       const SizedBox(height: 12),
+//                       _isLoadingOffices
+//                           ? const Center(child: CircularProgressIndicator())
+//                           : DropdownButtonFormField<String>(
+//                               decoration: InputDecoration(
+//                                 labelText: _t("اختر مكتب التسكيرات",
+//                                     "Select Mint Office"),
+//                                 border: OutlineInputBorder(
+//                                   borderRadius: BorderRadius.circular(10),
+//                                 ),
+//                                 contentPadding: const EdgeInsets.symmetric(
+//                                     horizontal: 12, vertical: 8),
+//                                 prefixIcon: const Icon(Icons.business,
+//                                     color: Color(0xFFD4AF37), size: 20),
+//                               ),
+//                               value: _selectedOfficeId,
+//                               items: _offices.map((o) {
+//                                 return DropdownMenuItem(
+//                                   value: o['id'].toString(),
+//                                   child: Text(o['name']),
+//                                 );
+//                               }).toList(),
+//                               onChanged: (v) {
+//                                 setState(() {
+//                                   _selectedOfficeId = v;
+//                                   _selectedOfficeName = _offices.firstWhere(
+//                                       (o) => o['id'].toString() == v)['name'];
+//                                 });
+//                               },
+//                             ),
+//                     ],
 
 //                     // حقول المبالغ حسب طريقة الدفع
 //                     if (paymentMethod == _t("كاش", "Cash") ||
@@ -3288,298 +3346,255 @@
 //             const SizedBox(height: 8),
 
 //             // بطاقة العيارات المتعددة
-//             Expanded(
-//               child: Card(
-//                 elevation: 2,
-//                 shape: RoundedRectangleBorder(
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(12),
-//                   child: Column(
-//                     crossAxisAlignment: CrossAxisAlignment.start,
-//                     children: [
-//                       Row(
-//                         children: [
-//                           const Icon(Icons.category,
-//                               color: Color(0xFFD4AF37), size: 20),
-//                           const SizedBox(width: 6),
-//                           Text(
-//                             _t("العيارات", "Carats"),
+//             Card(
+//               elevation: 2,
+//               shape: RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(12),
+//               ),
+//               child: Padding(
+//                 padding: const EdgeInsets.all(12),
+//                 child: Column(
+//                   crossAxisAlignment: CrossAxisAlignment.start,
+//                   children: [
+//                     Row(
+//                       children: [
+//                         const Icon(Icons.category,
+//                             color: Color(0xFFD4AF37), size: 20),
+//                         const SizedBox(width: 6),
+//                         Text(
+//                           _t("العيارات", "Carats"),
+//                           style: const TextStyle(
+//                             fontSize: 16,
+//                             fontWeight: FontWeight.bold,
+//                           ),
+//                         ),
+//                         const Spacer(),
+//                         IconButton(
+//                           icon: const Icon(Icons.add_circle,
+//                               color: Color(0xFFD4AF37), size: 28),
+//                           onPressed: _addNewCaratItem,
+//                           tooltip: _t("إضافة عيار", "Add Carat"),
+//                         ),
+//                         Container(
+//                           padding: const EdgeInsets.symmetric(
+//                               horizontal: 10, vertical: 4),
+//                           decoration: BoxDecoration(
+//                             color: const Color(0xFFD4AF37).withOpacity(0.1),
+//                             borderRadius: BorderRadius.circular(12),
+//                           ),
+//                           child: Text(
+//                             "${_t('الإجمالي', 'Total')}: ${_calculateTotalWeight().toStringAsFixed(2)} ${_t('جم', 'g')}",
 //                             style: const TextStyle(
-//                               fontSize: 16,
 //                               fontWeight: FontWeight.bold,
+//                               fontSize: 13,
+//                               color: Color(0xFFD4AF37),
 //                             ),
 //                           ),
-//                           const Spacer(),
-//                           IconButton(
-//                             icon: const Icon(Icons.add_circle,
-//                                 color: Color(0xFFD4AF37), size: 28),
-//                             onPressed: _addNewCaratItem,
-//                             tooltip: _t("إضافة عيار", "Add Carat"),
-//                           ),
-//                           Container(
-//                             padding: const EdgeInsets.symmetric(
-//                                 horizontal: 10, vertical: 4),
-//                             decoration: BoxDecoration(
-//                               color: const Color(0xFFD4AF37).withOpacity(0.1),
-//                               borderRadius: BorderRadius.circular(12),
+//                         ),
+//                       ],
+//                     ),
+//                     const Divider(height: 12),
+
+//                     Column(
+//                       children: caratItems
+//                           .asMap()
+//                           .entries
+//                           .map((e) => _buildCaratItem(e.key, e.value))
+//                           .toList(),
+//                     ),
+
+//                     const SizedBox(height: 4),
+
+//                     Container(
+//                       padding: const EdgeInsets.symmetric(
+//                           horizontal: 12, vertical: 8),
+//                       decoration: BoxDecoration(
+//                         color: const Color(0xFFD4AF37).withOpacity(0.08),
+//                         borderRadius: BorderRadius.circular(10),
+//                       ),
+//                       child: Row(
+//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                         children: [
+//                           Text(
+//                             _t("إجمالي الأجور", "Total Wages"),
+//                             style: const TextStyle(
+//                               fontWeight: FontWeight.bold,
+//                               fontSize: 14,
 //                             ),
-//                             child: Text(
-//                               "${_t('الإجمالي', 'Total')}: ${_calculateTotalWeight().toStringAsFixed(2)} ${_t('جم', 'g')}",
-//                               style: const TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 13,
-//                                 color: Color(0xFFD4AF37),
-//                               ),
+//                           ),
+//                           Text(
+//                             "${_calculateTotalWage().toStringAsFixed(2)}",
+//                             style: const TextStyle(
+//                               fontWeight: FontWeight.bold,
+//                               fontSize: 16,
+//                               color: Color(0xFFD4AF37),
 //                             ),
 //                           ),
 //                         ],
 //                       ),
-//                       const Divider(height: 12),
+//                     ),
 
-//                       // قائمة العيارات
-//                       Expanded(
-//                         child: ListView.builder(
-//                           itemCount: caratItems.length,
-//                           itemBuilder: (context, index) {
-//                             final item = caratItems[index];
-//                             return _buildCaratItem(index, item);
-//                           },
-//                         ),
-//                       ),
+//                     const SizedBox(height: 8),
 
-//                       // إجمالي الأجور
-//                       Container(
-//                         padding: const EdgeInsets.symmetric(
-//                             horizontal: 12, vertical: 8),
-//                         decoration: BoxDecoration(
-//                           color: const Color(0xFFD4AF37).withOpacity(0.08),
-//                           borderRadius: BorderRadius.circular(10),
+//                     // ============================================================
+//                     // زر الحفظ
+//                     // ============================================================
+//                     SizedBox(
+//                       width: double.infinity,
+//                       height: 44,
+//                       child: ElevatedButton.icon(
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: const Color(0xFFD4AF37),
+//                           shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(10)),
 //                         ),
-//                         child: Row(
-//                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                           children: [
-//                             Text(
-//                               _t("إجمالي الأجور", "Total Wages"),
-//                               style: const TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 14,
+//                         icon: const Icon(Icons.save,
+//                             color: Colors.white, size: 20),
+//                         label: Text(
+//                           _t("حفظ", "Save"),
+//                           style: const TextStyle(
+//                               color: Colors.white,
+//                               fontSize: 16,
+//                               fontWeight: FontWeight.bold),
+//                         ),
+//                         onPressed: () async {
+//                           // ===== 1) التحقق من البيانات =====
+//                           if (supplierId == null ||
+//                               delegate == null ||
+//                               paymentMethod == null) {
+//                             ScaffoldMessenger.of(context).showSnackBar(
+//                               SnackBar(
+//                                 content: Text(_t(
+//                                     "يرجى إدخال جميع البيانات المطلوبة",
+//                                     "Please fill all required fields")),
+//                                 backgroundColor: Colors.orange,
 //                               ),
-//                             ),
-//                             Text(
-//                               "${_calculateTotalWage().toStringAsFixed(2)}",
-//                               style: const TextStyle(
-//                                 fontWeight: FontWeight.bold,
-//                                 fontSize: 16,
-//                                 color: Color(0xFFD4AF37),
+//                             );
+//                             return;
+//                           }
+
+//                           if (_paymentType == 'mint' &&
+//                               _selectedOfficeId == null) {
+//                             ScaffoldMessenger.of(context).showSnackBar(
+//                               SnackBar(
+//                                 content: Text(_t("يرجى اختيار مكتب التسكيرات",
+//                                     "Please select mint office")),
+//                                 backgroundColor: Colors.orange,
 //                               ),
-//                             ),
-//                           ],
-//                         ),
-//                       ),
+//                             );
+//                             return;
+//                           }
 
-//                       const SizedBox(height: 8),
+//                           final validItems = caratItems
+//                               .where((item) =>
+//                                   item['carat'] != null && item['weight'] > 0)
+//                               .toList();
 
-//                       // زر الحفظ
-//                       SizedBox(
-//                         width: double.infinity,
-//                         height: 44,
-//                         child: ElevatedButton.icon(
-//                             style: ElevatedButton.styleFrom(
-//                               backgroundColor: const Color(0xFFD4AF37),
-//                               shape: RoundedRectangleBorder(
-//                                   borderRadius: BorderRadius.circular(10)),
-//                             ),
-//                             icon: const Icon(Icons.save,
-//                                 color: Colors.white, size: 20),
-//                             label: Text(
-//                               _t("حفظ", "Save"),
-//                               style: const TextStyle(
-//                                   color: Colors.white,
-//                                   fontSize: 16,
-//                                   fontWeight: FontWeight.bold),
-//                             ),
-//                             onPressed: () async {
-//                               if (supplierId == null ||
-//                                   delegate == null ||
-//                                   paymentMethod == null) {
-//                                 ScaffoldMessenger.of(context).showSnackBar(
-//                                   SnackBar(
-//                                     content: Text(_t(
-//                                         "يرجى إدخال جميع البيانات المطلوبة",
-//                                         "Please fill all required fields")),
-//                                     backgroundColor: Colors.orange,
-//                                   ),
-//                                 );
-//                                 return;
-//                               }
+//                           if (validItems.isEmpty) {
+//                             ScaffoldMessenger.of(context).showSnackBar(
+//                               SnackBar(
+//                                 content: Text(_t(
+//                                     "يرجى إدخال عيار واحد على الأقل",
+//                                     "Please enter at least one carat")),
+//                                 backgroundColor: Colors.orange,
+//                               ),
+//                             );
+//                             return;
+//                           }
 
-//                               final validItems = caratItems
-//                                   .where((item) =>
-//                                       item['carat'] != null &&
-//                                       item['weight'] > 0)
-//                                   .toList();
+//                           // تجهيز بيانات العيارات
+//                           List<Map<String, dynamic>> caratsData = [];
+//                           for (var item in validItems) {
+//                             caratsData.add({
+//                               'carat': item['carat'].toString(),
+//                               'weight': item['weight'],
+//                               'wage': item['wage'] ?? 0,
+//                             });
+//                           }
 
-//                               if (validItems.isEmpty) {
-//                                 ScaffoldMessenger.of(context).showSnackBar(
-//                                   SnackBar(
-//                                     content: Text(_t(
-//                                         "يرجى إدخال عيار واحد على الأقل",
-//                                         "Please enter at least one carat")),
-//                                     backgroundColor: Colors.orange,
-//                                   ),
-//                                 );
-//                                 return;
-//                               }
+//                           // ============================================================
+//                           // ✅ 1) حفظ سند الصرف دايماً
+//                           //      (بيخصم من رصيد المورد في الحالتين)
+//                           //      affectsScrap = true للكسر / false للمكتب
+//                           // ============================================================
+//                           await FS.addPaymentVoucher(
+//                             supplierId: supplierId!,
+//                             supplierName: supplierName!,
+//                             delegate: delegate!,
+//                             carat: 'multiple',
+//                             weight: _calculateTotalWeight(),
+//                             wage: _calculateTotalWage(),
+//                             paymentMethod: paymentMethod!,
+//                             cash: cashCtrl.text.isEmpty
+//                                 ? null
+//                                 : double.parse(cashCtrl.text),
+//                             network: networkCtrl.text.isEmpty
+//                                 ? null
+//                                 : double.parse(networkCtrl.text),
+//                             date: date!,
+//                             carats: caratsData,
+//                             affectsScrap: _paymentType == 'scrap',
+//                           );
 
-//                               // تجهيز بيانات العيارات المتعددة
-//                               List<Map<String, dynamic>> caratsData = [];
-//                               for (var item in validItems) {
-//                                 caratsData.add({
-//                                   'carat': item['carat'].toString(),
-//                                   'weight': item['weight'],
-//                                   'wage': item['wage'] ?? 0,
-//                                 });
-//                               }
+//                           // ============================================================
+//                           // ✅ 2) لو mint، اعمل تسكيرة كمان
+//                           // ============================================================
+//                           if (_paymentType == 'mint') {
+//                             final totalWeight = _calculateTotalWeight();
+//                             final totalWage = _calculateTotalWage();
+//                             final cashAmount =
+//                                 double.tryParse(cashCtrl.text) ?? 0;
+//                             final networkAmount =
+//                                 double.tryParse(networkCtrl.text) ?? 0;
+//                             final totalMoney = cashAmount + networkAmount;
 
-//                               // حفظ السند - الدالة تقوم تلقائياً بخصم الكسر
-//                               await FS.addPaymentVoucher(
-//                                 supplierId: supplierId!,
-//                                 supplierName: supplierName!,
-//                                 delegate: delegate!,
-//                                 carat: 'multiple',
-//                                 weight: _calculateTotalWeight(),
-//                                 wage: _calculateTotalWage(),
-//                                 paymentMethod: paymentMethod!,
-//                                 cash: cashCtrl.text.isEmpty
-//                                     ? null
-//                                     : double.parse(cashCtrl.text),
-//                                 network: networkCtrl.text.isEmpty
-//                                     ? null
-//                                     : double.parse(networkCtrl.text),
-//                                 date: date!,
-//                                 carats: caratsData,
-//                               );
+//                             final caratForMinting = validItems.length == 1
+//                                 ? validItems.first['carat'].toString()
+//                                 : 'multiple';
 
-//                               ScaffoldMessenger.of(context).showSnackBar(
-//                                 SnackBar(
-//                                   content: Text(_t(
-//                                       "تم حفظ السند بنجاح ✅ مع ${validItems.length} عيار وتم خصم الكسر",
-//                                       "Payment voucher saved successfully ✅ with ${validItems.length} carats and scrap deducted")),
-//                                   backgroundColor: Colors.green,
-//                                 ),
-//                               );
-
-//                               Future.delayed(const Duration(seconds: 1), () {
-//                                 Navigator.pop(context);
-//                               });
+//                             String payMethodForMint = 'cash';
+//                             if (paymentMethod == _t("شبكة", "Network")) {
+//                               payMethodForMint = 'network';
+//                             } else if (paymentMethod == _t("متعدد", "Mixed")) {
+//                               payMethodForMint = 'mixed';
 //                             }
-//                             // onPressed: () async {
-//                             //   if (supplierId == null ||
-//                             //       delegate == null ||
-//                             //       paymentMethod == null) {
-//                             //     ScaffoldMessenger.of(context).showSnackBar(
-//                             //       SnackBar(
-//                             //         content: Text(_t(
-//                             //             "يرجى إدخال جميع البيانات المطلوبة",
-//                             //             "Please fill all required fields")),
-//                             //         backgroundColor: Colors.orange,
-//                             //       ),
-//                             //     );
-//                             //     return;
-//                             //   }
 
-//                             //   final validItems = caratItems
-//                             //       .where((item) =>
-//                             //           item['carat'] != null && item['weight'] > 0)
-//                             //       .toList();
+//                             await FS.addMinting(
+//                               supplierId: supplierId!,
+//                               supplierName: supplierName!,
+//                               officeId: _selectedOfficeId!,
+//                               officeName: _selectedOfficeName ?? '',
+//                               carat: caratForMinting,
+//                               weight: totalWeight,
+//                               goldPrice: totalMoney,
+//                               manufacturing: totalWage,
+//                               paymentMethod: payMethodForMint,
+//                               date: date!,
+//                             );
+//                           }
 
-//                             //   if (validItems.isEmpty) {
-//                             //     ScaffoldMessenger.of(context).showSnackBar(
-//                             //       SnackBar(
-//                             //         content: Text(_t(
-//                             //             "يرجى إدخال عيار واحد على الأقل",
-//                             //             "Please enter at least one carat")),
-//                             //         backgroundColor: Colors.orange,
-//                             //       ),
-//                             //     );
-//                             //     return;
-//                             //   }
+//                           // ===== رسالة النجاح =====
+//                           final msg = _paymentType == 'mint'
+//                               ? _t(
+//                                   "✅ تم خصم رصيد المورد وإنشاء تسكيرة في مكتب $_selectedOfficeName",
+//                                   "✅ Supplier balance deducted & minting created at $_selectedOfficeName")
+//                               : _t("✅ تم حفظ السند وخصم الكسر ورصيد المورد",
+//                                   "✅ Voucher saved, scrap & supplier balance deducted");
 
-//                             //   // تجهيز بيانات العيارات المتعددة
-//                             //   List<Map<String, dynamic>> caratsData = [];
-//                             //   for (var item in validItems) {
-//                             //     caratsData.add({
-//                             //       'carat': item['carat'].toString(),
-//                             //       'weight': item['weight'],
-//                             //       'wage': item['wage'] ?? 0,
-//                             //     });
-//                             //   }
-
-//                             //   // حفظ السند مع جميع العيارات
-//                             //   await FS.addPaymentVoucher(
-//                             //     supplierId: supplierId!,
-//                             //     supplierName: supplierName!,
-//                             //     delegate: delegate!,
-//                             //     carat: 'multiple',
-//                             //     weight: _calculateTotalWeight(),
-//                             //     wage: _calculateTotalWage(),
-//                             //     paymentMethod: paymentMethod!,
-//                             //     cash: cashCtrl.text.isEmpty
-//                             //         ? null
-//                             //         : double.parse(cashCtrl.text),
-//                             //     network: networkCtrl.text.isEmpty
-//                             //         ? null
-//                             //         : double.parse(networkCtrl.text),
-//                             //     date: date!,
-//                             //     carats: caratsData,
-//                             //   );
-
-//                             //   // ✅ خصم من الكسر لكل عيار
-//                             //   for (var item in validItems) {
-//                             //     await FS.saveScrapPayment({
-//                             //       "carat": item['carat'].toString(),
-//                             //       "weight": item['weight'],
-//                             //       "wage": item['wage'] ?? 0,
-//                             //       "person": supplierName!,
-//                             //       "paymentType": paymentMethod!,
-//                             //       "cash": cashCtrl.text.isEmpty
-//                             //           ? 0
-//                             //           : double.parse(cashCtrl.text),
-//                             //       "network": networkCtrl.text.isEmpty
-//                             //           ? 0
-//                             //           : double.parse(networkCtrl.text),
-//                             //       "total": (cashCtrl.text.isEmpty
-//                             //               ? 0
-//                             //               : double.parse(cashCtrl.text)) +
-//                             //           (networkCtrl.text.isEmpty
-//                             //               ? 0
-//                             //               : double.parse(networkCtrl.text)),
-//                             //       "date": date!,
-//                             //       "notes": "سند صرف للمورد ${supplierName!}",
-//                             //       "type": "payment",
-//                             //       "createdAt": FieldValue.serverTimestamp(),
-//                             //     });
-//                             //   }
-
-//                             //   ScaffoldMessenger.of(context).showSnackBar(
-//                             //     SnackBar(
-//                             //       content: Text(_t(
-//                             //           "تم حفظ السند بنجاح ✅ مع ${validItems.length} عيار وتم خصم الكسر",
-//                             //           "Payment voucher saved successfully ✅ with ${validItems.length} carats and scrap deducted")),
-//                             //       backgroundColor: Colors.green,
-//                             //     ),
-//                             //   );
-
-//                             //   Future.delayed(const Duration(seconds: 1), () {
-//                             //     Navigator.pop(context);
-//                             //   });
-//                             // },
+//                           ScaffoldMessenger.of(context).showSnackBar(
+//                             SnackBar(
+//                               content: Text(msg),
+//                               backgroundColor: Colors.green,
 //                             ),
+//                           );
+
+//                           Future.delayed(const Duration(seconds: 1), () {
+//                             Navigator.pop(context);
+//                           });
+//                         },
 //                       ),
-//                     ],
-//                   ),
+//                     ),
+//                   ],
 //                 ),
 //               ),
 //             ),
@@ -3600,7 +3615,6 @@
 //       ),
 //       child: Row(
 //         children: [
-//           // العيار - أصغر
 //           Expanded(
 //             flex: 3,
 //             child: DropdownButtonFormField<String>(
@@ -3614,7 +3628,7 @@
 //                 isDense: true,
 //               ),
 //               value: item['carat']?.toString(),
-//               items: ["18", "21", "22"].map((c) {
+//               items: ["14", "18", "21", "22", "24"].map((c) {
 //                 return DropdownMenuItem(
 //                   value: c,
 //                   child: Text(c),
@@ -3628,7 +3642,6 @@
 //             ),
 //           ),
 //           const SizedBox(width: 6),
-//           // الوزن - أكبر
 //           Expanded(
 //             flex: 4,
 //             child: TextField(
@@ -3651,7 +3664,6 @@
 //             ),
 //           ),
 //           const SizedBox(width: 6),
-//           // الأجر - متوسط
 //           Expanded(
 //             flex: 3,
 //             child: TextField(
@@ -3673,7 +3685,6 @@
 //             ),
 //           ),
 //           const SizedBox(width: 4),
-//           // زر الحذف
 //           IconButton(
 //             icon: const Icon(Icons.remove_circle, color: Colors.red, size: 22),
 //             onPressed:
@@ -3923,7 +3934,7 @@ class _PartPageState extends State<PartPage> {
 }
 
 // ============================================================
-// 🔹 SuppliersPage - صفحة الموردين الموحدة (معدلة)
+// 🔹 SuppliersPage - صفحة الموردين الموحدة
 // ============================================================
 class SuppliersPage extends StatefulWidget {
   const SuppliersPage({super.key});
@@ -3946,15 +3957,18 @@ class _SuppliersPageState extends State<SuppliersPage> {
   bool isEditing = false;
   String? editingSupplierId;
 
-  // دالة تحويل الوزن إلى 24 قيراط
   double _convertTo24Karat(double weight, String carat) {
     switch (carat) {
+      case '14':
+        return weight * (14 / 24);
       case '18':
         return weight * (18 / 24);
       case '21':
         return weight * (21 / 24);
       case '22':
         return weight * (22 / 24);
+      case '24':
+        return weight;
       default:
         return weight;
     }
@@ -4027,9 +4041,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
     setState(() => delegates.remove(name));
   }
 
-  // ============================================================
-  // 🔹 حساب رصيد المورد (مع دعم العيارات المتعددة)
-  // ============================================================
   Future<Map<String, dynamic>> _supplierSummary(String supplierId) async {
     final vouchers = await FS.getVouchersForSupplier(supplierId);
 
@@ -4037,11 +4048,9 @@ class _SuppliersPageState extends State<SuppliersPage> {
     double payG = 0, recG = 0;
 
     for (var v in vouchers) {
-      // التحقق من وجود عيارات متعددة
       final carats = v["carats"] as List?;
 
       if (carats != null && carats.isNotEmpty) {
-        // إذا كان السند يحتوي على عيارات متعددة
         for (var c in carats) {
           final weight = (c["weight"] ?? 0).toDouble();
           final wage = (c["wage"] ?? 0).toDouble();
@@ -4057,7 +4066,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
           }
         }
       } else {
-        // السند العادي (عيار واحد)
         final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
         final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
         final carat = (v["carat"] ?? "").toString();
@@ -4365,13 +4373,9 @@ class _SuppliersPageState extends State<SuppliersPage> {
     }
   }
 
-  // ======================
-  // 🔹 عرض تفاصيل المورد
-  // ======================
   void _showSupplierDetails(String supplierId) async {
     final vouchers = await FS.getVouchersForSupplier(supplierId);
 
-    // ✅ ترتيب السندات من الأحدث إلى الأقدم
     vouchers.sort((a, b) {
       final dateA = a["date"] as Timestamp?;
       final dateB = b["date"] as Timestamp?;
@@ -4386,25 +4390,40 @@ class _SuppliersPageState extends State<SuppliersPage> {
     final paymentVouchers =
         vouchers.where((v) => v["type"] == "payment").toList();
 
-    // ✅ حساب تفاصيل العيارات مع دعم العيارات المتعددة
     Map<String, Map<String, double>> _calculateSummary(
         List<Map<String, dynamic>> voucherList) {
-      final Map<String, double> weightMap = {"18": 0, "21": 0, "22": 0};
-      final Map<String, double> wageMap = {"18": 0, "21": 0, "22": 0};
-      final Map<String, double> weight24Map = {"18": 0, "21": 0, "22": 0};
+      final Map<String, double> weightMap = {
+        "14": 0,
+        "18": 0,
+        "21": 0,
+        "22": 0,
+        "24": 0
+      };
+      final Map<String, double> wageMap = {
+        "14": 0,
+        "18": 0,
+        "21": 0,
+        "22": 0,
+        "24": 0
+      };
+      final Map<String, double> weight24Map = {
+        "14": 0,
+        "18": 0,
+        "21": 0,
+        "22": 0,
+        "24": 0
+      };
 
       for (var v in voucherList) {
-        // التحقق من وجود عيارات متعددة
         final carats = v["carats"] as List?;
 
         if (carats != null && carats.isNotEmpty) {
-          // إذا كان السند يحتوي على عيارات متعددة
           for (var c in carats) {
             final carat = (c["carat"] ?? "").toString();
             final weight = (c["weight"] ?? 0).toDouble();
             final wage = (c["wage"] ?? 0).toDouble();
 
-            if (["18", "21", "22"].contains(carat)) {
+            if (["14", "18", "21", "22", "24"].contains(carat)) {
               weightMap[carat] = (weightMap[carat] ?? 0) + weight;
               wageMap[carat] = (wageMap[carat] ?? 0) + wage;
               weight24Map[carat] =
@@ -4412,12 +4431,11 @@ class _SuppliersPageState extends State<SuppliersPage> {
             }
           }
         } else {
-          // السند العادي (عيار واحد)
           final carat = (v["carat"] ?? "").toString();
           final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
           final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
 
-          if (["18", "21", "22"].contains(carat)) {
+          if (["14", "18", "21", "22", "24"].contains(carat)) {
             weightMap[carat] = (weightMap[carat] ?? 0) + weight;
             wageMap[carat] = (wageMap[carat] ?? 0) + wage;
             weight24Map[carat] =
@@ -4475,7 +4493,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
                     ),
                   ),
                   const SizedBox(height: 14),
-
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
@@ -4521,10 +4538,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
                       ],
                     ),
                   ),
-
                   const SizedBox(height: 10),
-
-                  // ===== كارت الرصيد الإجمالي =====
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Container(
@@ -4620,10 +4634,8 @@ class _SuppliersPageState extends State<SuppliersPage> {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 12),
                   const Divider(height: 1),
-
                   Container(
                     color: Colors.white,
                     child: TabBar(
@@ -4641,7 +4653,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
                       ],
                     ),
                   ),
-
                   Expanded(
                     child: TabBarView(
                       children: [
@@ -4671,9 +4682,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
     );
   }
 
-  // ==========================================
-  // 🔹 دالة مساعدة لبناء محتوى كل تبويب
-  // ==========================================
   Widget _buildTabContent(
     BuildContext context,
     ScrollController scrollController, {
@@ -4691,7 +4699,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
     final wageMap = summaryMap["wage"]!;
     final weight24Map = summaryMap["weight24"]!;
 
-    final caratsWithBalance = ["18", "21", "22"].where((c) {
+    final caratsWithBalance = ["14", "18", "21", "22", "24"].where((c) {
       return weightMap[c]!.abs() > 0.0001 || wageMap[c]!.abs() > 0.0001;
     }).toList();
 
@@ -4941,15 +4949,12 @@ class _SuppliersPageState extends State<SuppliersPage> {
                   double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
               final weight24 = _convertTo24Karat(weight, carat);
 
-              // التحقق من وجود عيارات متعددة
               final carats = v["carats"] as List?;
               final hasMultipleCarats = carats != null && carats.isNotEmpty;
 
-              // حساب الوزن الإجمالي للعيارات المتعددة
               double totalCaratsWeight = 0;
               double totalCaratsWage = 0;
 
-              // بناء قائمة Widgets للعيارات
               List<Widget> caratWidgets = [];
               if (hasMultipleCarats) {
                 for (var c in carats!) {
@@ -4974,7 +4979,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
                     ),
                   );
                 }
-                // إضافة إجمالي الوزن والأجر
                 caratWidgets.add(
                   Container(
                     padding:
@@ -5060,7 +5064,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
                                 ],
                               ),
                               const SizedBox(height: 4),
-                              // عرض المندوب
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 8, vertical: 2),
@@ -5077,7 +5080,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-                              // عرض العيارات
                               if (hasMultipleCarats) ...[
                                 ...caratWidgets,
                               ] else ...[
@@ -5147,9 +5149,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
     );
   }
 
-  // ======================
-  // 🔹 BUILD
-  // ======================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -5184,9 +5183,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
                           color: Colors.grey.shade500,
                         ),
                       ),
-                      onChanged: (value) {
-                        // يمكن إضافة منطق البحث هنا
-                      },
+                      onChanged: (value) {},
                     ),
                   ),
                 ),
@@ -5269,9 +5266,6 @@ class _SuppliersPageState extends State<SuppliersPage> {
     );
   }
 
-  // ======================
-  // 🔹 بطاقة المورد
-  // ======================
   Widget _buildSupplierCard(Map<String, dynamic> supplier) {
     return Card(
       elevation: 2,
@@ -5430,7 +5424,7 @@ class _SuppliersPageState extends State<SuppliersPage> {
 }
 
 // ============================================================
-// 🔹 Part1Page - صفحة السندات
+// 🔹 Part1Page - صفحة السندات (مع 3 أزرار: قبض / صرف / السجل)
 // ============================================================
 class Part1Page extends StatefulWidget {
   const Part1Page({super.key});
@@ -5500,6 +5494,12 @@ class _Part1PageState extends State<Part1Page> {
                       icon: Icons.payments,
                       label: _t("سند صرف", "Payment Voucher"),
                       page: const PaymentVoucherPage(),
+                    ),
+                    _buildMenuCard(
+                      context,
+                      icon: Icons.history,
+                      label: _t("السجل", "History"),
+                      page: const VouchersHistoryPage(),
                     ),
                   ],
                 ),
@@ -5705,7 +5705,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
 
   List<Map<String, dynamic>> caratItems = [];
 
-  // متغيرات الرصيد
   double _balanceWeight24 = 0.0;
   double _balanceWage = 0.0;
   bool _isLoadingBalance = false;
@@ -5743,15 +5742,18 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
     });
   }
 
-  // دالة تحويل الوزن إلى 24 قيراط
   double _convertTo24Karat(double weight, String carat) {
     switch (carat) {
+      case '14':
+        return weight * (14 / 24);
       case '18':
         return weight * (18 / 24);
       case '21':
         return weight * (21 / 24);
       case '22':
         return weight * (22 / 24);
+      case '24':
+        return weight;
       default:
         return weight;
     }
@@ -5787,7 +5789,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
     return total;
   }
 
-  // ✅ جلب رصيد المورد محول إلى 24 قيراط (مصحح)
   Future<void> _loadSupplierBalance(String supplierId) async {
     setState(() => _isLoadingBalance = true);
     try {
@@ -5797,11 +5798,9 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
       double payG = 0, recG = 0;
 
       for (var v in vouchers) {
-        // التحقق من وجود عيارات متعددة
         final carats = v["carats"] as List?;
 
         if (carats != null && carats.isNotEmpty) {
-          // إذا كان السند يحتوي على عيارات متعددة
           for (var c in carats) {
             final weight = (c["weight"] ?? 0).toDouble();
             final wage = (c["wage"] ?? 0).toDouble();
@@ -5817,7 +5816,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
             }
           }
         } else {
-          // السند العادي (عيار واحد)
           final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
           final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
           final carat = (v["carat"] ?? "").toString();
@@ -5833,7 +5831,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
         }
       }
 
-      // ✅ الرصيد = القبض - الصرف (محول إلى 24 قيراط)
       final balanceWeight = recW - payW;
       final balanceWage = recG - payG;
 
@@ -5848,7 +5845,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
     }
   }
 
-  // حساب الرصيد المتبقي بعد الإضافة
   double _getNewBalance() {
     return _balanceWeight24 + _calculateTotalWeight24();
   }
@@ -5864,7 +5860,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            // بطاقة المعلومات الأساسية
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -5874,7 +5869,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
-                    // التاريخ
                     Row(
                       children: [
                         const Icon(Icons.calendar_today,
@@ -5912,8 +5906,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                       ],
                     ),
                     const Divider(height: 16),
-
-                    // اختيار المورد
                     FutureBuilder(
                       future: FS.getSuppliers(),
                       builder: (context, snap) {
@@ -5957,8 +5949,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                       },
                     ),
                     const SizedBox(height: 12),
-
-                    // اختيار المندوب
                     if (supplierId != null)
                       FutureBuilder(
                         future: FS.getSuppliers(),
@@ -6021,10 +6011,7 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 8),
-
-            // بطاقة العيارات المتعددة
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -6073,8 +6060,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                       ],
                     ),
                     const Divider(height: 12),
-
-                    // قائمة العيارات (Column بدل ListView للسماح بالسكرول الكلي)
                     Column(
                       children: caratItems
                           .asMap()
@@ -6082,10 +6067,7 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                           .map((e) => _buildCaratItem(e.key, e.value))
                           .toList(),
                     ),
-
                     const SizedBox(height: 4),
-
-                    // إجمالي الأجور
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
@@ -6114,10 +6096,7 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 8),
-
-                    // زر الحفظ
                     SizedBox(
                       width: double.infinity,
                       height: 44,
@@ -6165,7 +6144,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                             return;
                           }
 
-                          // تجهيز بيانات العيارات المتعددة
                           List<Map<String, dynamic>> caratsData = [];
                           for (var item in validItems) {
                             caratsData.add({
@@ -6175,7 +6153,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                             });
                           }
 
-                          // حفظ السند مع جميع العيارات
                           await FS.addReceiptVoucher(
                             supplierId: supplierId!,
                             supplierName: supplierName!,
@@ -6223,7 +6200,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
       ),
       child: Row(
         children: [
-          // العيار - أصغر
           Expanded(
             flex: 3,
             child: DropdownButtonFormField<String>(
@@ -6237,7 +6213,7 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
                 isDense: true,
               ),
               value: item['carat']?.toString(),
-              items: ["18", "21", "22"].map((c) {
+              items: ["14", "18", "21", "22", "24"].map((c) {
                 return DropdownMenuItem(
                   value: c,
                   child: Text(c),
@@ -6251,7 +6227,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
             ),
           ),
           const SizedBox(width: 6),
-          // الوزن - أكبر
           Expanded(
             flex: 4,
             child: TextField(
@@ -6274,7 +6249,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
             ),
           ),
           const SizedBox(width: 6),
-          // الأجر - متوسط
           Expanded(
             flex: 3,
             child: TextField(
@@ -6296,7 +6270,6 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
             ),
           ),
           const SizedBox(width: 4),
-          // زر الحذف
           IconButton(
             icon: const Icon(Icons.remove_circle, color: Colors.red, size: 22),
             onPressed:
@@ -6312,7 +6285,9 @@ class _ReceiptVoucherPageState extends State<ReceiptVoucherPage> {
 }
 
 // ============================================================
-// 🔹 صفحة سند الصرف (متعددة العيارات مع عرض الرصيد + Scroll)
+// 🔹 صفحة سند الصرف (متعددة العيارات + خيار الدفع)
+//     ✅ [معدّل] onPressed بيستخدم addPaymentVoucher الجديدة
+//     مع officeId/officeName بدل ما ينادي addMinting لوحده
 // ============================================================
 class PaymentVoucherPage extends StatefulWidget {
   const PaymentVoucherPage({super.key});
@@ -6333,10 +6308,15 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
   final cashCtrl = TextEditingController();
   final networkCtrl = TextEditingController();
 
-  // متغيرات الرصيد
   double _balanceWeight24 = 0.0;
   double _balanceWage = 0.0;
   bool _isLoadingBalance = false;
+
+  String _paymentType = 'scrap';
+  String? _selectedOfficeId;
+  String? _selectedOfficeName;
+  List<Map<String, dynamic>> _offices = [];
+  bool _isLoadingOffices = false;
 
   String _lang = 'ar';
   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
@@ -6346,6 +6326,7 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
     super.initState();
     _loadLanguage();
     _addNewCaratItem();
+    _loadOffices();
   }
 
   Future<void> _loadLanguage() async {
@@ -6353,6 +6334,24 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
     setState(() {
       _lang = prefs.getString('languageCode') ?? 'ar';
     });
+  }
+
+  Future<void> _loadOffices() async {
+    setState(() => _isLoadingOffices = true);
+    try {
+      final list = await FS.getMintOffices();
+      setState(() {
+        _offices = list;
+        if (_offices.isNotEmpty) {
+          _selectedOfficeId = _offices.first['id'].toString();
+          _selectedOfficeName = _offices.first['name'];
+        }
+      });
+    } catch (e) {
+      print('❌ خطأ في تحميل المكاتب: $e');
+    } finally {
+      setState(() => _isLoadingOffices = false);
+    }
   }
 
   void _addNewCaratItem() {
@@ -6371,15 +6370,18 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
     });
   }
 
-  // دالة تحويل الوزن إلى 24 قيراط
   double _convertTo24Karat(double weight, String carat) {
     switch (carat) {
+      case '14':
+        return weight * (14 / 24);
       case '18':
         return weight * (18 / 24);
       case '21':
         return weight * (21 / 24);
       case '22':
         return weight * (22 / 24);
+      case '24':
+        return weight;
       default:
         return weight;
     }
@@ -6415,7 +6417,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
     return total;
   }
 
-  // ✅ جلب رصيد المورد محول إلى 24 قيراط (مصحح)
   Future<void> _loadSupplierBalance(String supplierId) async {
     setState(() => _isLoadingBalance = true);
     try {
@@ -6425,11 +6426,9 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
       double payG = 0, recG = 0;
 
       for (var v in vouchers) {
-        // التحقق من وجود عيارات متعددة
         final carats = v["carats"] as List?;
 
         if (carats != null && carats.isNotEmpty) {
-          // إذا كان السند يحتوي على عيارات متعددة
           for (var c in carats) {
             final weight = (c["weight"] ?? 0).toDouble();
             final wage = (c["wage"] ?? 0).toDouble();
@@ -6445,7 +6444,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
             }
           }
         } else {
-          // السند العادي (عيار واحد)
           final weight = double.tryParse(v["weight"]?.toString() ?? "0") ?? 0;
           final wage = double.tryParse(v["wage"]?.toString() ?? "0") ?? 0;
           final carat = (v["carat"] ?? "").toString();
@@ -6461,7 +6459,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
         }
       }
 
-      // ✅ الرصيد = القبض - الصرف (محول إلى 24 قيراط)
       final balanceWeight = recW - payW;
       final balanceWage = recG - payG;
 
@@ -6476,7 +6473,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
     }
   }
 
-  // حساب الرصيد المتبقي بعد الخصم
   double _getRemainingBalance() {
     return _balanceWeight24 - _calculateTotalWeight24();
   }
@@ -6492,7 +6488,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            // بطاقة المعلومات الأساسية
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -6502,7 +6497,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   children: [
-                    // التاريخ
                     Row(
                       children: [
                         const Icon(Icons.calendar_today,
@@ -6540,8 +6534,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                       ],
                     ),
                     const Divider(height: 16),
-
-                    // اختيار المورد
                     FutureBuilder(
                       future: FS.getSuppliers(),
                       builder: (context, snap) {
@@ -6585,8 +6577,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                       },
                     ),
                     const SizedBox(height: 12),
-
-                    // اختيار المندوب
                     if (supplierId != null)
                       FutureBuilder(
                         future: FS.getSuppliers(),
@@ -6645,10 +6635,7 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                           );
                         },
                       ),
-
                     const SizedBox(height: 12),
-
-                    // طريقة الدفع
                     DropdownButtonFormField<String>(
                       decoration: InputDecoration(
                         labelText: _t("طريقة الدفع", "Payment Method"),
@@ -6669,8 +6656,112 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                       }).toList(),
                       onChanged: (v) => setState(() => paymentMethod = v),
                     ),
-
-                    // حقول المبالغ حسب طريقة الدفع
+                    const SizedBox(height: 12),
+                    Text(
+                      _t("نوع الدفع", "Payment Type"),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 14),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _paymentType = 'scrap'),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _paymentType == 'scrap'
+                                      ? const Color(0xFFD4AF37)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    _t("من الكسر", "From Scrap"),
+                                    style: TextStyle(
+                                      color: _paymentType == 'scrap'
+                                          ? Colors.white
+                                          : Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _paymentType = 'mint'),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: _paymentType == 'mint'
+                                      ? const Color(0xFFD4AF37)
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    _t("من مكتب التسكيرات", "From Mint Office"),
+                                    style: TextStyle(
+                                      color: _paymentType == 'mint'
+                                          ? Colors.white
+                                          : Colors.black87,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_paymentType == 'mint') ...[
+                      const SizedBox(height: 12),
+                      _isLoadingOffices
+                          ? const Center(child: CircularProgressIndicator())
+                          : DropdownButtonFormField<String>(
+                              decoration: InputDecoration(
+                                labelText: _t("اختر مكتب التسكيرات",
+                                    "Select Mint Office"),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                prefixIcon: const Icon(Icons.business,
+                                    color: Color(0xFFD4AF37), size: 20),
+                              ),
+                              value: _selectedOfficeId,
+                              items: _offices.map((o) {
+                                return DropdownMenuItem(
+                                  value: o['id'].toString(),
+                                  child: Text(o['name']),
+                                );
+                              }).toList(),
+                              onChanged: (v) {
+                                setState(() {
+                                  _selectedOfficeId = v;
+                                  _selectedOfficeName = _offices.firstWhere(
+                                      (o) => o['id'].toString() == v)['name'];
+                                });
+                              },
+                            ),
+                    ],
                     if (paymentMethod == _t("كاش", "Cash") ||
                         paymentMethod == _t("متعدد", "Mixed"))
                       Padding(
@@ -6712,8 +6803,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                 ),
               ),
             ),
-
-            // ===== كارت الرصيد =====
             if (supplierId != null) ...[
               const SizedBox(height: 8),
               Container(
@@ -6865,10 +6954,7 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                 ),
               ),
             ],
-
             const SizedBox(height: 8),
-
-            // بطاقة العيارات المتعددة
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(
@@ -6918,7 +7004,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                     ),
                     const Divider(height: 12),
 
-                    // قائمة العيارات (Column بدل ListView للسماح بالسكرول الكلي)
                     Column(
                       children: caratItems
                           .asMap()
@@ -6929,7 +7014,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
 
                     const SizedBox(height: 4),
 
-                    // إجمالي الأجور
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),
@@ -6961,99 +7045,125 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
 
                     const SizedBox(height: 8),
 
-                    // زر الحفظ
+                    // ============================================================
+                    // ✅ [معدّل] زر الحفظ — بيستخدم addPaymentVoucher الجديدة
+                    // ============================================================
                     SizedBox(
                       width: double.infinity,
                       height: 44,
                       child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFD4AF37),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          icon: const Icon(Icons.save,
-                              color: Colors.white, size: 20),
-                          label: Text(
-                            _t("حفظ", "Save"),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          onPressed: () async {
-                            if (supplierId == null ||
-                                delegate == null ||
-                                paymentMethod == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(_t(
-                                      "يرجى إدخال جميع البيانات المطلوبة",
-                                      "Please fill all required fields")),
-                                  backgroundColor: Colors.orange,
-                                ),
-                              );
-                              return;
-                            }
-
-                            final validItems = caratItems
-                                .where((item) =>
-                                    item['carat'] != null && item['weight'] > 0)
-                                .toList();
-
-                            if (validItems.isEmpty) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(_t(
-                                      "يرجى إدخال عيار واحد على الأقل",
-                                      "Please enter at least one carat")),
-                                  backgroundColor: Colors.orange,
-                                ),
-                              );
-                              return;
-                            }
-
-                            // تجهيز بيانات العيارات المتعددة
-                            List<Map<String, dynamic>> caratsData = [];
-                            for (var item in validItems) {
-                              caratsData.add({
-                                'carat': item['carat'].toString(),
-                                'weight': item['weight'],
-                                'wage': item['wage'] ?? 0,
-                              });
-                            }
-
-                            // حفظ السند - الدالة تقوم تلقائياً بخصم الكسر
-                            await FS.addPaymentVoucher(
-                              supplierId: supplierId!,
-                              supplierName: supplierName!,
-                              delegate: delegate!,
-                              carat: 'multiple',
-                              weight: _calculateTotalWeight(),
-                              wage: _calculateTotalWage(),
-                              paymentMethod: paymentMethod!,
-                              cash: cashCtrl.text.isEmpty
-                                  ? null
-                                  : double.parse(cashCtrl.text),
-                              network: networkCtrl.text.isEmpty
-                                  ? null
-                                  : double.parse(networkCtrl.text),
-                              date: date!,
-                              carats: caratsData,
-                            );
-
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD4AF37),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                        ),
+                        icon: const Icon(Icons.save,
+                            color: Colors.white, size: 20),
+                        label: Text(
+                          _t("حفظ", "Save"),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () async {
+                          if (supplierId == null ||
+                              delegate == null ||
+                              paymentMethod == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(_t(
-                                    "تم حفظ السند بنجاح ✅ مع ${validItems.length} عيار وتم خصم الكسر",
-                                    "Payment voucher saved successfully ✅ with ${validItems.length} carats and scrap deducted")),
-                                backgroundColor: Colors.green,
+                                    "يرجى إدخال جميع البيانات المطلوبة",
+                                    "Please fill all required fields")),
+                                backgroundColor: Colors.orange,
                               ),
                             );
+                            return;
+                          }
 
-                            Future.delayed(const Duration(seconds: 1), () {
-                              Navigator.pop(context);
+                          if (_paymentType == 'mint' &&
+                              _selectedOfficeId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(_t("يرجى اختيار مكتب التسكيرات",
+                                    "Please select mint office")),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                            return;
+                          }
+
+                          final validItems = caratItems
+                              .where((item) =>
+                                  item['carat'] != null && item['weight'] > 0)
+                              .toList();
+
+                          if (validItems.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(_t(
+                                    "يرجى إدخال عيار واحد على الأقل",
+                                    "Please enter at least one carat")),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                            return;
+                          }
+
+                          List<Map<String, dynamic>> caratsData = [];
+                          for (var item in validItems) {
+                            caratsData.add({
+                              'carat': item['carat'].toString(),
+                              'weight': item['weight'],
+                              'wage': item['wage'] ?? 0,
                             });
-                          }),
+                          }
+
+                          // ✅ الحفظ الموحّد (بيتعامل مع الكسر والتسكيرة داخلياً)
+                          await FS.addPaymentVoucher(
+                            supplierId: supplierId!,
+                            supplierName: supplierName!,
+                            delegate: delegate!,
+                            carat: 'multiple',
+                            weight: _calculateTotalWeight(),
+                            wage: _calculateTotalWage(),
+                            paymentMethod: paymentMethod!,
+                            cash: cashCtrl.text.isEmpty
+                                ? null
+                                : double.parse(cashCtrl.text),
+                            network: networkCtrl.text.isEmpty
+                                ? null
+                                : double.parse(networkCtrl.text),
+                            date: date!,
+                            carats: caratsData,
+                            affectsScrap: _paymentType == 'scrap',
+                            officeId: _paymentType == 'mint'
+                                ? _selectedOfficeId
+                                : null,
+                            officeName: _paymentType == 'mint'
+                                ? _selectedOfficeName
+                                : null,
+                          );
+
+                          final msg = _paymentType == 'mint'
+                              ? _t(
+                                  "✅ تم خصم رصيد المورد وإنشاء تسكيرة في مكتب $_selectedOfficeName",
+                                  "✅ Supplier balance deducted & minting created at $_selectedOfficeName")
+                              : _t("✅ تم حفظ السند وخصم الكسر ورصيد المورد",
+                                  "✅ Voucher saved, scrap & supplier balance deducted");
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(msg),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+
+                          Future.delayed(const Duration(seconds: 1), () {
+                            Navigator.pop(context);
+                          });
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -7076,7 +7186,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
       ),
       child: Row(
         children: [
-          // العيار - أصغر
           Expanded(
             flex: 3,
             child: DropdownButtonFormField<String>(
@@ -7090,7 +7199,7 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
                 isDense: true,
               ),
               value: item['carat']?.toString(),
-              items: ["18", "21", "22"].map((c) {
+              items: ["14", "18", "21", "22", "24"].map((c) {
                 return DropdownMenuItem(
                   value: c,
                   child: Text(c),
@@ -7104,7 +7213,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
             ),
           ),
           const SizedBox(width: 6),
-          // الوزن - أكبر
           Expanded(
             flex: 4,
             child: TextField(
@@ -7127,7 +7235,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
             ),
           ),
           const SizedBox(width: 6),
-          // الأجر - متوسط
           Expanded(
             flex: 3,
             child: TextField(
@@ -7149,7 +7256,6 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
             ),
           ),
           const SizedBox(width: 4),
-          // زر الحذف
           IconButton(
             icon: const Icon(Icons.remove_circle, color: Colors.red, size: 22),
             onPressed:
@@ -7157,6 +7263,1259 @@ class _PaymentVoucherPageState extends State<PaymentVoucherPage> {
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
             tooltip: _t("حذف العيار", "Remove Carat"),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// 🆕 VouchersHistoryPage - سجل السندات (قبض + صرف + Swipe)
+// ============================================================
+class VouchersHistoryPage extends StatefulWidget {
+  const VouchersHistoryPage({super.key});
+
+  @override
+  State<VouchersHistoryPage> createState() => _VouchersHistoryPageState();
+}
+
+class _VouchersHistoryPageState extends State<VouchersHistoryPage> {
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage();
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  double _convertTo24Karat(double weight, String carat) {
+    switch (carat) {
+      case '14':
+        return weight * (14 / 24);
+      case '18':
+        return weight * (18 / 24);
+      case '21':
+        return weight * (21 / 24);
+      case '22':
+        return weight * (22 / 24);
+      case '24':
+        return weight;
+      default:
+        return weight;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(_t("سجل السندات", "Vouchers History")),
+          backgroundColor: const Color(0xFFD4AF37),
+          bottom: TabBar(
+            indicatorColor: Colors.white,
+            indicatorWeight: 3,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+            tabs: [
+              Tab(text: _t("📥 سندات القبض", "📥 Receipts")),
+              Tab(text: _t("📤 سندات الصرف", "📤 Payments")),
+            ],
+          ),
+        ),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: FS.vouchersStream(),
+          builder: (context, snap) {
+            if (snap.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            if (snap.hasError) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error_outline,
+                          color: Colors.red, size: 48),
+                      const SizedBox(height: 12),
+                      Text(
+                        _t("حدث خطأ في تحميل السندات",
+                            "Error loading vouchers"),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '${snap.error}',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.grey.shade600),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _t("💡 لو الخطأ عن Index، افتح Firebase Console ودوس على اللينك في الرسالة",
+                            "💡 If it's an Index error, open Firebase Console & click the link"),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: 12, color: Colors.orange.shade700),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
+
+            final allDocs = snap.data?.docs ?? [];
+
+            final receiptVouchers = allDocs
+                .where((d) => (d.data() as Map)['type'] == 'receipt')
+                .toList();
+            final paymentVouchers = allDocs
+                .where((d) => (d.data() as Map)['type'] == 'payment')
+                .toList();
+
+            return TabBarView(
+              children: [
+                _buildVouchersList(
+                  receiptVouchers,
+                  isReceipt: true,
+                ),
+                _buildVouchersList(
+                  paymentVouchers,
+                  isReceipt: false,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildVouchersList(
+    List<QueryDocumentSnapshot> vouchers, {
+    required bool isReceipt,
+  }) {
+    if (vouchers.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              isReceipt ? Icons.receipt_long_outlined : Icons.payments_outlined,
+              size: 64,
+              color: Colors.grey.shade300,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              isReceipt
+                  ? _t("لا توجد سندات قبض", "No receipt vouchers")
+                  : _t("لا توجد سندات صرف", "No payment vouchers"),
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(12),
+      itemCount: vouchers.length,
+      itemBuilder: (context, i) {
+        final doc = vouchers[i];
+        final data = doc.data() as Map<String, dynamic>;
+        return _buildVoucherCard(doc.id, data, isReceipt);
+      },
+    );
+  }
+
+  Widget _buildVoucherCard(
+    String voucherId,
+    Map<String, dynamic> data,
+    bool isReceipt,
+  ) {
+    final color = isReceipt ? Colors.green : Colors.red;
+    final isNewFormat = data['isNewFormat'] == true;
+
+    final supplierName = (data['supplierName'] ?? '').toString();
+    final delegate = (data['delegate'] ?? '').toString();
+    final weight = double.tryParse(data['weight']?.toString() ?? '0') ?? 0;
+    final wage = double.tryParse(data['wage']?.toString() ?? '0') ?? 0;
+
+    final carats = data['carats'] as List?;
+    final hasMultipleCarats = carats != null && carats.isNotEmpty;
+
+    DateTime? date;
+    if (data['date'] is Timestamp) {
+      date = (data['date'] as Timestamp).toDate();
+    }
+
+    // رصيد العرض: للقبض نعرض الوزن الكلي، للصرف نعرض الوزن الكلي برضه
+    double totalWeight = weight;
+    double totalWage = wage;
+    if (hasMultipleCarats) {
+      totalWeight = 0;
+      totalWage = 0;
+      for (var c in carats) {
+        totalWeight += (c['weight'] ?? 0).toDouble();
+        totalWage += (c['wage'] ?? 0).toDouble();
+      }
+    }
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 10),
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 20,
+                  backgroundColor: color.withOpacity(0.1),
+                  child: Icon(
+                    isReceipt
+                        ? Icons.south_west_rounded
+                        : Icons.north_east_rounded,
+                    color: color,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        supplierName.isEmpty ? '-' : supplierName,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        delegate.isEmpty ? '-' : delegate,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Badge
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: isNewFormat
+                        ? const Color(0xFFD4AF37).withOpacity(0.15)
+                        : Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    isNewFormat ? _t("جديد", "New") : _t("قديم", "Old"),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: isNewFormat
+                          ? const Color(0xFFD4AF37)
+                          : Colors.grey.shade600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (date != null)
+              Row(
+                children: [
+                  Icon(Icons.calendar_today,
+                      size: 13, color: Colors.grey.shade500),
+                  const SizedBox(width: 4),
+                  Text(
+                    DateFormat('dd/MM/yyyy HH:mm').format(date),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _infoChip(
+                      icon: Icons.scale_outlined,
+                      label: _t("وزن", "Weight"),
+                      value:
+                          "${totalWeight.toStringAsFixed(2)} ${_t('جم', 'g')}",
+                      color: color,
+                    ),
+                  ),
+                  Container(width: 1, height: 30, color: Colors.grey.shade300),
+                  Expanded(
+                    child: _infoChip(
+                      icon: Icons.payments_outlined,
+                      label: _t("أجر", "Wage"),
+                      value: totalWage.toStringAsFixed(2),
+                      color: color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (hasMultipleCarats) ...[
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: carats.map((c) {
+                  return Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      "${_t('عيار', 'K')} ${c['carat']} • ${(c['weight'] ?? 0).toStringAsFixed(2)}${_t('جم', 'g')} • ${(c['wage'] ?? 0).toStringAsFixed(0)}",
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey.shade700,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFD4AF37),
+                      side: const BorderSide(color: Color(0xFFD4AF37)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    icon: const Icon(Icons.edit, size: 18),
+                    label: Text(_t("تعديل", "Edit")),
+                    onPressed: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => VoucherEditPage(
+                            voucherId: voucherId,
+                          ),
+                        ),
+                      );
+                      if (result == true && mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(_t("تم التعديل ✅", "Updated ✅")),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red,
+                    side: const BorderSide(color: Colors.red),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  icon: const Icon(Icons.delete, size: 18),
+                  label: Text(_t("حذف", "Delete")),
+                  onPressed: () => _confirmDelete(voucherId, isNewFormat),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _infoChip({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 13, color: color),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _confirmDelete(String voucherId, bool isNewFormat) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(_t("تأكيد الحذف", "Confirm Delete")),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(_t("هل أنت متأكد من حذف السند؟",
+                "Are you sure you want to delete this voucher?")),
+            if (isNewFormat) ...[
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _t("⚠️ سيتم حذف الكسر/التسكيرة المرتبطة أيضاً",
+                      "⚠️ Linked scrap/minting will be deleted too"),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.orange.shade800,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(_t("إلغاء", "Cancel")),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              _t("حذف", "Delete"),
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    try {
+      await FS.deleteVoucher(voucherId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_t("تم الحذف ✅", "Deleted ✅")),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${_t("خطأ", "Error")}: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+}
+
+// ============================================================
+// 🆕 VoucherEditPage - صفحة تعديل السند
+// ============================================================
+class VoucherEditPage extends StatefulWidget {
+  final String voucherId;
+  const VoucherEditPage({super.key, required this.voucherId});
+
+  @override
+  State<VoucherEditPage> createState() => _VoucherEditPageState();
+}
+
+class _VoucherEditPageState extends State<VoucherEditPage> {
+  String _lang = 'ar';
+  String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+  bool _isLoading = true;
+  bool _isSaving = false;
+  bool _isNewFormat = false;
+  String? _error;
+
+  DateTime? _date;
+  String _type = '';
+  String _supplierName = '';
+  String _delegate = '';
+  String? _paymentMethod;
+  List<String> _delegatesList = [];
+
+  final _cashCtrl = TextEditingController();
+  final _networkCtrl = TextEditingController();
+
+  List<Map<String, dynamic>> _caratItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLanguage().then((_) => _loadVoucher());
+  }
+
+  Future<void> _loadLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() {
+      _lang = prefs.getString('languageCode') ?? 'ar';
+    });
+  }
+
+  Future<void> _loadVoucher() async {
+    try {
+      final data = await FS.getVoucherById(widget.voucherId);
+      if (data == null) {
+        if (!mounted) return;
+        setState(() {
+          _error = _t("السند غير موجود", "Voucher not found");
+          _isLoading = false;
+        });
+        return;
+      }
+
+      _isNewFormat = data['isNewFormat'] == true;
+      _type = (data['type'] ?? '').toString();
+      _supplierName = (data['supplierName'] ?? '').toString();
+      _delegate = (data['delegate'] ?? '').toString();
+      _paymentMethod = data['paymentMethod']?.toString();
+
+      if (data['date'] is Timestamp) {
+        _date = (data['date'] as Timestamp).toDate();
+      } else {
+        _date = DateTime.now();
+      }
+
+      _cashCtrl.text = (data['cash'] ?? '').toString();
+      _networkCtrl.text = (data['network'] ?? '').toString();
+
+      final carats = data['carats'] as List?;
+      if (carats != null && carats.isNotEmpty) {
+        _caratItems = carats.map<Map<String, dynamic>>((c) {
+          return {
+            'carat': (c['carat'] ?? '').toString(),
+            'weight': (c['weight'] ?? 0).toDouble(),
+            'wage': (c['wage'] ?? 0).toDouble(),
+          };
+        }).toList();
+      } else {
+        _caratItems = [
+          {
+            'carat': (data['carat'] ?? '18').toString(),
+            'weight': double.tryParse(data['weight']?.toString() ?? '0') ?? 0,
+            'wage': double.tryParse(data['wage']?.toString() ?? '0') ?? 0,
+          }
+        ];
+      }
+
+      // جيب المندوبين من المورد
+      final supplierId = data['supplierId']?.toString();
+      if (supplierId != null && supplierId.isNotEmpty) {
+        try {
+          final suppliers = await FS.getSuppliers();
+          final sup = suppliers.firstWhere(
+            (s) => s['id'] == supplierId,
+            orElse: () => {},
+          );
+          if (sup.isNotEmpty) {
+            _delegatesList = List<String>.from(sup['delegates'] ?? []);
+          }
+        } catch (_) {}
+      }
+
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = '$e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  double _convertTo24Karat(double weight, String carat) {
+    switch (carat) {
+      case '14':
+        return weight * (14 / 24);
+      case '18':
+        return weight * (18 / 24);
+      case '21':
+        return weight * (21 / 24);
+      case '22':
+        return weight * (22 / 24);
+      case '24':
+        return weight;
+      default:
+        return weight;
+    }
+  }
+
+  double _totalWeight() {
+    double t = 0;
+    for (var c in _caratItems) {
+      if (c['carat'] != null && (c['weight'] ?? 0) > 0) {
+        t += (c['weight'] as num).toDouble();
+      }
+    }
+    return t;
+  }
+
+  double _totalWage() {
+    double t = 0;
+    for (var c in _caratItems) {
+      if (c['carat'] != null) {
+        t += ((c['wage'] ?? 0) as num).toDouble();
+      }
+    }
+    return t;
+  }
+
+  void _addCaratItem() {
+    setState(() {
+      _caratItems.add({'carat': null, 'weight': 0.0, 'wage': 0.0});
+    });
+  }
+
+  void _removeCaratItem(int i) {
+    if (_caratItems.length <= 1) return;
+    setState(() => _caratItems.removeAt(i));
+  }
+
+  Future<void> _save() async {
+    // التحقق
+    if (_date == null) {
+      _showSnack(_t("يرجى تحديد التاريخ", "Please select date"), Colors.orange);
+      return;
+    }
+    final valid = _caratItems
+        .where((c) => c['carat'] != null && (c['weight'] ?? 0) > 0)
+        .toList();
+    if (valid.isEmpty) {
+      _showSnack(
+          _t("يرجى إدخال عيار واحد على الأقل", "Enter at least one carat"),
+          Colors.orange);
+      return;
+    }
+
+    List<Map<String, dynamic>> caratsData = valid.map((c) {
+      return {
+        'carat': c['carat'].toString(),
+        'weight': (c['weight'] as num).toDouble(),
+        'wage': ((c['wage'] ?? 0) as num).toDouble(),
+      };
+    }).toList();
+
+    final totalWeight = _totalWeight();
+    final totalWage = _totalWage();
+
+    Map<String, dynamic> newData = {
+      'weight': totalWeight,
+      'wage': totalWage,
+      'carats': caratsData,
+      'carat': caratsData.length == 1 ? caratsData.first['carat'] : 'multiple',
+      'date': Timestamp.fromDate(_date!),
+      'delegate': _delegate,
+    };
+
+    if (_type == 'payment' && _paymentMethod != null) {
+      newData['paymentMethod'] = _paymentMethod;
+      newData['cash'] =
+          _cashCtrl.text.isEmpty ? null : double.tryParse(_cashCtrl.text);
+      newData['network'] =
+          _networkCtrl.text.isEmpty ? null : double.tryParse(_networkCtrl.text);
+      newData['total'] = (_cashCtrl.text.isEmpty
+              ? 0.0
+              : double.tryParse(_cashCtrl.text) ?? 0) +
+          (_networkCtrl.text.isEmpty
+              ? 0.0
+              : double.tryParse(_networkCtrl.text) ?? 0);
+    }
+
+    setState(() => _isSaving = true);
+    try {
+      await FS.updateVoucher(
+        voucherId: widget.voucherId,
+        newData: newData,
+      );
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      _showSnack('${_t("خطأ", "Error")}: $e', Colors.red);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
+  }
+
+  void _showSnack(String msg, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: color),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isReceipt = _type == 'receipt';
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_t("تعديل السند", "Edit Voucher")),
+        backgroundColor: const Color(0xFFD4AF37),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(color: Colors.red),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              : SingleChildScrollView(
+                  padding: const EdgeInsets.all(12),
+                  child: Column(
+                    children: [
+                      // Warning banner
+                      if (_isNewFormat)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.orange.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.info_outline,
+                                  color: Colors.orange.shade800, size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _t("⚠️ سند جديد — التعديل هيمس الكسر/التسكيرة المرتبطة تلقائياً",
+                                      "⚠️ New voucher — editing will also update the linked scrap/minting"),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.orange.shade800,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(Icons.info_outline,
+                                  color: Colors.grey.shade700, size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _t("ℹ️ سند قديم — التعديل هيمس السند فقط (بدون الكسر)",
+                                      "ℹ️ Old voucher — editing will only affect the voucher"),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade700,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      // Header card
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 20,
+                                    backgroundColor:
+                                        (isReceipt ? Colors.green : Colors.red)
+                                            .withOpacity(0.1),
+                                    child: Icon(
+                                      isReceipt
+                                          ? Icons.south_west_rounded
+                                          : Icons.north_east_rounded,
+                                      color:
+                                          isReceipt ? Colors.green : Colors.red,
+                                      size: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          isReceipt
+                                              ? _t("سند قبض", "Receipt Voucher")
+                                              : _t(
+                                                  "سند صرف", "Payment Voucher"),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        Text(
+                                          _supplierName,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.grey.shade600,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 20),
+
+                              // التاريخ
+                              Row(
+                                children: [
+                                  const Icon(Icons.calendar_today,
+                                      color: Color(0xFFD4AF37), size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _t('التاريخ', 'Date'),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    DateFormat("yyyy-MM-dd")
+                                        .format(_date ?? DateTime.now()),
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, size: 18),
+                                    onPressed: () async {
+                                      final picked = await showDatePicker(
+                                        context: context,
+                                        initialDate: _date ?? DateTime.now(),
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2100),
+                                      );
+                                      if (picked != null) {
+                                        setState(() => _date = picked);
+                                      }
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              // المندوب
+                              if (_delegatesList.isNotEmpty)
+                                DropdownButtonFormField<String>(
+                                  decoration: InputDecoration(
+                                    labelText: _t("المندوب", "Delegate"),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 8),
+                                    prefixIcon: const Icon(Icons.person,
+                                        color: Color(0xFFD4AF37), size: 20),
+                                  ),
+                                  value: _delegatesList.contains(_delegate)
+                                      ? _delegate
+                                      : null,
+                                  items: _delegatesList.map((d) {
+                                    return DropdownMenuItem(
+                                      value: d,
+                                      child: Text(d),
+                                    );
+                                  }).toList(),
+                                  onChanged: (v) {
+                                    if (v != null) {
+                                      setState(() => _delegate = v);
+                                    }
+                                  },
+                                ),
+
+                              // طريقة الدفع (لصرف بس)
+                              if (!isReceipt) ...[
+                                const SizedBox(height: 10),
+                                DropdownButtonFormField<String>(
+                                  decoration: InputDecoration(
+                                    labelText:
+                                        _t("طريقة الدفع", "Payment Method"),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 8),
+                                    prefixIcon: const Icon(Icons.payment,
+                                        color: Color(0xFFD4AF37), size: 20),
+                                  ),
+                                  value: _paymentMethod,
+                                  items: [
+                                    _t("كاش", "Cash"),
+                                    _t("شبكة", "Network"),
+                                    _t("متعدد", "Mixed")
+                                  ].map((m) {
+                                    return DropdownMenuItem(
+                                        value: m, child: Text(m));
+                                  }).toList(),
+                                  onChanged: (v) =>
+                                      setState(() => _paymentMethod = v),
+                                ),
+                                if (_paymentMethod == _t("كاش", "Cash") ||
+                                    _paymentMethod == _t("متعدد", "Mixed"))
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: TextField(
+                                      controller: _cashCtrl,
+                                      decoration: InputDecoration(
+                                        labelText: _t(
+                                            "💵 المبلغ كاش", "💵 Cash Amount"),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 8),
+                                        prefixIcon: const Icon(Icons.money,
+                                            color: Color(0xFFD4AF37), size: 20),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                                if (_paymentMethod == _t("شبكة", "Network") ||
+                                    _paymentMethod == _t("متعدد", "Mixed"))
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 10),
+                                    child: TextField(
+                                      controller: _networkCtrl,
+                                      decoration: InputDecoration(
+                                        labelText: _t("💳 المبلغ شبكة",
+                                            "💳 Network Amount"),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 8),
+                                        prefixIcon: const Icon(
+                                            Icons.credit_card,
+                                            color: Color(0xFFD4AF37),
+                                            size: 20),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Carats
+                      Card(
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.category,
+                                      color: Color(0xFFD4AF37), size: 20),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    _t("العيارات", "Carats"),
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  IconButton(
+                                    icon: const Icon(Icons.add_circle,
+                                        color: Color(0xFFD4AF37), size: 28),
+                                    onPressed: _addCaratItem,
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 12),
+                              Column(
+                                children: _caratItems
+                                    .asMap()
+                                    .entries
+                                    .map((e) => _buildCaratRow(e.key, e.value))
+                                    .toList(),
+                              ),
+                              const SizedBox(height: 4),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 8),
+                                decoration: BoxDecoration(
+                                  color:
+                                      const Color(0xFFD4AF37).withOpacity(0.08),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      _t("الإجمالي", "Total"),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      "${_totalWeight().toStringAsFixed(2)} ${_t('جم', 'g')} • ${_totalWage().toStringAsFixed(2)}",
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFFD4AF37),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Save button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFD4AF37),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          icon: _isSaving
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.save, color: Colors.white),
+                          label: Text(
+                            _isSaving
+                                ? _t("جاري الحفظ...", "Saving...")
+                                : _t("حفظ التعديلات", "Save Changes"),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          onPressed: _isSaving ? null : _save,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+    );
+  }
+
+  Widget _buildCaratRow(int index, Map<String, dynamic> item) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: DropdownButtonFormField<String>(
+              decoration: InputDecoration(
+                labelText: _t("العيار", "Carat"),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                isDense: true,
+              ),
+              value: ["14", "18", "21", "22", "24"]
+                      .contains(item['carat']?.toString())
+                  ? item['carat'].toString()
+                  : null,
+              items: ["14", "18", "21", "22", "24"].map((c) {
+                return DropdownMenuItem(value: c, child: Text(c));
+              }).toList(),
+              onChanged: (v) {
+                setState(() {
+                  _caratItems[index]['carat'] = v;
+                });
+              },
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 4,
+            child: TextField(
+              controller: TextEditingController(
+                text: (item['weight'] ?? 0).toString(),
+              ),
+              decoration: InputDecoration(
+                labelText: _t("الوزن", "Weight"),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                suffixText: _t("جم", "g"),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                isDense: true,
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (v) {
+                _caratItems[index]['weight'] = double.tryParse(v) ?? 0;
+              },
+            ),
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            flex: 3,
+            child: TextField(
+              controller: TextEditingController(
+                text: (item['wage'] ?? 0).toString(),
+              ),
+              decoration: InputDecoration(
+                labelText: _t("الأجر", "Wage"),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                isDense: true,
+              ),
+              keyboardType: TextInputType.number,
+              onChanged: (v) {
+                _caratItems[index]['wage'] = double.tryParse(v) ?? 0;
+              },
+            ),
+          ),
+          const SizedBox(width: 4),
+          IconButton(
+            icon: const Icon(Icons.remove_circle, color: Colors.red, size: 22),
+            onPressed:
+                _caratItems.length > 1 ? () => _removeCaratItem(index) : null,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
           ),
         ],
       ),

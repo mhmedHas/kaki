@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
+import 'package:uhf_gold_shop/pages/purchases_page.dart';
 import 'package:uhf_gold_shop/pages/report_opening_page.dart';
 import 'print_page.dart';
 //import 'printer_page.dart';
@@ -387,6 +388,12 @@ class _partPageState extends State<partPage> {
                     children: [
                       _buildMenuCard(
                         context,
+                        icon: Icons.shopping_bag,
+                        label: _t("المشتريات", "Purchases"),
+                        page: const PurchasesPage(),
+                      ),
+                      _buildMenuCard(
+                        context,
                         icon: Icons.add_box,
                         label: _t("الادخال", "Input"),
                         page: const _ItemsList(),
@@ -395,7 +402,7 @@ class _partPageState extends State<partPage> {
                         context,
                         icon: Icons.account_balance_wallet,
                         label: _t("ر.الافتتاحي", "O.Balance"),
-                        page: const OpeningBalanceDisplayPage(),
+                        page: const OpeningBalanceReportPage(),
                       ),
                       _buildMenuCard(
                         context,
@@ -1179,6 +1186,7 @@ class _TransfersListState extends State<_TransfersList> {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class _ExpensesList extends StatefulWidget {
   const _ExpensesList();
 
@@ -1551,6 +1559,7 @@ class _ExpensesListState extends State<_ExpensesList> {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
 class _SalerList extends StatefulWidget {
   const _SalerList();
 

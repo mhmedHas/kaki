@@ -347,41 +347,51 @@ class _EditPageState extends State<EditPage> {
             false);
         return;
       }
+
       setState(() {
         itemData = data;
         category = data['category'];
         currentImages = List<String>.from(data['images'] ?? []);
+
+        final p = data['payload'];
+        if (p != null) {
+          controllers["carat"]!.text = p['carat']?.toString() ?? '';
+          controllers["weight"]!.text = p['weight']?.toString() ?? '';
+          controllers["wage"]!.text = p['wage']?.toString() ?? '';
+          controllers["qrCode"]!.text = p['qrCode']?.toString() ?? '';
+          controllers["type"]!.text = p['type']?.toString() ?? '';
+          controllers["cost"]!.text = p['cost']?.toString() ?? '';
+          controllers["notes"]!.text = p['notes']?.toString() ?? '';
+          controllers["size"]!.text = p['size']?.toString() ?? '';
+
+          final kind = p['kind']?.toString();
+          selectedGoldType = typeOptions.contains(kind) ? kind : null;
+
+          selectedSetComponents = List<String>.from(p['setComponents'] ?? []);
+          showSetComponents =
+              selectedGoldType == 'طقم' || selectedGoldType == 'طقم هافست';
+        }
+
+        controllers["EPC"]!.text = data['epcHex']?.toString() ?? '';
+
+        // تاريخ الإدخال
+        final rawDate = data['createdAt'] ?? data['date'];
+        DateTime? entryDate;
+        if (rawDate is Timestamp) {
+          entryDate = rawDate.toDate();
+        } else if (rawDate != null) {
+          entryDate = DateTime.tryParse(rawDate.toString());
+        }
+        controllers["entryDate"]!.text = entryDate == null
+            ? ''
+            : "${entryDate.day.toString().padLeft(2, '0')}/"
+                "${entryDate.month.toString().padLeft(2, '0')}/"
+                "${entryDate.year}";
       });
 
-      if (data['payload'] != null) {
-        final p = data['payload'];
-        controllers["carat"]!.text = p['carat']?.toString() ?? '';
-        controllers["weight"]!.text = p['weight']?.toString() ?? '';
-        controllers["wage"]!.text = p['wage']?.toString() ?? '';
-        controllers["qrCode"]!.text = p['qrCode']?.toString() ?? '';
-        controllers["type"]!.text = p['type']?.toString() ?? '';
-        controllers["cost"]!.text = p['cost']?.toString() ?? '';
-        controllers["notes"]!.text = p['notes']?.toString() ?? '';
-        controllers["EPC"]!.text = data['epcHex']?.toString() ?? '';
-        controllers["size"]!.text = p['size']?.toString() ?? '';
-        selectedGoldType = p['kind']?.toString() ?? '';
-        selectedSetComponents = p['setComponents'];
-
-        // Load entry date from createdAt
-        final createdAt = data['createdAt'];
-        if (createdAt != null) {
-          final date = createdAt is Timestamp
-              ? createdAt.toDate()
-              : DateTime.tryParse(createdAt.toString());
-          if (date != null) {
-            controllers["entryDate"]!.text =
-                "${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}";
-          }
-        }
-      }
       _showMsg(_t('تم تحميل البيانات بنجاح', 'Data loaded successfully'), true);
     } catch (e) {
-      //_showMsg(_t("فشل تحميل البيانات: $e", "Failed to load data: $e"), false);
+      _showMsg(_t("فشل تحميل البيانات: $e", "Failed to load data: $e"), false);
     } finally {
       setState(() => busy = false);
     }
@@ -698,6 +708,7 @@ class _EditPageState extends State<EditPage> {
             const SizedBox(height: 16),
             //const SizedBox(height: 16),
             DropdownButtonFormField<String>(
+              key: ValueKey(epcHex),
               initialValue: selectedGoldType,
               decoration: InputDecoration(
                 labelText: _t('النوع', 'Type'),

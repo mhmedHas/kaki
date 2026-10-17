@@ -177,9 +177,7 @@
 // //           isReading = false;
 // //         });
 // //       } else {
-// //         setState(() {
-// //           qrController.text = tag;
-// //         });
+// //         // ✅ سيتم التعامل مع الرقم داخل كل Form على حدة
 // //       }
 // //     });
 
@@ -542,7 +540,7 @@
 // //                   ),
 // //                   const SizedBox(height: 16),
 // //                   Text(
-// //                     '${_tempPower} dBm',
+// //                     '$_tempPower dBm',
 // //                     style: const TextStyle(
 // //                         fontSize: 22, fontWeight: FontWeight.bold),
 // //                   ),
@@ -1106,8 +1104,8 @@
 // //         note2: note2?.trim().isEmpty ?? true ? null : note2?.trim(),
 // //         showQr: showQr.trim(),
 // //         qrCode: qrCode.trim(),
-// //         customLogoBase64: logoBase64, // ← هنا بتبعت اللوجو لـ Kotlin
-// //         labelLayout: layout.toJson(),
+// //         customLogoBase64:
+// //             logoBase64, // ← هنا بتبعت اللوجو لـ Kotlin        labelLayout: layout.toJson(),
 // //       );
 
 // //       if (!success) {
@@ -1224,6 +1222,16 @@
 // //   String _lang = 'ar';
 // //   final TextEditingController _sizeController = TextEditingController();
 
+// //   // ✅ متغيرات حقل الشريحة اليدوي والاستماع للقارئ
+// //   final TextEditingController manualEpcController = TextEditingController();
+// //   final FocusNode manualEpcFocus = FocusNode();
+// //   bool showManualEpcField = false;
+// //   StreamSubscription<String>? _tagSubscription;
+
+// //   // ✅ متغير لتحديد وضع الماسح
+// //   bool _isPrimaryScanner =
+// //       false; // false = مساعد (يظهر الحقل)، true = أساسي (يخفي الحقل)
+
 // //   void _subscribeToWeight() {
 // //     _weightSub?.cancel();
 // //     _weightSub = widget.weightStream.listen((value) {
@@ -1243,24 +1251,44 @@
 
 // //     _loadLanguage();
 // //     _loadActiveProfile();
+// //     _loadScannerMode(); // ✅ تحميل وضع الماسح
 // //     weight.addListener(_onFormChanged);
 // //     wage.addListener(_onFormChanged);
 // //     widget.qrController.addListener(_onFormChanged);
 // //     _sizeController.text = "0";
 // //     _loadSettings();
-// //     /*widget.weightStream.listen((value) {
-// //       if (_autoWeightMode) { // ✅ يأخذ من الميزان بس لو الوضع التلقائي
-// //         // استخراج أرقام عشرية فقط
-// //         final match = RegExp(r'\d+\.?\d*').firstMatch(value);
-// //         final cleaned = match != null ? match.group(0)! : '';
-// //         if (cleaned.isNotEmpty) {
-// //           setState(() {
-// //             weight.text = cleaned;
-// //           });
-// //         }
+
+// //     // ✅ استماع للقارئ داخل GoldForm
+// //     _tagSubscription = SeuicUhfService.tagStream.listen((tag) {
+// //       if (!mounted) return;
+
+// //       // ✅ نتعامل مع الأرقام القصيرة (QR) فقط، والأرقام الطويلة (EPC) تتعامل معها الصفحة الأم
+// //       if (tag.length < 24) {
+// //         setState(() {
+// //           manualEpcController.text = tag;
+// //           showManualEpcField = true;
+// //         });
+
+// //         // ✅ نطلب التركيز يفضل في حقل الشريحة
+// //         WidgetsBinding.instance.addPostFrameCallback((_) {
+// //           if (mounted) {
+// //             FocusScope.of(context).requestFocus(manualEpcFocus);
+// //           }
+// //         });
 // //       }
-// //     });*/
+// //     });
+
 // //     _subscribeToWeight();
+// //   }
+
+// //   // ✅ تحميل وضع الماسح من الإعدادات
+// //   Future<void> _loadScannerMode() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     final mode = prefs.getString('scannerMode');
+// //     // القيمة الافتراضية هي false (مساعد) إذا لم يتم العثور على إعداد
+// //     setState(() {
+// //       _isPrimaryScanner = mode == 'primary';
+// //     });
 // //   }
 
 // //   @override
@@ -1269,6 +1297,18 @@
 // //     if (oldWidget.weightStream != widget.weightStream) {
 // //       _subscribeToWeight();
 // //     }
+// //   }
+
+// //   @override
+// //   void dispose() {
+// //     _tagSubscription?.cancel();
+// //     _weightSub?.cancel();
+// //     weight.removeListener(_onFormChanged);
+// //     wage.removeListener(_onFormChanged);
+// //     widget.qrController.removeListener(_onFormChanged);
+// //     manualEpcController.dispose();
+// //     manualEpcFocus.dispose();
+// //     super.dispose();
 // //   }
 
 // //   Future<void> _loadActiveProfile() async {
@@ -1431,15 +1471,6 @@
 
 // //   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
 
-// //   @override
-// //   void dispose() {
-// //     _weightSub?.cancel();
-// //     weight.removeListener(_onFormChanged);
-// //     wage.removeListener(_onFormChanged);
-// //     widget.qrController.removeListener(_onFormChanged);
-// //     super.dispose();
-// //   }
-
 // //   bool useScanner = false;
 // //   void showAppMessage(BuildContext context, String msg) {
 // //     final isSuccess = msg.contains('تمت') ||
@@ -1464,6 +1495,10 @@
 // //         ),
 // //       ),
 // //     );
+// //   }
+
+// //   void AddEpcManualy(String Epc) {
+// //     SeuicUhfService.addEpcManualy(Epc);
 // //   }
 
 // //   Future<void> _saveGold() async {
@@ -1509,8 +1544,11 @@
 // //         //carat = '21';
 // //         date = DateTime.now();
 // //         // امسح الشريحة بعد الحفظ
-// //         widget.onClearEpc?.call();
+// //         widget.onClearEpc.call();
 // //         widget.qrController.text = const Uuid().v4().substring(0, 7);
+// //         // ✅ مسح حقل الشريحة وإخفائه
+// //         manualEpcController.clear();
+// //         showManualEpcField = false;
 
 // //         if (!_pinImage) {
 // //           selectedImage = null;
@@ -1592,10 +1630,6 @@
 // //   }
 
 // //   bool _showNotes = false;
-// //   final TextEditingController manualEpcController = TextEditingController();
-// //   final FocusNode manualEpcFocus = FocusNode();
-
-// //   bool showManualEpcField = false;
 
 // //   @override
 // //   Widget build(BuildContext context) {
@@ -1623,7 +1657,7 @@
 // //                 children: [
 // //                   const SizedBox(height: 16),
 // //                   DropdownButtonFormField<String>(
-// //                     value: carat,
+// //                     initialValue: carat,
 // //                     items: const ['18', '21', '22']
 // //                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
 // //                         .toList(),
@@ -1737,7 +1771,7 @@
 // //                   ),
 // //                   const SizedBox(height: 16),
 // //                   DropdownButtonFormField<String>(
-// //                     value: selectedGoldType,
+// //                     initialValue: selectedGoldType,
 // //                     decoration: InputDecoration(
 // //                       labelText: _t('النوع', 'Type'),
 // //                       prefixIcon:
@@ -1923,6 +1957,8 @@
 // //                   TextFormField(
 // //                     controller: widget.qrController,
 // //                     readOnly: true,
+// //                     focusNode: FocusNode(
+// //                         canRequestFocus: false), // ✅ منع التركيز على حقل QR
 // //                     decoration: InputDecoration(
 // //                       labelText: widget.useScanner
 // //                           ? _t("QR من الماسح", "QR from Scanner")
@@ -1970,8 +2006,10 @@
 // //                                   });
 // //                                   WidgetsBinding.instance
 // //                                       .addPostFrameCallback((_) {
-// //                                     FocusScope.of(context)
-// //                                         .requestFocus(manualEpcFocus);
+// //                                     if (mounted) {
+// //                                       FocusScope.of(context)
+// //                                           .requestFocus(manualEpcFocus);
+// //                                     }
 // //                                   });
 // //                                 },
 // //                           icon: widget.isPrinting
@@ -2026,7 +2064,8 @@
 // //                       ),
 // //                     ],
 // //                   ),
-// //                   if (showManualEpcField) ...[
+// //                   // ✅ إظهار حقل إدخال الشريحة فقط إذا كان الماسح مساعداً
+// //                   if (!_isPrimaryScanner && showManualEpcField) ...[
 // //                     const SizedBox(height: 16),
 // //                     TextField(
 // //                       controller: manualEpcController,
@@ -2174,10 +2213,6 @@
 // //       ),
 // //     );
 // //   }
-
-// //   void AddEpcManualy(String Epc) {
-// //     SeuicUhfService.addEpcManualy(Epc);
-// //   }
 // // }
 
 // // class GemForm extends StatefulWidget {
@@ -2233,6 +2268,16 @@
 // //   bool _pinImage = false; // تثبيت الصورة
 // //   LabelProfile? _activeProfile; // البروفايل المختار حالياً
 
+// //   // ✅ متغيرات حقل الشريحة اليدوي والاستماع للقارئ
+// //   final TextEditingController manualEpcController = TextEditingController();
+// //   final FocusNode manualEpcFocus = FocusNode();
+// //   bool showManualEpcField = false;
+// //   StreamSubscription<String>? _tagSubscription;
+
+// //   // ✅ متغير لتحديد وضع الماسح
+// //   bool _isPrimaryScanner =
+// //       false; // false = مساعد (يظهر الحقل)، true = أساسي (يخفي الحقل)
+
 // //   String _lang = 'ar';
 // //   Future<void> _loadLanguage() async {
 // //     final prefs = await SharedPreferences.getInstance();
@@ -2249,10 +2294,49 @@
 // //   void initState() {
 // //     super.initState();
 // //     _loadActiveProfile();
+// //     _loadScannerMode(); // ✅ تحميل وضع الماسح
 // //     cost.addListener(_onFormChanged);
 // //     widget.qrController.addListener(_onFormChanged);
 // //     _loadSettings();
 // //     _loadLanguage();
+
+// //     // ✅ استماع للقارئ داخل GemForm
+// //     _tagSubscription = SeuicUhfService.tagStream.listen((tag) {
+// //       if (!mounted) return;
+
+// //       if (tag.length < 24) {
+// //         setState(() {
+// //           manualEpcController.text = tag;
+// //           showManualEpcField = true;
+// //         });
+
+// //         WidgetsBinding.instance.addPostFrameCallback((_) {
+// //           if (mounted) {
+// //             FocusScope.of(context).requestFocus(manualEpcFocus);
+// //           }
+// //         });
+// //       }
+// //     });
+// //   }
+
+// //   // ✅ تحميل وضع الماسح من الإعدادات
+// //   Future<void> _loadScannerMode() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     final mode = prefs.getString('scannerMode');
+// //     // القيمة الافتراضية هي false (مساعد) إذا لم يتم العثور على إعداد
+// //     setState(() {
+// //       _isPrimaryScanner = mode == 'primary';
+// //     });
+// //   }
+
+// //   @override
+// //   void dispose() {
+// //     _tagSubscription?.cancel();
+// //     cost.removeListener(_onFormChanged);
+// //     widget.qrController.removeListener(_onFormChanged);
+// //     manualEpcController.dispose();
+// //     manualEpcFocus.dispose();
+// //     super.dispose();
 // //   }
 
 // //   void _onFormChanged() {
@@ -2405,14 +2489,11 @@
 // //     );
 // //   }
 
-// //   @override
-// //   void dispose() {
-// //     cost.removeListener(_onFormChanged);
-// //     widget.qrController.removeListener(_onFormChanged);
-// //     super.dispose();
-// //   }
-
 // //   bool useScanner = false;
+
+// //   void AddEpcManualy(String Epc) {
+// //     SeuicUhfService.addEpcManualy(Epc);
+// //   }
 
 // //   Future<void> _saveGem() async {
 // //     setState(() {
@@ -2444,8 +2525,11 @@
 // //         notes.clear();
 // //         //gemType = 'ماس';
 // //         date = DateTime.now();
-// //         widget.onClearEpc?.call();
+// //         widget.onClearEpc.call();
 // //         widget.qrController.text = const Uuid().v4().substring(0, 7);
+// //         // ✅ مسح حقل الشريحة وإخفائه
+// //         manualEpcController.clear();
+// //         showManualEpcField = false;
 
 // //         if (!_pinImage) {
 // //           selectedImage = null;
@@ -2461,7 +2545,7 @@
 // //       });
 // //     } catch (e) {
 // //       setState(() {
-// //         msg = _t('فشل الحفظ', 'Failed to save') + ': $e';
+// //         msg = '${_t('فشل الحفظ', 'Failed to save')}: $e';
 // //       });
 // //       showAppMessage(context, msg!);
 // //     } finally {
@@ -2548,10 +2632,6 @@
 // //   }
 
 // //   bool _showNotes = false;
-// //   final TextEditingController manualEpcController = TextEditingController();
-// //   final FocusNode manualEpcFocus = FocusNode();
-
-// //   bool showManualEpcField = false;
 
 // //   @override
 // //   Widget build(BuildContext context) {
@@ -2591,7 +2671,7 @@
 // //                 children: [
 // //                   const SizedBox(height: 16),
 // //                   DropdownButtonFormField<String>(
-// //                     value: gemType,
+// //                     initialValue: gemType,
 // //                     items: gemTypes
 // //                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
 // //                         .toList(),
@@ -2718,6 +2798,8 @@
 // //                   TextFormField(
 // //                     controller: widget.qrController,
 // //                     readOnly: true,
+// //                     focusNode: FocusNode(
+// //                         canRequestFocus: false), // ✅ منع التركيز على حقل QR
 // //                     decoration: InputDecoration(
 // //                       labelText: widget.useScanner
 // //                           ? _t("QR من الماسح", "QR from Scanner")
@@ -2816,8 +2898,10 @@
 // //                                   });
 // //                                   WidgetsBinding.instance
 // //                                       .addPostFrameCallback((_) {
-// //                                     FocusScope.of(context)
-// //                                         .requestFocus(manualEpcFocus);
+// //                                     if (mounted) {
+// //                                       FocusScope.of(context)
+// //                                           .requestFocus(manualEpcFocus);
+// //                                     }
 // //                                   });
 // //                                 },
 // //                           icon: widget.isPrinting
@@ -2870,7 +2954,8 @@
 // //                       ),
 // //                     ],
 // //                   ),
-// //                   if (showManualEpcField) ...[
+// //                   // ✅ إظهار حقل إدخال الشريحة فقط إذا كان الماسح مساعداً
+// //                   if (!_isPrimaryScanner && showManualEpcField) ...[
 // //                     const SizedBox(height: 16),
 // //                     TextField(
 // //                       controller: manualEpcController,
@@ -3005,10 +3090,6 @@
 // //       ),
 // //     );
 // //   }
-
-// //   void AddEpcManualy(String Epc) {
-// //     SeuicUhfService.addEpcManualy(Epc);
-// //   }
 // // }
 
 // // class BullionForm extends StatefulWidget {
@@ -3071,6 +3152,16 @@
 // //   bool showQr = true; // true = QR, false = Barcode
 // //   CodeDisplayMode _displayMode = CodeDisplayMode.qr;
 
+// //   // ✅ متغيرات حقل الشريحة اليدوي والاستماع للقارئ
+// //   final TextEditingController manualEpcController = TextEditingController();
+// //   final FocusNode manualEpcFocus = FocusNode();
+// //   bool showManualEpcField = false;
+// //   StreamSubscription<String>? _tagSubscription;
+
+// //   // ✅ متغير لتحديد وضع الماسح
+// //   bool _isPrimaryScanner =
+// //       false; // false = مساعد (يظهر الحقل)، true = أساسي (يخفي الحقل)
+
 // //   String _lang = 'ar';
 // //   Future<void> _loadLanguage() async {
 // //     final prefs = await SharedPreferences.getInstance();
@@ -3102,12 +3193,42 @@
 // //   void initState() {
 // //     super.initState();
 // //     _loadActiveProfile();
+// //     _loadScannerMode(); // ✅ تحميل وضع الماسح
 // //     weight.addListener(_onFormChanged);
 // //     wage.addListener(_onFormChanged);
 // //     widget.qrController.addListener(_onFormChanged);
 // //     _loadSettings();
 // //     _loadLanguage();
+
+// //     // ✅ استماع للقارئ داخل BullionForm
+// //     _tagSubscription = SeuicUhfService.tagStream.listen((tag) {
+// //       if (!mounted) return;
+
+// //       if (tag.length < 24) {
+// //         setState(() {
+// //           manualEpcController.text = tag;
+// //           showManualEpcField = true;
+// //         });
+
+// //         WidgetsBinding.instance.addPostFrameCallback((_) {
+// //           if (mounted) {
+// //             FocusScope.of(context).requestFocus(manualEpcFocus);
+// //           }
+// //         });
+// //       }
+// //     });
+
 // //     _subscribeToWeight();
+// //   }
+
+// //   // ✅ تحميل وضع الماسح من الإعدادات
+// //   Future<void> _loadScannerMode() async {
+// //     final prefs = await SharedPreferences.getInstance();
+// //     final mode = prefs.getString('scannerMode');
+// //     // القيمة الافتراضية هي false (مساعد) إذا لم يتم العثور على إعداد
+// //     setState(() {
+// //       _isPrimaryScanner = mode == 'primary';
+// //     });
 // //   }
 
 // //   @override
@@ -3116,6 +3237,18 @@
 // //     if (oldWidget.weightStream != widget.weightStream) {
 // //       _subscribeToWeight();
 // //     }
+// //   }
+
+// //   @override
+// //   void dispose() {
+// //     _tagSubscription?.cancel();
+// //     _weightSub?.cancel();
+// //     weight.removeListener(_onFormChanged);
+// //     wage.removeListener(_onFormChanged);
+// //     widget.qrController.removeListener(_onFormChanged);
+// //     manualEpcController.dispose();
+// //     manualEpcFocus.dispose();
+// //     super.dispose();
 // //   }
 
 // //   void _onFormChanged() {
@@ -3268,16 +3401,11 @@
 // //     }
 // //   }
 
-// //   @override
-// //   void dispose() {
-// //     _weightSub?.cancel();
-// //     weight.removeListener(_onFormChanged);
-// //     wage.removeListener(_onFormChanged);
-// //     widget.qrController.removeListener(_onFormChanged);
-// //     super.dispose();
-// //   }
-
 // //   bool useScanner = false;
+
+// //   void AddEpcManualy(String Epc) {
+// //     SeuicUhfService.addEpcManualy(Epc);
+// //   }
 
 // //   Future<void> _saveBullion() async {
 // //     setState(() {
@@ -3311,6 +3439,9 @@
 // //         notes.clear();
 // //         date = DateTime.now();
 // //         widget.qrController.text = const Uuid().v4().substring(0, 7);
+// //         // ✅ مسح حقل الشريحة وإخفائه
+// //         manualEpcController.clear();
+// //         showManualEpcField = false;
 
 // //         if (!_pinImage) {
 // //           selectedImage = null;
@@ -3327,7 +3458,7 @@
 // //       });
 // //     } catch (e) {
 // //       setState(() {
-// //         msg = _t('فشل الحفظ', 'Failed to save') + ': $e';
+// //         msg = '${_t('فشل الحفظ', 'Failed to save')}: $e';
 // //       });
 // //       showAppMessage(context, msg!);
 // //     } finally {
@@ -3414,10 +3545,6 @@
 // //   }
 
 // //   bool _showNotes = false;
-// //   final TextEditingController manualEpcController = TextEditingController();
-// //   final FocusNode manualEpcFocus = FocusNode();
-
-// //   bool showManualEpcField = false;
 
 // //   @override
 // //   Widget build(BuildContext context) {
@@ -3641,6 +3768,8 @@
 // //                   TextFormField(
 // //                     controller: widget.qrController,
 // //                     readOnly: true,
+// //                     focusNode: FocusNode(
+// //                         canRequestFocus: false), // ✅ منع التركيز على حقل QR
 // //                     decoration: InputDecoration(
 // //                       labelText: widget.useScanner
 // //                           ? _t("QR من الماسح", "QR from Scanner")
@@ -3738,8 +3867,10 @@
 // //                                   });
 // //                                   WidgetsBinding.instance
 // //                                       .addPostFrameCallback((_) {
-// //                                     FocusScope.of(context)
-// //                                         .requestFocus(manualEpcFocus);
+// //                                     if (mounted) {
+// //                                       FocusScope.of(context)
+// //                                           .requestFocus(manualEpcFocus);
+// //                                     }
 // //                                   });
 // //                                 },
 // //                           icon: widget.isPrinting
@@ -3794,7 +3925,8 @@
 // //                       ),
 // //                     ],
 // //                   ),
-// //                   if (showManualEpcField) ...[
+// //                   // ✅ إظهار حقل إدخال الشريحة فقط إذا كان الماسح مساعداً
+// //                   if (!_isPrimaryScanner && showManualEpcField) ...[
 // //                     const SizedBox(height: 16),
 // //                     TextField(
 // //                       controller: manualEpcController,
@@ -3884,10 +4016,6 @@
 // //         ),
 // //       ),
 // //     );
-// //   }
-
-// //   void AddEpcManualy(String Epc) {
-// //     SeuicUhfService.addEpcManualy(Epc);
 // //   }
 // // }
 // import 'dart:async';
@@ -4069,11 +4197,7 @@
 //           isReading = false;
 //         });
 //       } else {
-//         // ✅ تم إزالة السطر الذي كان يضع الرقم في qrController
 //         // ✅ سيتم التعامل مع الرقم داخل كل Form على حدة
-//         // setState(() {
-//         //   qrController.text = tag; // ❌ تم إزالة هذا السطر
-//         // });
 //       }
 //     });
 
@@ -4436,7 +4560,7 @@
 //                   ),
 //                   const SizedBox(height: 16),
 //                   Text(
-//                     '${_tempPower} dBm',
+//                     '$_tempPower dBm',
 //                     style: const TextStyle(
 //                         fontSize: 22, fontWeight: FontWeight.bold),
 //                   ),
@@ -5107,7 +5231,13 @@
 //     'غير ذلك'
 //   ];
 
-//   List<String> get setComponentOptions => typeOptions
+//   // ✅ التصنيفات المخصصة المضافة من الإعدادات
+//   List<String> _customGoldTypes = [];
+
+//   // ✅ الدمج: المخصص أولاً ثم الأصلية
+//   List<String> get _allTypeOptions => [..._customGoldTypes, ...typeOptions];
+
+//   List<String> get setComponentOptions => _allTypeOptions
 //       .where(
 //         (type) => type != 'طقم' && type != 'طقم هافست',
 //       )
@@ -5123,6 +5253,10 @@
 //   final FocusNode manualEpcFocus = FocusNode();
 //   bool showManualEpcField = false;
 //   StreamSubscription<String>? _tagSubscription;
+
+//   // ✅ متغير لتحديد وضع الماسح
+//   bool _isPrimaryScanner =
+//       false; // false = مساعد (يظهر الحقل)، true = أساسي (يخفي الحقل)
 
 //   void _subscribeToWeight() {
 //     _weightSub?.cancel();
@@ -5143,6 +5277,8 @@
 
 //     _loadLanguage();
 //     _loadActiveProfile();
+//     _loadScannerMode(); // ✅ تحميل وضع الماسح
+//     _loadCustomGoldTypes(); // ✅ تحميل التصنيفات المخصصة
 //     weight.addListener(_onFormChanged);
 //     wage.addListener(_onFormChanged);
 //     widget.qrController.addListener(_onFormChanged);
@@ -5170,6 +5306,30 @@
 //     });
 
 //     _subscribeToWeight();
+//   }
+
+//   // ✅ تحميل التصنيفات المخصصة من الإعدادات
+//   Future<void> _loadCustomGoldTypes() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     final loaded = prefs.getStringList('customGoldTypes') ?? [];
+//     setState(() {
+//       _customGoldTypes = loaded;
+//       // لو التصنيف المختار مش موجود خلاص، رجّعه للأول
+//       final all = [...loaded, ...typeOptions];
+//       if (!all.contains(selectedGoldType)) {
+//         selectedGoldType = all.isNotEmpty ? all.first : null;
+//       }
+//     });
+//   }
+
+//   // ✅ تحميل وضع الماسح من الإعدادات
+//   Future<void> _loadScannerMode() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     final mode = prefs.getString('scannerMode');
+//     // القيمة الافتراضية هي false (مساعد) إذا لم يتم العثور على إعداد
+//     setState(() {
+//       _isPrimaryScanner = mode == 'primary';
+//     });
 //   }
 
 //   @override
@@ -5425,7 +5585,7 @@
 //         //carat = '21';
 //         date = DateTime.now();
 //         // امسح الشريحة بعد الحفظ
-//         widget.onClearEpc?.call();
+//         widget.onClearEpc.call();
 //         widget.qrController.text = const Uuid().v4().substring(0, 7);
 //         // ✅ مسح حقل الشريحة وإخفائه
 //         manualEpcController.clear();
@@ -5538,7 +5698,7 @@
 //                 children: [
 //                   const SizedBox(height: 16),
 //                   DropdownButtonFormField<String>(
-//                     value: carat,
+//                     initialValue: carat,
 //                     items: const ['18', '21', '22']
 //                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
 //                         .toList(),
@@ -5652,7 +5812,7 @@
 //                   ),
 //                   const SizedBox(height: 16),
 //                   DropdownButtonFormField<String>(
-//                     value: selectedGoldType,
+//                     initialValue: selectedGoldType,
 //                     decoration: InputDecoration(
 //                       labelText: _t('النوع', 'Type'),
 //                       prefixIcon:
@@ -5660,7 +5820,7 @@
 //                       border: OutlineInputBorder(
 //                           borderRadius: BorderRadius.all(Radius.circular(12))),
 //                     ),
-//                     items: typeOptions.map((String type) {
+//                     items: _allTypeOptions.map((String type) {
 //                       return DropdownMenuItem<String>(
 //                         value: type,
 //                         child: Text(type),
@@ -5945,7 +6105,8 @@
 //                       ),
 //                     ],
 //                   ),
-//                   if (showManualEpcField) ...[
+//                   // ✅ إظهار حقل إدخال الشريحة فقط إذا كان الماسح مساعداً
+//                   if (!_isPrimaryScanner && showManualEpcField) ...[
 //                     const SizedBox(height: 16),
 //                     TextField(
 //                       controller: manualEpcController,
@@ -6154,6 +6315,10 @@
 //   bool showManualEpcField = false;
 //   StreamSubscription<String>? _tagSubscription;
 
+//   // ✅ متغير لتحديد وضع الماسح
+//   bool _isPrimaryScanner =
+//       false; // false = مساعد (يظهر الحقل)، true = أساسي (يخفي الحقل)
+
 //   String _lang = 'ar';
 //   Future<void> _loadLanguage() async {
 //     final prefs = await SharedPreferences.getInstance();
@@ -6170,6 +6335,7 @@
 //   void initState() {
 //     super.initState();
 //     _loadActiveProfile();
+//     _loadScannerMode(); // ✅ تحميل وضع الماسح
 //     cost.addListener(_onFormChanged);
 //     widget.qrController.addListener(_onFormChanged);
 //     _loadSettings();
@@ -6191,6 +6357,16 @@
 //           }
 //         });
 //       }
+//     });
+//   }
+
+//   // ✅ تحميل وضع الماسح من الإعدادات
+//   Future<void> _loadScannerMode() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     final mode = prefs.getString('scannerMode');
+//     // القيمة الافتراضية هي false (مساعد) إذا لم يتم العثور على إعداد
+//     setState(() {
+//       _isPrimaryScanner = mode == 'primary';
 //     });
 //   }
 
@@ -6390,7 +6566,7 @@
 //         notes.clear();
 //         //gemType = 'ماس';
 //         date = DateTime.now();
-//         widget.onClearEpc?.call();
+//         widget.onClearEpc.call();
 //         widget.qrController.text = const Uuid().v4().substring(0, 7);
 //         // ✅ مسح حقل الشريحة وإخفائه
 //         manualEpcController.clear();
@@ -6410,7 +6586,7 @@
 //       });
 //     } catch (e) {
 //       setState(() {
-//         msg = _t('فشل الحفظ', 'Failed to save') + ': $e';
+//         msg = '${_t('فشل الحفظ', 'Failed to save')}: $e';
 //       });
 //       showAppMessage(context, msg!);
 //     } finally {
@@ -6536,7 +6712,7 @@
 //                 children: [
 //                   const SizedBox(height: 16),
 //                   DropdownButtonFormField<String>(
-//                     value: gemType,
+//                     initialValue: gemType,
 //                     items: gemTypes
 //                         .map((e) => DropdownMenuItem(value: e, child: Text(e)))
 //                         .toList(),
@@ -6819,7 +6995,8 @@
 //                       ),
 //                     ],
 //                   ),
-//                   if (showManualEpcField) ...[
+//                   // ✅ إظهار حقل إدخال الشريحة فقط إذا كان الماسح مساعداً
+//                   if (!_isPrimaryScanner && showManualEpcField) ...[
 //                     const SizedBox(height: 16),
 //                     TextField(
 //                       controller: manualEpcController,
@@ -7022,6 +7199,10 @@
 //   bool showManualEpcField = false;
 //   StreamSubscription<String>? _tagSubscription;
 
+//   // ✅ متغير لتحديد وضع الماسح
+//   bool _isPrimaryScanner =
+//       false; // false = مساعد (يظهر الحقل)، true = أساسي (يخفي الحقل)
+
 //   String _lang = 'ar';
 //   Future<void> _loadLanguage() async {
 //     final prefs = await SharedPreferences.getInstance();
@@ -7053,6 +7234,7 @@
 //   void initState() {
 //     super.initState();
 //     _loadActiveProfile();
+//     _loadScannerMode(); // ✅ تحميل وضع الماسح
 //     weight.addListener(_onFormChanged);
 //     wage.addListener(_onFormChanged);
 //     widget.qrController.addListener(_onFormChanged);
@@ -7078,6 +7260,16 @@
 //     });
 
 //     _subscribeToWeight();
+//   }
+
+//   // ✅ تحميل وضع الماسح من الإعدادات
+//   Future<void> _loadScannerMode() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     final mode = prefs.getString('scannerMode');
+//     // القيمة الافتراضية هي false (مساعد) إذا لم يتم العثور على إعداد
+//     setState(() {
+//       _isPrimaryScanner = mode == 'primary';
+//     });
 //   }
 
 //   @override
@@ -7307,7 +7499,7 @@
 //       });
 //     } catch (e) {
 //       setState(() {
-//         msg = _t('فشل الحفظ', 'Failed to save') + ': $e';
+//         msg = '${_t('فشل الحفظ', 'Failed to save')}: $e';
 //       });
 //       showAppMessage(context, msg!);
 //     } finally {
@@ -7774,7 +7966,8 @@
 //                       ),
 //                     ],
 //                   ),
-//                   if (showManualEpcField) ...[
+//                   // ✅ إظهار حقل إدخال الشريحة فقط إذا كان الماسح مساعداً
+//                   if (!_isPrimaryScanner && showManualEpcField) ...[
 //                     const SizedBox(height: 16),
 //                     TextField(
 //                       controller: manualEpcController,
@@ -9079,7 +9272,14 @@ class _GoldFormState extends State<GoldForm> {
     'غير ذلك'
   ];
 
-  List<String> get setComponentOptions => typeOptions
+  // ✅ التصنيفات المخصصة المضافة من الإعدادات (Firestore)
+  List<String> _customGoldTypes = [];
+  StreamSubscription<List<String>>? _goldTypesSub;
+
+  // ✅ الدمج: المخصص أولاً ثم الأصلية
+  List<String> get _allTypeOptions => [..._customGoldTypes, ...typeOptions];
+
+  List<String> get setComponentOptions => _allTypeOptions
       .where(
         (type) => type != 'طقم' && type != 'طقم هافست',
       )
@@ -9120,6 +9320,7 @@ class _GoldFormState extends State<GoldForm> {
     _loadLanguage();
     _loadActiveProfile();
     _loadScannerMode(); // ✅ تحميل وضع الماسح
+    _listenToCustomGoldTypes(); // ✅ استماع لتصنيفات الذهب من Firestore
     weight.addListener(_onFormChanged);
     wage.addListener(_onFormChanged);
     widget.qrController.addListener(_onFormChanged);
@@ -9149,6 +9350,21 @@ class _GoldFormState extends State<GoldForm> {
     _subscribeToWeight();
   }
 
+  // ✅ الاستماع اللحظي لتصنيفات الذهب من Firestore
+  void _listenToCustomGoldTypes() {
+    _goldTypesSub?.cancel();
+    _goldTypesSub = CustomGoldTypesService.stream().listen((types) {
+      if (!mounted) return;
+      setState(() {
+        _customGoldTypes = types;
+        final all = [...types, ...typeOptions];
+        if (!all.contains(selectedGoldType)) {
+          selectedGoldType = all.isNotEmpty ? all.first : null;
+        }
+      });
+    });
+  }
+
   // ✅ تحميل وضع الماسح من الإعدادات
   Future<void> _loadScannerMode() async {
     final prefs = await SharedPreferences.getInstance();
@@ -9169,6 +9385,7 @@ class _GoldFormState extends State<GoldForm> {
 
   @override
   void dispose() {
+    _goldTypesSub?.cancel(); // ✅ إلغاء الاستماع لتصنيفات الذهب
     _tagSubscription?.cancel();
     _weightSub?.cancel();
     weight.removeListener(_onFormChanged);
@@ -9647,7 +9864,7 @@ class _GoldFormState extends State<GoldForm> {
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(12))),
                     ),
-                    items: typeOptions.map((String type) {
+                    items: _allTypeOptions.map((String type) {
                       return DropdownMenuItem<String>(
                         value: type,
                         child: Text(type),
