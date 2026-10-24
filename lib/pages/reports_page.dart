@@ -3,8 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
+import 'package:uhf_gold_shop/pages/inventory_history_page.dart';
 import 'package:uhf_gold_shop/pages/purchases_page.dart';
 import 'package:uhf_gold_shop/pages/report_opening_page.dart';
+import 'package:uhf_gold_shop/pages/sales_history_page.dart';
 import 'print_page.dart';
 //import 'printer_page.dart';
 import '../services/firestore_service.dart';
@@ -403,6 +405,18 @@ class _partPageState extends State<partPage> {
                         icon: Icons.account_balance_wallet,
                         label: _t("ر.الافتتاحي", "O.Balance"),
                         page: const OpeningBalanceReportPage(),
+                      ),
+                      _buildMenuCard(
+                        context,
+                        icon: Icons.history_rounded,
+                        label: _t("سجل المبيعات", "Sales History"),
+                        page: const SalesHistoryPage(),
+                      ),
+                      _buildMenuCard(
+                        context,
+                        icon: Icons.history_rounded,
+                        label: _t("سجل الجرد", "Inventory History"),
+                        page: const InventoryHistoryPage(),
                       ),
                       _buildMenuCard(
                         context,
