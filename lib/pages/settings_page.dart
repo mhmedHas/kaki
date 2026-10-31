@@ -6362,7 +6362,7 @@ class SettingsSyncService {
       'displayMode': prefs.getString('displayMode') ?? 'qr',
       'reportFrequency': prefs.getString('reportFrequency') ?? 'daily',
       'languageCode': prefs.getString('languageCode') ?? 'ar',
-      'scannerMode': prefs.getString('scannerMode') ?? 'secondary',
+      'scannerMode': prefs.getString('scannerMode') ?? 'primary',
       'showScrapBoxTab': prefs.getBool('showScrapBoxTab') ?? true,
       'showDailyBoxTab': prefs.getBool('showDailyBoxTab') ?? true,
       'showSafeBoxTab': prefs.getBool('showSafeBoxTab') ?? true,
@@ -6574,7 +6574,7 @@ class _SettingsPageState extends State<SettingsPage> {
   CodeDisplayMode _mode = CodeDisplayMode.qr;
   ReportFrequency _frequency = ReportFrequency.daily;
 
-  ScannerMode _scannerMode = ScannerMode.secondary;
+  ScannerMode _scannerMode = ScannerMode.primary;
 
   bool _showScrapBoxTab = true;
   bool _showDailyBoxTab = true;
@@ -6674,7 +6674,7 @@ class _SettingsPageState extends State<SettingsPage> {
       setState(() {
         _scannerMode = ScannerMode.values.firstWhere(
           (e) => e.name == mode,
-          orElse: () => ScannerMode.secondary,
+          orElse: () => ScannerMode.primary,
         );
       });
     }

@@ -10152,9 +10152,12 @@ class _GoldFormState extends State<GoldForm> {
                   // ✅ إظهار حقل إدخال الشريحة فقط إذا كان الماسح مساعداً
                   if (!_isPrimaryScanner && showManualEpcField) ...[
                     const SizedBox(height: 16),
+
                     TextField(
                       controller: manualEpcController,
                       focusNode: manualEpcFocus,
+                      keyboardType: TextInputType
+                          .visiblePassword, // ← سطر جديد: كيبورد إنجليزي/لاتيني
                       textCapitalization: TextCapitalization.characters,
                       decoration: const InputDecoration(
                         labelText: 'أدخل رقم الشريحة',
@@ -10168,6 +10171,22 @@ class _GoldFormState extends State<GoldForm> {
                         });
                       },
                     ),
+                    // TextField(
+                    //   controller: manualEpcController,
+                    //   focusNode: manualEpcFocus,
+                    //   textCapitalization: TextCapitalization.characters,
+                    //   decoration: const InputDecoration(
+                    //     labelText: 'أدخل رقم الشريحة',
+                    //     border: OutlineInputBorder(),
+                    //     prefixIcon: Icon(Icons.nfc),
+                    //   ),
+                    //   onSubmitted: (value) {
+                    //     setState(() {
+                    //       AddEpcManualy(value);
+                    //       showManualEpcField = false;
+                    //     });
+                    //   },
+                    // ),
                   ],
                   Container(
                     padding: const EdgeInsets.all(20),

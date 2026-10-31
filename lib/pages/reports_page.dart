@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
+import 'package:uhf_gold_shop/pages/SellersRegistryPage.dart';
 import 'package:uhf_gold_shop/pages/inventory_history_page.dart';
 import 'package:uhf_gold_shop/pages/purchases_page.dart';
 import 'package:uhf_gold_shop/pages/report_opening_page.dart';
@@ -411,6 +412,12 @@ class _partPageState extends State<partPage> {
                         icon: Icons.history_rounded,
                         label: _t("سجل المبيعات", "Sales History"),
                         page: const SalesHistoryPage(),
+                      ),
+                      _buildMenuCard(
+                        context,
+                        icon: Icons.history_rounded,
+                        label: _t("سجل البائعين", "Sellers History"),
+                        page: const SellersRegistryPage(),
                       ),
                       _buildMenuCard(
                         context,
