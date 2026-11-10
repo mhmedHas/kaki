@@ -3046,6 +3046,12 @@ class _SalesPageState extends State<SalesPage> {
         epcs.fold<double>(0, (sum, e) => sum + (piecePrices[e] ?? 0));
     final double paid = totalCash + totalVisa;
 
+    // اقفل زر البيع قبل فتح أي نافذة تأكيد قد تنتظر المستخدم.
+    setState(() {
+      busy = true;
+      msg = null;
+    });
+
     if ((paid - expected).abs() > 0.5) {
       final ok = await showDialog<bool>(
         context: context,
@@ -3090,13 +3096,11 @@ class _SalesPageState extends State<SalesPage> {
           ],
         ),
       );
-      if (ok != true) return;
+      if (ok != true) {
+        if (mounted) setState(() => busy = false);
+        return;
+      }
     }
-
-    setState(() {
-      busy = true;
-      msg = null;
-    });
 
     final saleGroupId = DateTime.now().millisecondsSinceEpoch.toString();
     final hasSetItem = epcs.any((epc) {
