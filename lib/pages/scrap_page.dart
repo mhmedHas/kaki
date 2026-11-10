@@ -4761,6 +4761,7 @@ class _ScrapAddFormState extends State<ScrapAddForm> {
   }
 
   Future<void> _save() async {
+    if (isLoading || !mounted) return;
     if (!_formKey.currentState!.validate()) return;
 
     if (weightController.text.isEmpty) {
