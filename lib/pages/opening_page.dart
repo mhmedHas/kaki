@@ -1042,6 +1042,7 @@ class _OpeningBalanceEntryPageState extends State<OpeningBalanceEntryPage> {
   // ============================================================
 
   Future<void> _saveAllData() async {
+    if (_isSaving || !mounted) return;
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
 
