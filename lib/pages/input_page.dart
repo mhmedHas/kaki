@@ -1502,6 +1502,7 @@
 // //   }
 
 // //   Future<void> _saveGold() async {
+    if (busy || !mounted) return;
 // //     setState(() {
 // //       busy = true;
 // //       msg = null;
@@ -2496,6 +2497,7 @@
 // //   }
 
 // //   Future<void> _saveGem() async {
+    if (busy || !mounted) return;
 // //     setState(() {
 // //       busy = true;
 // //       msg = null;
@@ -3408,6 +3410,7 @@
 // //   }
 
 // //   Future<void> _saveBullion() async {
+    if (busy || !mounted) return;
 // //     setState(() {
 // //       busy = true;
 // //       msg = null;
