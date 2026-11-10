@@ -168,6 +168,7 @@ class _ExternalTransactionsPageState extends State<ExternalTransactionsPage> {
     }
   }*/
   Future<void> _sendExternal() async {
+    if (busy || !mounted) return;
     if (epcs.isEmpty) {
       _showMsg("اقرأ شريحة واحدة على الأقل", false);
       return;
