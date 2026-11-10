@@ -1880,6 +1880,7 @@ class _ReturnEntryPageState extends State<ReturnEntryPage> {
   // حفظ الاسترجاع
   // ==================================================================
   Future<void> _saveReturn() async {
+    if (_isSaving || !mounted) return;
     // التحقق من صحة النموذج
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
