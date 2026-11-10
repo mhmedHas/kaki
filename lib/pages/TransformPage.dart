@@ -271,6 +271,7 @@ class _TransformPageState extends State<TransformPage> {
   }
 
   Future<void> _convertToScrap() async {
+    if (busy || !mounted) return;
     if (itemData == null) return;
 
     setState(() => busy = true);
@@ -293,6 +294,7 @@ class _TransformPageState extends State<TransformPage> {
   }
 
   Future<void> _convertToBranch() async {
+    if (busy || !mounted) return;
     if (itemData == null || selectedBranch == null || selectedRep == null) {
       setState(() => msg = _t("يرجى اختيار الفرع والمندوب أولاً",
           "Please select branch and delegate first"));
