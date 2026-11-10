@@ -408,6 +408,7 @@ class _ExpensesPageState extends State<ExpensesPage>
 
   // ✅ جديد: طريقة الدفع
   String _paymentMethod = 'cash'; // 'cash' أو 'network'
+  bool _isSavingExpense = false;
 
   String? _filterType;
   String? _filterPayment; // ✅ جديد: فلتر بطريقة الدفع
@@ -440,31 +441,45 @@ class _ExpensesPageState extends State<ExpensesPage>
   }
 
   Future<void> _addExpense() async {
+    // قفل فوري يمنع تكرار المصروف مع الضغط المتتابع.
+    if (_isSavingExpense || !mounted) return;
     if (!_formKey.currentState!.validate()) return;
 
-    final amount = double.parse(_amountController.text.trim());
+    setState(() => _isSavingExpense = true);
+    try {
+      final amount = double.parse(_amountController.text.trim());
 
-    // ✅ نرسل طريقة الدفع مع المبلغ
-    await FS.addExpense(
-      type: _typeController.text.trim(),
-      amount: amount,
-      date: _date ?? DateTime.now(),
-      note: _noteController.text.trim(),
-      paymentMethod: _paymentMethod, // ✅ جديد
-    );
+      await FS.addExpense(
+        type: _typeController.text.trim(),
+        amount: amount,
+        date: _date ?? DateTime.now(),
+        note: _noteController.text.trim(),
+        paymentMethod: _paymentMethod,
+      );
 
-    _typeController.clear();
-    _amountController.clear();
-    _noteController.clear();
-    setState(() => _paymentMethod = 'cash');
+      if (!mounted) return;
+      _typeController.clear();
+      _amountController.clear();
+      _noteController.clear();
+      setState(() => _paymentMethod = 'cash');
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content:
-            Text(_t("✅ تم حفظ المصروف بنجاح", "✅ Expense saved successfully")),
-        backgroundColor: Colors.green,
-      ),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_t("✅ تم حفظ المصروف بنجاح", "✅ Expense saved successfully")),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_t("❌ فشل حفظ المصروف: $e", "❌ Expense save failed: $e")),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSavingExpense = false);
+    }
   }
 
   Future<void> _pickDateRange() async {
@@ -663,9 +678,11 @@ class _ExpensesPageState extends State<ExpensesPage>
 
                   // زر الحفظ
                   ElevatedButton.icon(
-                    onPressed: _addExpense,
-                    icon: const Icon(Icons.save),
-                    label: Text(_t("حفظ المصروف", "Save Expense")),
+                    onPressed: _isSavingExpense ? null : _addExpense,
+                    icon: _isSavingExpense
+                        ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
+                        : const Icon(Icons.save),
+                    label: Text(_isSavingExpense ? _t("جارٍ الحفظ...", "Saving...") : _t("حفظ المصروف", "Save Expense")),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFD4AF37),
                       foregroundColor: Colors.black,
