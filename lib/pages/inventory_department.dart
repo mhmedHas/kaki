@@ -886,6 +886,7 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
   }
 
   Future<void> _saveInventory() async {
+    if (busy || !mounted) return;
     if (epcs.isEmpty) {
       setState(() => msg = _t(
           'يجب قراءة شريحة واحدة على الأقل', 'At least one chip must be read'));

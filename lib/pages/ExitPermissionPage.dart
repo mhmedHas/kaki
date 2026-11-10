@@ -69,6 +69,7 @@ class _ExitPermissionPageState extends State<ExitPermissionPage>
   }
 
   Future<void> _allowExit() async {
+    if (loading || !mounted) return;
     final user = FirebaseAuth.instance.currentUser;
     if (user == null || itemData == null) return;
 

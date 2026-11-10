@@ -292,6 +292,7 @@ class _AddBranchPageState extends State<AddBranchPage> {
   }
 
   Future<void> _save() async {
+    if (saving || !mounted) return;
     final name = nameCtrl.text.trim();
     final uid = uidCtrl.text.trim();
     final address = addressCtrl.text.trim();

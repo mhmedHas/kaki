@@ -521,6 +521,7 @@ class _EditPageState extends State<EditPage> {
 
   // ==================== حفظ التعديلات النصية ====================
   Future<void> _saveChanges() async {
+    if (busy || !mounted) return;
     if (epcHex.isEmpty || itemData == null) {
       _showMsg(_t("اقرأ الشريحة أولاً", "Read the tag first"), false);
       return;

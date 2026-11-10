@@ -7951,6 +7951,7 @@ class _VoucherEditPageState extends State<VoucherEditPage> {
   }
 
   Future<void> _save() async {
+    if (_isSaving || !mounted) return;
     // التحقق
     if (_date == null) {
       _showSnack(_t("يرجى تحديد التاريخ", "Please select date"), Colors.orange);
