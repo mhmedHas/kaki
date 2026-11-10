@@ -2765,6 +2765,7 @@ class _AddNonGoldDialogState extends State<_AddNonGoldDialog> {
   }
 
   Future<void> _save() async {
+    if (_saving || !mounted) return;
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _saving = true);
