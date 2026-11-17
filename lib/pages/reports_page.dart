@@ -7,6 +7,7 @@ import 'package:uhf_gold_shop/pages/SellersRegistryPage.dart';
 import 'package:uhf_gold_shop/pages/inventory_history_page.dart';
 import 'package:uhf_gold_shop/pages/purchases_page.dart';
 import 'package:uhf_gold_shop/pages/report_opening_page.dart';
+import 'package:uhf_gold_shop/pages/report_sections_page.dart';
 import 'package:uhf_gold_shop/pages/sales_history_page.dart';
 import 'print_page.dart';
 //import 'printer_page.dart';
@@ -187,12 +188,42 @@ class printPage extends StatefulWidget {
   State<printPage> createState() => _printPageState();
 }
 
+class _LoadingDialog extends StatelessWidget {
+  final String message;
+  const _LoadingDialog({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(color: Color(0xFFD4AF37)),
+            const SizedBox(height: 20),
+            Text(message,
+                style:
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            const Text('قد يستغرق بعض الثواني',
+                style: TextStyle(fontSize: 13, color: Colors.grey)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _printPageState extends State<printPage> {
   String _lang = 'ar';
   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
 
   Future<void> _loadLanguage() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) return;
     setState(() {
       _lang = prefs.getString('languageCode') ?? 'ar';
     });
@@ -204,10 +235,272 @@ class _printPageState extends State<printPage> {
     _loadLanguage();
   }
 
+  // ============ BottomSheet لفلترة التاريخ ============
+  Future<DateTimeRange?> _showDateFilterSheet() async {
+    DateTime initialStart = DateTime.now().subtract(const Duration(days: 6));
+    DateTime initialEnd = DateTime.now();
+
+    return showModalBottomSheet<DateTimeRange>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Directionality(
+          textDirection:
+              _lang == 'ar' ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+          child: StatefulBuilder(
+            builder: (context, setModalState) {
+              String fmt(DateTime d) => d.toString().split(' ').first;
+              return Padding(
+                padding: EdgeInsets.only(
+                  left: 16,
+                  right: 16,
+                  top: 16,
+                  bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 50,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(_t('فلترة التقرير', 'Filter Report'),
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _quickBtn(_t('اليوم', 'Today'), () {
+                          setModalState(() {
+                            initialStart = DateTime.now();
+                            initialEnd = DateTime.now();
+                          });
+                        }),
+                        _quickBtn(_t('آخر 7 أيام', 'Last 7 days'), () {
+                          setModalState(() {
+                            initialStart = DateTime.now()
+                                .subtract(const Duration(days: 6));
+                            initialEnd = DateTime.now();
+                          });
+                        }),
+                        _quickBtn(_t('هذا الشهر', 'This month'), () {
+                          setModalState(() {
+                            final n = DateTime.now();
+                            initialStart = DateTime(n.year, n.month, 1);
+                            initialEnd = n;
+                          });
+                        }),
+                        _quickBtn(_t('الشهر الماضي', 'Last month'), () {
+                          setModalState(() {
+                            final n = DateTime.now();
+                            initialStart = DateTime(n.year, n.month - 1, 1);
+                            initialEnd = DateTime(n.year, n.month, 0);
+                          });
+                        }),
+                        _quickBtn(_t('هذه السنة', 'This year'), () {
+                          setModalState(() {
+                            final n = DateTime.now();
+                            initialStart = DateTime(n.year, 1, 1);
+                            initialEnd = n;
+                          });
+                        }),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.calendar_today,
+                          color: Color(0xFFD4AF37)),
+                      title: Text(_t('من تاريخ', 'From Date')),
+                      trailing: Text(fmt(initialStart),
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: initialStart,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) {
+                          setModalState(() {
+                            initialStart = DateTime(
+                                picked.year, picked.month, picked.day, 0, 0, 0);
+                          });
+                        }
+                      },
+                    ),
+                    const Divider(height: 1),
+                    ListTile(
+                      leading: const Icon(Icons.calendar_today,
+                          color: Color(0xFFD4AF37)),
+                      title: Text(_t('إلى تاريخ', 'To Date')),
+                      trailing: Text(fmt(initialEnd),
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      onTap: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: initialEnd,
+                          firstDate: initialStart,
+                          lastDate: DateTime(2100),
+                        );
+                        if (picked != null) {
+                          setModalState(() {
+                            initialEnd = DateTime(picked.year, picked.month,
+                                picked.day, 23, 59, 59);
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(
+                            context,
+                            DateTimeRange(start: initialStart, end: initialEnd),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD4AF37),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12)),
+                        ),
+                        icon: const Icon(Icons.arrow_forward,
+                            color: Colors.white),
+                        label: Text(_t('متابعة', 'Continue'),
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _quickBtn(String label, VoidCallback onTap) {
+    return OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: const Color(0xFFD4AF37),
+        side: const BorderSide(color: Color(0xFFD4AF37)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      ),
+      child: Text(label, style: const TextStyle(fontSize: 13)),
+    );
+  }
+
+  // ============ تدفق تقرير PDF ============
+  Future<void> _startPdfReportFlow() async {
+    final range = await _showDateFilterSheet();
+    if (range == null || !mounted) return;
+
+    final selected = await Navigator.push<Set<ReportSection>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReportSectionsPage(
+          start: range.start,
+          end: range.end,
+          isTotalReport: false,
+        ),
+      ),
+    );
+    if (selected == null || selected.isEmpty) return;
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (_) => const _LoadingDialog(message: 'جاري تجهيز التقرير...'),
+    );
+
+    try {
+      await PdfReport.printReport(
+        range.start,
+        range.end,
+        sections: selected,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
+
+  // ============ تدفق تقرير الإجماليات ============
+  Future<void> _startTotalReportFlow() async {
+    final range = await _showDateFilterSheet();
+    if (range == null || !mounted) return;
+
+    final selected = await Navigator.push<Set<ReportSection>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ReportSectionsPage(
+          start: range.start,
+          end: range.end,
+          isTotalReport: true,
+        ),
+      ),
+    );
+    if (selected == null || selected.isEmpty) return;
+
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      useRootNavigator: true,
+      builder: (_) =>
+          const _LoadingDialog(message: 'جاري تجهيز تقرير الإجماليات...'),
+    );
+
+    try {
+      await PdfReport.printReportTotal(
+        range.start,
+        range.end,
+        sections: selected,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('خطأ: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) Navigator.of(context, rootNavigator: true).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(_t("ملفات pdf", "PDF Files")),
@@ -229,75 +522,24 @@ class _printPageState extends State<printPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildReportButton(
-                context,
-                icon: Icons.picture_as_pdf,
-                label: _t("تقارير PDF", "PDF Reports"),
-                onTap: () async {
-                  DateTime? start = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                    helpText: _t('اختر تاريخ البداية', 'Select start date'),
-                  );
-                  if (start == null) return;
-                  start = DateTime(start.year, start.month, start.day, 0, 0, 0);
-
-                  DateTime? end = await showDatePicker(
-                    context: context,
-                    initialDate: start,
-                    firstDate: start,
-                    lastDate: DateTime(2100),
-                    helpText: _t('اختر تاريخ النهاية', 'Select end date'),
-                  );
-                  if (end == null) return;
-                  end = DateTime(end.year, end.month, end.day, 23, 59, 59);
-
-                  await PdfReport.printReport(start, end);
-                },
-              ),
+              _buildReportButton(context,
+                  icon: Icons.picture_as_pdf,
+                  label: _t("تقارير PDF", "PDF Reports"),
+                  onTap: _startPdfReportFlow),
               const SizedBox(height: 20),
-              _buildReportButton(
-                context,
-                icon: Icons.summarize,
-                label: _t("تقارير الإجماليات", "Total Reports"),
-                onTap: () async {
-                  DateTime? start = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2000),
-                    lastDate: DateTime(2100),
-                    helpText: _t('اختر تاريخ البداية', 'Select start date'),
-                  );
-                  if (start == null) return;
-                  start = DateTime(start.year, start.month, start.day, 0, 0, 0);
-
-                  DateTime? end = await showDatePicker(
-                    context: context,
-                    initialDate: start,
-                    firstDate: start,
-                    lastDate: DateTime(2100),
-                    helpText: _t('اختر تاريخ النهاية', 'Select end date'),
-                  );
-                  if (end == null) return;
-                  end = DateTime(end.year, end.month, end.day, 23, 59, 59);
-
-                  await PdfReport.printReportTotal(start, end);
-                },
-              ),
+              _buildReportButton(context,
+                  icon: Icons.summarize,
+                  label: _t("تقارير الإجماليات", "Total Reports"),
+                  onTap: _startTotalReportFlow),
               const SizedBox(height: 20),
-              _buildReportButton(
-                context,
-                icon: Icons.folder_open,
-                label: _t("التقارير السابقة", "Previous Reports"),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const PdfReportsPage()),
-                  );
-                },
-              ),
+              _buildReportButton(context,
+                  icon: Icons.folder_open,
+                  label: _t("التقارير السابقة", "Previous Reports"), onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const PdfReportsPage()),
+                );
+              }),
             ],
           ),
         ),
@@ -305,18 +547,18 @@ class _printPageState extends State<printPage> {
     );
   }
 
-  Widget _buildReportButton(BuildContext context,
-      {required IconData icon,
-      required String label,
-      required VoidCallback onTap}) {
+  Widget _buildReportButton(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         icon: Icon(icon, color: Colors.white),
-        label: Text(
-          label,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        label: Text(label,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         onPressed: onTap,
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFFD4AF37),
@@ -329,6 +571,461 @@ class _printPageState extends State<printPage> {
     );
   }
 }
+// class printPage extends StatefulWidget {
+//   const printPage({super.key});
+
+//   @override
+//   State<printPage> createState() => _printPageState();
+// }
+
+// class _printPageState extends State<printPage> {
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     if (!mounted) return;
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   Future<DateTimeRange?> _showDateFilterSheet() async {
+//     DateTime initialStart = DateTime.now().subtract(const Duration(days: 6));
+//     DateTime initialEnd = DateTime.now();
+
+//     return showModalBottomSheet<DateTimeRange>(
+//       context: context,
+//       isScrollControlled: true,
+//       shape: const RoundedRectangleBorder(
+//         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+//       ),
+//       builder: (ctx) {
+//         return Directionality(
+//           textDirection:
+//               _lang == 'ar' ? ui.TextDirection.rtl : ui.TextDirection.ltr,
+//           child: StatefulBuilder(
+//             builder: (context, setModalState) {
+//               String fmt(DateTime d) => d.toString().split(' ').first;
+//               return Padding(
+//                 padding: EdgeInsets.only(
+//                   left: 16,
+//                   right: 16,
+//                   top: 16,
+//                   bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+//                 ),
+//                 child: Column(
+//                   mainAxisSize: MainAxisSize.min,
+//                   crossAxisAlignment: CrossAxisAlignment.stretch,
+//                   children: [
+//                     Center(
+//                       child: Container(
+//                         width: 50,
+//                         height: 4,
+//                         decoration: BoxDecoration(
+//                           color: Colors.grey[300],
+//                           borderRadius: BorderRadius.circular(2),
+//                         ),
+//                       ),
+//                     ),
+//                     const SizedBox(height: 16),
+//                     Text(_t('فلترة التقرير', 'Filter Report'),
+//                         style: const TextStyle(
+//                             fontSize: 20, fontWeight: FontWeight.bold),
+//                         textAlign: TextAlign.center),
+//                     const SizedBox(height: 16),
+//                     Wrap(
+//                       spacing: 8,
+//                       runSpacing: 8,
+//                       children: [
+//                         _quickBtn(_t('اليوم', 'Today'), () {
+//                           setModalState(() {
+//                             initialStart = DateTime.now();
+//                             initialEnd = DateTime.now();
+//                           });
+//                         }),
+//                         _quickBtn(_t('آخر 7 أيام', 'Last 7 days'), () {
+//                           setModalState(() {
+//                             initialStart = DateTime.now()
+//                                 .subtract(const Duration(days: 6));
+//                             initialEnd = DateTime.now();
+//                           });
+//                         }),
+//                         _quickBtn(_t('هذا الشهر', 'This month'), () {
+//                           setModalState(() {
+//                             final n = DateTime.now();
+//                             initialStart = DateTime(n.year, n.month, 1);
+//                             initialEnd = n;
+//                           });
+//                         }),
+//                         _quickBtn(_t('الشهر الماضي', 'Last month'), () {
+//                           setModalState(() {
+//                             final n = DateTime.now();
+//                             initialStart = DateTime(n.year, n.month - 1, 1);
+//                             initialEnd = DateTime(n.year, n.month, 0);
+//                           });
+//                         }),
+//                         _quickBtn(_t('هذه السنة', 'This year'), () {
+//                           setModalState(() {
+//                             final n = DateTime.now();
+//                             initialStart = DateTime(n.year, 1, 1);
+//                             initialEnd = n;
+//                           });
+//                         }),
+//                       ],
+//                     ),
+//                     const SizedBox(height: 16),
+//                     const Divider(height: 1),
+//                     ListTile(
+//                       leading: const Icon(Icons.calendar_today,
+//                           color: Color(0xFFD4AF37)),
+//                       title: Text(_t('من تاريخ', 'From Date')),
+//                       trailing: Text(fmt(initialStart),
+//                           style: const TextStyle(fontWeight: FontWeight.bold)),
+//                       onTap: () async {
+//                         final picked = await showDatePicker(
+//                           context: context,
+//                           initialDate: initialStart,
+//                           firstDate: DateTime(2000),
+//                           lastDate: DateTime(2100),
+//                         );
+//                         if (picked != null) {
+//                           setModalState(() {
+//                             initialStart = DateTime(
+//                                 picked.year, picked.month, picked.day, 0, 0, 0);
+//                           });
+//                         }
+//                       },
+//                     ),
+//                     const Divider(height: 1),
+//                     ListTile(
+//                       leading: const Icon(Icons.calendar_today,
+//                           color: Color(0xFFD4AF37)),
+//                       title: Text(_t('إلى تاريخ', 'To Date')),
+//                       trailing: Text(fmt(initialEnd),
+//                           style: const TextStyle(fontWeight: FontWeight.bold)),
+//                       onTap: () async {
+//                         final picked = await showDatePicker(
+//                           context: context,
+//                           initialDate: initialEnd,
+//                           firstDate: initialStart,
+//                           lastDate: DateTime(2100),
+//                         );
+//                         if (picked != null) {
+//                           setModalState(() {
+//                             initialEnd = DateTime(picked.year, picked.month,
+//                                 picked.day, 23, 59, 59);
+//                           });
+//                         }
+//                       },
+//                     ),
+//                     const SizedBox(height: 16),
+//                     SizedBox(
+//                       width: double.infinity,
+//                       child: ElevatedButton.icon(
+//                         onPressed: () {
+//                           Navigator.pop(
+//                               context,
+//                               DateTimeRange(
+//                                   start: initialStart, end: initialEnd));
+//                         },
+//                         style: ElevatedButton.styleFrom(
+//                           backgroundColor: const Color(0xFFD4AF37),
+//                           padding: const EdgeInsets.symmetric(vertical: 14),
+//                           shape: RoundedRectangleBorder(
+//                               borderRadius: BorderRadius.circular(12)),
+//                         ),
+//                         icon: const Icon(Icons.arrow_forward,
+//                             color: Colors.white),
+//                         label: Text(_t('متابعة', 'Continue'),
+//                             style: const TextStyle(
+//                                 fontSize: 16,
+//                                 fontWeight: FontWeight.bold,
+//                                 color: Colors.white)),
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               );
+//             },
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget _quickBtn(String label, VoidCallback onTap) {
+//     return OutlinedButton(
+//       onPressed: onTap,
+//       style: OutlinedButton.styleFrom(
+//         foregroundColor: const Color(0xFFD4AF37),
+//         side: const BorderSide(color: Color(0xFFD4AF37)),
+//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+//         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+//       ),
+//       child: Text(label, style: const TextStyle(fontSize: 13)),
+//     );
+//   }
+
+//   Future<void> _startPdfReportFlow() async {
+//     final range = await _showDateFilterSheet();
+//     if (range == null || !mounted) return;
+//     final selected = await Navigator.push<Set<ReportSection>>(
+//       context,
+//       MaterialPageRoute(
+//         builder: (_) => ReportSectionsPage(
+//           start: range.start,
+//           end: range.end,
+//           isTotalReport: false,
+//         ),
+//       ),
+//     );
+//     if (selected == null || selected.isEmpty) return;
+//     await PdfReport.printReport(range.start, range.end, sections: selected);
+//   }
+
+//   Future<void> _startTotalReportFlow() async {
+//     final range = await _showDateFilterSheet();
+//     if (range == null || !mounted) return;
+//     final selected = await Navigator.push<Set<ReportSection>>(
+//       context,
+//       MaterialPageRoute(
+//         builder: (_) => ReportSectionsPage(
+//           start: range.start,
+//           end: range.end,
+//           isTotalReport: true,
+//         ),
+//       ),
+//     );
+//     if (selected == null || selected.isEmpty) return;
+//     await PdfReport.printReportTotal(range.start, range.end,
+//         sections: selected);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("ملفات pdf", "PDF Files")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: Container(
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               theme.colorScheme.surface,
+//               theme.colorScheme.surface.withOpacity(0.8),
+//             ],
+//           ),
+//         ),
+//         child: Padding(
+//           padding: const EdgeInsets.all(20),
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               _buildReportButton(context,
+//                   icon: Icons.picture_as_pdf,
+//                   label: _t("تقارير PDF", "PDF Reports"),
+//                   onTap: _startPdfReportFlow),
+//               const SizedBox(height: 20),
+//               _buildReportButton(context,
+//                   icon: Icons.summarize,
+//                   label: _t("تقارير الإجماليات", "Total Reports"),
+//                   onTap: _startTotalReportFlow),
+//               const SizedBox(height: 20),
+//               _buildReportButton(context,
+//                   icon: Icons.folder_open,
+//                   label: _t("التقارير السابقة", "Previous Reports"), onTap: () {
+//                 Navigator.push(context,
+//                     MaterialPageRoute(builder: (_) => const PdfReportsPage()));
+//               }),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildReportButton(BuildContext context,
+//       {required IconData icon,
+//       required String label,
+//       required VoidCallback onTap}) {
+//     return SizedBox(
+//       width: double.infinity,
+//       child: ElevatedButton.icon(
+//         icon: Icon(icon, color: Colors.white),
+//         label: Text(label,
+//             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+//         onPressed: onTap,
+//         style: ElevatedButton.styleFrom(
+//           backgroundColor: const Color(0xFFD4AF37),
+//           padding: const EdgeInsets.symmetric(vertical: 16),
+//           shape:
+//               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class printPage extends StatefulWidget {
+//   const printPage({super.key});
+
+//   @override
+//   State<printPage> createState() => _printPageState();
+// }
+
+// class _printPageState extends State<printPage> {
+//   String _lang = 'ar';
+//   String _t(String ar, String en) => _lang == 'ar' ? ar : en;
+
+//   Future<void> _loadLanguage() async {
+//     final prefs = await SharedPreferences.getInstance();
+//     setState(() {
+//       _lang = prefs.getString('languageCode') ?? 'ar';
+//     });
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadLanguage();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text(_t("ملفات pdf", "PDF Files")),
+//         backgroundColor: const Color(0xFFD4AF37),
+//       ),
+//       body: Container(
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             begin: Alignment.topCenter,
+//             end: Alignment.bottomCenter,
+//             colors: [
+//               theme.colorScheme.surface,
+//               theme.colorScheme.surface.withOpacity(0.8),
+//             ],
+//           ),
+//         ),
+//         child: Padding(
+//           padding: const EdgeInsets.all(20),
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: [
+//               _buildReportButton(
+//                 context,
+//                 icon: Icons.picture_as_pdf,
+//                 label: _t("تقارير PDF", "PDF Reports"),
+//                 onTap: () async {
+//                   DateTime? start = await showDatePicker(
+//                     context: context,
+//                     initialDate: DateTime.now(),
+//                     firstDate: DateTime(2000),
+//                     lastDate: DateTime(2100),
+//                     helpText: _t('اختر تاريخ البداية', 'Select start date'),
+//                   );
+//                   if (start == null) return;
+//                   start = DateTime(start.year, start.month, start.day, 0, 0, 0);
+
+//                   DateTime? end = await showDatePicker(
+//                     context: context,
+//                     initialDate: start,
+//                     firstDate: start,
+//                     lastDate: DateTime(2100),
+//                     helpText: _t('اختر تاريخ النهاية', 'Select end date'),
+//                   );
+//                   if (end == null) return;
+//                   end = DateTime(end.year, end.month, end.day, 23, 59, 59);
+
+//                   await PdfReport.printReport(start, end);
+//                 },
+//               ),
+//               const SizedBox(height: 20),
+//               _buildReportButton(
+//                 context,
+//                 icon: Icons.summarize,
+//                 label: _t("تقارير الإجماليات", "Total Reports"),
+//                 onTap: () async {
+//                   DateTime? start = await showDatePicker(
+//                     context: context,
+//                     initialDate: DateTime.now(),
+//                     firstDate: DateTime(2000),
+//                     lastDate: DateTime(2100),
+//                     helpText: _t('اختر تاريخ البداية', 'Select start date'),
+//                   );
+//                   if (start == null) return;
+//                   start = DateTime(start.year, start.month, start.day, 0, 0, 0);
+
+//                   DateTime? end = await showDatePicker(
+//                     context: context,
+//                     initialDate: start,
+//                     firstDate: start,
+//                     lastDate: DateTime(2100),
+//                     helpText: _t('اختر تاريخ النهاية', 'Select end date'),
+//                   );
+//                   if (end == null) return;
+//                   end = DateTime(end.year, end.month, end.day, 23, 59, 59);
+
+//                   await PdfReport.printReportTotal(start, end);
+//                 },
+//               ),
+//               const SizedBox(height: 20),
+//               _buildReportButton(
+//                 context,
+//                 icon: Icons.folder_open,
+//                 label: _t("التقارير السابقة", "Previous Reports"),
+//                 onTap: () {
+//                   Navigator.push(
+//                     context,
+//                     MaterialPageRoute(builder: (_) => const PdfReportsPage()),
+//                   );
+//                 },
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildReportButton(BuildContext context,
+//       {required IconData icon,
+//       required String label,
+//       required VoidCallback onTap}) {
+//     return SizedBox(
+//       width: double.infinity,
+//       child: ElevatedButton.icon(
+//         icon: Icon(icon, color: Colors.white),
+//         label: Text(
+//           label,
+//           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//         ),
+//         onPressed: onTap,
+//         style: ElevatedButton.styleFrom(
+//           backgroundColor: const Color(0xFFD4AF37),
+//           padding: const EdgeInsets.symmetric(vertical: 16),
+//           shape: RoundedRectangleBorder(
+//             borderRadius: BorderRadius.circular(12),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class partPage extends StatefulWidget {
   const partPage({super.key});

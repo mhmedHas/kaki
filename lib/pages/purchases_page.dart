@@ -2251,7 +2251,7 @@ class _PurchasesPageState extends State<PurchasesPage>
           value: _scrapCost,
         ),
         _buildRow(
-          label: _t('شراء ذهب خام للتسكير', 'Raw gold for minting'),
+          label: _t('شراء ذهب خام ', 'Raw gold for minting'),
           value: _rawGoldCost,
         ),
         _buildRow(
