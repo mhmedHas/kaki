@@ -582,7 +582,8 @@ class _EditPageState extends State<EditPage> {
           break;
       }
 
-      await FS.updateItem(epcHex, updates);
+      // await FS.updateItem(epcHex, updates);
+      await FS.updateItemById(itemData!['id'], updates);
 
       _showMsg(
           _t("✅ تم حفظ التعديلات بنجاح", "✅ Changes saved successfully"), true);
