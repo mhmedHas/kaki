@@ -35,7 +35,11 @@ class _InventoryPageState extends State<InventoryPage> {
   List<Map<String, dynamic>> AllTags = [];
   Timer? _uiUpdateTimer;
   final Set<String> _pendingEpcs = {};
-  late Map<String, Map<String, dynamic>> tagsLookup;
+  Map<String, Map<String, dynamic>> tagsLookup = {};
+  String get _draftKey {
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+    return 'inventory_page_draft_$uid';
+  }
 
   @override
   void initState() {
@@ -55,6 +59,7 @@ class _InventoryPageState extends State<InventoryPage> {
           epcs.addAll(_pendingEpcs);
           _pendingEpcs.clear();
         });
+        _persistDraft();
       }
     });
 
@@ -86,6 +91,7 @@ class _InventoryPageState extends State<InventoryPage> {
           });*/
           _pendingEpcs.add(epc);
           itemsData[epc] = result;
+          _persistDraft();
 
           /*final itemData = await FS.findItemByEpc(epc);
           if (!mounted) return;
@@ -104,7 +110,7 @@ class _InventoryPageState extends State<InventoryPage> {
     tagsLookup = {};
 
     for (var item in allTags) {
-      final epc = item['epcHex']?.toString();
+      final epc = item['epcHex']?.toString().toUpperCase();
       final qr = item['qrCode']?.toString().toUpperCase();
 
       if (epc != null) {
@@ -119,6 +125,37 @@ class _InventoryPageState extends State<InventoryPage> {
     setState(() {
       AllTags = allTags;
     });
+    await _restoreDraft();
+  }
+
+  Future<void> _persistDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    final draftEpcs = {...epcs, ..._pendingEpcs}.toList();
+    if (draftEpcs.isEmpty) {
+      await prefs.remove(_draftKey);
+      return;
+    }
+    await prefs.setString(_draftKey, jsonEncode(draftEpcs));
+  }
+
+  Future<void> _restoreDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_draftKey);
+    if (raw == null || !mounted) return;
+    try {
+      final savedEpcs = (jsonDecode(raw) as List).map((e) => e.toString());
+      setState(() {
+        for (final savedEpc in savedEpcs) {
+          final item = tagsLookup[savedEpc.toUpperCase()];
+          if (item == null) continue;
+          final epc = item['epcHex']?.toString() ?? savedEpc;
+          if (!epcs.contains(epc)) epcs.add(epc);
+          itemsData[epc] = item;
+        }
+      });
+    } catch (_) {
+      await prefs.remove(_draftKey);
+    }
   }
 
   Map<String, List<Map<String, dynamic>>> missingByDepartment = {};
@@ -546,6 +583,7 @@ class _InventoryPageState extends State<InventoryPage> {
   @override
   void dispose() {
     _tagSubscription?.cancel();
+    _uiUpdateTimer?.cancel();
     super.dispose();
   }
 
@@ -594,6 +632,8 @@ class _InventoryPageState extends State<InventoryPage> {
         itemsData.clear();
         saveProgress = 1.0;
       });
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_draftKey);
     } catch (e) {
       setState(() => msg = _t('فشل الحفظ: $e', 'Save failed: $e'));
     } finally {
@@ -1072,6 +1112,7 @@ class _InventoryPageState extends State<InventoryPage> {
                               epcs.remove(epc);
                               itemsData.remove(epc);
                             });
+                            _persistDraft();
                           },
                         ),
                       ],
@@ -1486,6 +1527,7 @@ class _InventoryPageState extends State<InventoryPage> {
       setState(() {
         epcs.add(epc);
       });
+      await _persistDraft();
 
       final itemData = await FS.findItemByEpc(epc);
       if (!mounted) return;

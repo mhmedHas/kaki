@@ -35,7 +35,11 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
   List<Map<String, dynamic>> AllTags = [];
   Timer? _uiUpdateTimer;
   final Set<String> _pendingEpcs = {};
-  late Map<String, Map<String, dynamic>> tagsLookup;
+  Map<String, Map<String, dynamic>> tagsLookup = {};
+  String get _draftKey {
+    final uid = FirebaseAuth.instance.currentUser?.uid ?? 'anonymous';
+    return 'inventory_department_draft_$uid';
+  }
 
   List<String> allDepartments = [];
   List<String> selectedDepartments = [];
@@ -60,6 +64,7 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
           epcs.addAll(_pendingEpcs);
           _pendingEpcs.clear();
         });
+        _persistDraft();
       }
     });
 
@@ -124,7 +129,7 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
     tagsLookup = {};
 
     for (var item in allTags) {
-      final epc = item['epcHex']?.toString();
+      final epc = item['epcHex']?.toString().toUpperCase();
       final qr = item['qrCode']?.toString().toUpperCase();
 
       if (epc != null) {
@@ -139,6 +144,47 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
     setState(() {
       AllTags = allTags;
     });
+    await _restoreDraft();
+  }
+
+  Future<void> _persistDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    final draftEpcs = {...epcs, ..._pendingEpcs}.toList();
+    if (draftEpcs.isEmpty && selectedDepartments.isEmpty) {
+      await prefs.remove(_draftKey);
+      return;
+    }
+    await prefs.setString(_draftKey, jsonEncode({
+      'epcs': draftEpcs,
+      'departments': selectedDepartments,
+    }));
+  }
+
+  Future<void> _restoreDraft() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_draftKey);
+    if (raw == null || !mounted) return;
+    try {
+      final draft = jsonDecode(raw) as Map<String, dynamic>;
+      final savedEpcs = (draft['epcs'] as List? ?? []).map((e) => e.toString());
+      final savedDepartments =
+          (draft['departments'] as List? ?? []).map((e) => e.toString());
+      setState(() {
+        selectedDepartments = savedDepartments.toSet().toList();
+        for (final savedEpc in savedEpcs) {
+          final key = savedEpc.toUpperCase();
+          final item = tagsLookup[key];
+          if (item == null) continue;
+          final epc = item['epcHex']?.toString() ?? savedEpc;
+          if (!epcs.contains(epc)) epcs.add(epc);
+          itemsData[epc] = item;
+        }
+      });
+      _calculateDepartmentsCountFromLocal();
+      _calculateScannedDepartmentsCount();
+    } catch (_) {
+      await prefs.remove(_draftKey);
+    }
   }
 
   Future<void> _loadDepartments() async {
@@ -209,6 +255,7 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
                     setState(() {}); // يحدث الشاشة الرئيسية
                     Navigator.pop(context);
                     _calculateDepartmentsCountFromLocal();
+                  _persistDraft();
                   },
                   child: Text(_t("حفظ", "Save")),
                 ),
@@ -875,6 +922,7 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
   @override
   void dispose() {
     _tagSubscription?.cancel();
+    _uiUpdateTimer?.cancel();
     super.dispose();
   }
 
@@ -923,6 +971,8 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
         itemsData.clear();
         saveProgress = 1.0;
       });
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_draftKey);
     } catch (e) {
       setState(() => msg = _t('فشل الحفظ: $e', 'Save failed: $e'));
     } finally {
@@ -1401,6 +1451,7 @@ class _InventoryDepartmentState extends State<InventoryDepartment> {
                               epcs.remove(epc);
                               itemsData.remove(epc);
                             });
+                            _persistDraft();
                           },
                         ),
                       ],
